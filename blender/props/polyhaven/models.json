@@ -1,0 +1,215 @@
+{
+  "source": "polyhaven.com (CC0)",
+  "models": {
+    "sofa_02": {
+      "name": "Sofa 02",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/sofa_02/sofa_02.gltf",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "dimensions": [
+        1807.1673512458801,
+        817.7513778209686,
+        709.4888985157013
+      ]
+    },
+    "Sofa_01": {
+      "name": "Sofa 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/Sofa_01/Sofa_01.gltf",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "dimensions": [
+        1571.4675784111023,
+        658.0145359039307,
+        796.515051391907
+      ]
+    },
+    "ArmChair_01": {
+      "name": "Arm Chair 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/ArmChair_01/ArmChair_01.gltf",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "dimensions": [
+        848.4309017658234,
+        765.7602727413177,
+        1065.087635157397
+      ]
+    },
+    "GreenChair_01": {
+      "name": "Green Chair 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/GreenChair_01/GreenChair_01.gltf",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "dimensions": [
+        673.0944514274597,
+        664.3875539302826,
+        1058.5118799936026
+      ]
+    },
+    "gothic_coffee_table": {
+      "name": "Gothic Coffee Table",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/gothic_coffee_table/gothic_coffee_table.gltf",
+      "authors": [
+        "Ulan Cabanilla"
+      ],
+      "dimensions": [
+        1443.0902004241943,
+        1443.0902004241943,
+        558.7729810795281
+      ]
+    },
+    "ClassicConsole_01": {
+      "name": "Classic Console 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/ClassicConsole_01/ClassicConsole_01.gltf",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "dimensions": [
+        1543.0203676223755,
+        589.2754197120667,
+        949.0714100943478
+      ]
+    },
+    "side_table_tall_01": {
+      "name": "Side Table Tall 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/side_table_tall_01/side_table_tall_01.gltf",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "dimensions": [
+        383.98271799087524,
+        383.98271799087524,
+        761.1514969321433
+      ]
+    },
+    "ornate_mirror_01": {
+      "name": "Ornate Mirror 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/ornate_mirror_01/ornate_mirror_01.gltf",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "dimensions": [
+        486.4957332611084,
+        25.958335027098656,
+        744.1554069519043
+      ]
+    },
+    "vintage_grandfather_clock_01": {
+      "name": "Vintage Grandfather Clock 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/vintage_grandfather_clock_01/vintage_grandfather_clock_01.gltf",
+      "authors": [
+        "Yann Kervran",
+        "James Ray Cock"
+      ],
+      "dimensions": [
+        996.6365396976471,
+        795.2136099338531,
+        2190.5919313430786
+      ]
+    },
+    "mantel_clock_01": {
+      "name": "Mantel Clock 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/mantel_clock_01/mantel_clock_01.gltf",
+      "authors": [
+        "Yann Kervran",
+        "Rico Cilliers"
+      ],
+      "dimensions": [
+        483.6633503437042,
+        250.80496072769165,
+        160.9499454498291
+      ]
+    },
+    "marble_bust_01": {
+      "name": "Marble Bust 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/marble_bust_01/marble_bust_01.gltf",
+      "authors": [
+        "Rico Cilliers"
+      ],
+      "dimensions": [
+        271.7496156692505,
+        299.713671207428,
+        514.9431824684143
+      ]
+    },
+    "horse_statue_01": {
+      "name": "Horse Statue 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/horse_statue_01/horse_statue_01.gltf",
+      "authors": [
+        "Rico Cilliers"
+      ],
+      "dimensions": [
+        163.80367428064346,
+        107.79086500406265,
+        219.97890953571186
+      ]
+    },
+    "antique_ceramic_vase_01": {
+      "name": "Antique Ceramic Vase 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/antique_ceramic_vase_01/antique_ceramic_vase_01.gltf",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "dimensions": [
+        255.02996146678925,
+        255.02994656562805,
+        439.553053722193
+      ]
+    },
+    "brass_candleholders": {
+      "name": "Brass Candleholders",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/brass_candleholders/brass_candleholders.gltf",
+      "authors": [
+        "Tina"
+      ],
+      "dimensions": [
+        1052.9398620128632,
+        364.6823465824127,
+        835.2597653865814
+      ]
+    },
+    "vintage_oil_lamp": {
+      "name": "Vintage Oil Lamp",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/vintage_oil_lamp/vintage_oil_lamp.gltf",
+      "authors": [
+        "Monsta3D"
+      ],
+      "dimensions": [
+        219.9999988079071,
+        219.9999913573265,
+        801.6371909276536
+      ]
+    },
+    "potted_plant_02": {
+      "name": "Potted Plant 02",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/potted_plant_02/potted_plant_02.gltf",
+      "authors": [
+        "Rico Cilliers"
+      ],
+      "dimensions": [
+        701.1570334434509,
+        657.3865860700607,
+        841.1787391305552
+      ]
+    }
+  }
+}

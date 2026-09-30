@@ -30,17 +30,28 @@ export function createMaterials(tex: TextureLibrary): Record<MaterialKey, Materi
     normalScale: new Vector2(0.4, 0.4),
   });
   const walnut = pbr('Wood_WalnutPolished', 0.5, {
-    color: tint(0x4a3022), roughness: 0.9, metalness: 0,
-    clearcoat: 1, clearcoatRoughness: 0.08, envMapIntensity: 2.2, // French-polished lacquer
-    normalScale: new Vector2(0.3, 0.3),
+    color: tint(0x4a3022), roughness: 1, metalness: 0,
+    // hand-rubbed satin, not lacquer: a faint, broad sheen (a mirror clearcoat read as plastic on every panel)
+    clearcoat: 0.22, clearcoatRoughness: 0.38, envMapIntensity: 0.9,
+    normalScale: new Vector2(0.45, 0.45),
   });
 
-  /** Gilt / brass: our colour over scanned worn-gold micro-roughness and fine scratches (ambientCG Metal007). */
-  const wornMetal = (hex: number, roughnessScale: number) => {
+  /** Gilt / brass: our colour over scanned worn-gold micro-roughness and fine scratches (ambientCG Metal007).
+   *  Aged, hand-burnished finish — a soft glow, not a mirror: century-old gilding is rubbed and dulled. */
+  const wornMetal = (hex: number, roughnessScale: number, env = 1.3) => {
     const t = tex.get('Metal_WornGold', 3);
     return new MeshPhysicalMaterial({
       color: tint(hex), metalness: 1, metalnessMap: t.ORM, roughness: 0.34 * roughnessScale, roughnessMap: t.ORM,
-      normalMap: t.Normal, normalScale: new Vector2(0.25, 0.25), envMapIntensity: 2.5,
+      normalMap: t.Normal, normalScale: new Vector2(0.35, 0.35), envMapIntensity: env,
+    });
+  };
+
+  const carpet = (hex: number) => {
+    const t = tex.get('Carpet_Gul', 1 / 0.77, 1 / 0.517); // one tile = 0.77 × 0.517 m of the original carpet
+    return new MeshPhysicalMaterial({
+      map: t.BaseColor, normalMap: t.Normal, aoMap: t.ORM, roughnessMap: t.ORM, color: tint(hex),
+      roughness: 1, metalness: 0, normalScale: new Vector2(0.9, 0.9), envMapIntensity: 0.3,
+      sheen: 0.22, sheenColor: tint(0x6a1a12), sheenRoughness: 0.85, // wool pile: a faint sheen in the dye's colour
     });
   };
 
@@ -52,38 +63,37 @@ export function createMaterials(tex: TextureLibrary): Record<MaterialKey, Materi
     MAT_Marble_Rosso: pbr('Marble_Calacatta', 0.5, {
       color: tint(0x6e2a22), roughness: 1, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 3.2,
     }),
+    MAT_Marble_Bardiglio: pbr('Marble_Calacatta', 0.42, { // Italian blue-grey marble for the floor's checker and inlays
+      color: tint(0x8f9296), roughness: 1, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.035, envMapIntensity: 3.0,
+      normalScale: new Vector2(0.4, 0.4),
+    }),
     MAT_Wood_WalnutPolished: walnut,
     MAT_Wood_WalnutDark: pbr('Wood_WalnutPolished', 0.7, {
-      color: tint(0x24170f), roughness: 0.9, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.18,
-      normalScale: new Vector2(0.3, 0.3),
+      color: tint(0x24170f), roughness: 1, metalness: 0, clearcoat: 0.12, clearcoatRoughness: 0.45, envMapIntensity: 0.8,
+      normalScale: new Vector2(0.45, 0.45),
     }),
     MAT_Fabric_DamaskOxblood: pbr('Fabric_Damask', 1.1, {
       color: tint(0x4e0f0d), roughness: 1, metalness: 0,
-      sheen: 0.35, sheenColor: tint(0x8a2a20), sheenRoughness: 0.6,
+      sheen: 0.2, sheenColor: tint(0x7a2a20), sheenRoughness: 0.8, envMapIntensity: 0.6,
     }),
     MAT_Fabric_DamaskForest: pbr('Fabric_Damask', 1.1, {
       color: tint(0x1f4a30), roughness: 1, metalness: 0,
-      sheen: 0.45, sheenColor: tint(0x4f9a66), sheenRoughness: 0.6,
+      sheen: 0.25, sheenColor: tint(0x4f9a66), sheenRoughness: 0.8, envMapIntensity: 0.6,
     }),
     MAT_Fabric_DamaskGold: pbr('Fabric_Damask', 1.1, {
       color: tint(0x6a4a22), roughness: 1, metalness: 0,
-      sheen: 0.5, sheenColor: tint(0xc9a45c), sheenRoughness: 0.5,
+      sheen: 0.3, sheenColor: tint(0xc9a45c), sheenRoughness: 0.75, envMapIntensity: 0.6,
     }),
-    MAT_Fabric_CarpetForest: pbr('Fabric_Damask', 0.9, {
-      color: tint(0x1b2a20), roughness: 1, metalness: 0,
-      sheen: 0.6, sheenColor: tint(0x4a6a3a), sheenRoughness: 0.7,
-      normalScale: new Vector2(1.4, 1.4),
-    }),
-    MAT_Fabric_CarpetCrimson: pbr('Fabric_Damask', 0.9, {
-      color: tint(0x5e0e0e), roughness: 1, metalness: 0,
-      sheen: 0.6, sheenColor: tint(0x9a2a20), sheenRoughness: 0.7,
-      normalScale: new Vector2(1.4, 1.4),
-    }),
+    // Wall-to-wall carpet: a real Turkmen (Salor) carpet photographed by the Met, made into a seamless
+    // tile at its true scale (scripts/make-carpets.mjs) with a synthesised wool-pile normal/roughness.
+    MAT_Fabric_CarpetForest: carpet(0x6f8a68),
+    MAT_Fabric_CarpetCrimson: carpet(0xbfaea6),
     MAT_Fabric_VelvetRed: (() => {
       const t = tex.get('Fabric_Velvet', 3);
       return new MeshPhysicalMaterial({
-        color: tint(0x3a0606), normalMap: t.Normal, aoMap: t.ORM, roughnessMap: t.ORM, roughness: 0.9,
-        sheen: 0.7, sheenColor: tint(0x9a2a2a), sheenRoughness: 0.4,
+        // plush crimson velvet (casino.png poker room): deep body colour, bright pile sheen at grazing angles
+        color: tint(0x560a0d), normalMap: t.Normal, normalScale: new Vector2(0.55, 0.55), aoMap: t.ORM, roughnessMap: t.ORM,
+        roughness: 0.92, envMapIntensity: 0.5, sheen: 0.7, sheenColor: tint(0x9c2a26), sheenRoughness: 0.45,
       });
     })(),
     MAT_Fabric_FeltGreen: pbr('Fabric_Felt', 2.5, {
@@ -91,10 +101,10 @@ export function createMaterials(tex: TextureLibrary): Record<MaterialKey, Materi
       sheen: 0.5, sheenColor: tint(0x4a9a60), sheenRoughness: 0.8,
     }),
     MAT_Leather_Oxblood: pbr('Leather_Oxblood', 2.5, {
-      color: tint(0xa8483a), roughness: 1, metalness: 0, clearcoat: 0.35, clearcoatRoughness: 0.35,
+      color: tint(0xa8483a), roughness: 1, metalness: 0, clearcoat: 0.12, clearcoatRoughness: 0.5, envMapIntensity: 0.8,
     }),
-    MAT_Brass_Aged: wornMetal(0xb98a4a, 1.25),
-    MAT_Gold_Gilt: wornMetal(0xd8ad5c, 0.85),
+    MAT_Brass_Aged: wornMetal(0x9c7640, 1.7, 1.1),
+    MAT_Gold_Gilt: wornMetal(0xb88e4c, 1.55, 1.2),
     MAT_Crystal_Clear: new MeshPhysicalMaterial({
       color: tint(0xffffff), metalness: 0, roughness: 0.02, ior: 2.0, specularIntensity: 1,
       iridescence: 0.5, iridescenceIOR: 1.6, emissive: tint(0xffc890), emissiveIntensity: 0.35,

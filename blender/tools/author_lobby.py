@@ -22,6 +22,7 @@ import numpy as np
 from mathutils import Vector
 
 sys.path.insert(0, os.path.dirname(__file__))
+import flora  # noqa: E402
 import kit  # noqa: E402
 import mansion  # noqa: E402
 
@@ -57,49 +58,196 @@ cy = (Y0 + Y1) / 2
 # ============================================================================ build: floor & ceiling
 import bmesh  # noqa: E402
 
-# floor: bordered marble field
-m, band = 0.7, 0.35
-W_, D_ = X1 - X0, Y1 - Y0
-cx, cy = 0, (Y0 + Y1) / 2
-slabs = [
-    ((W_, m), (cx, Y0 + m / 2), "marble"), ((W_, m), (cx, Y1 - m / 2), "marble"),
-    ((m, D_ - 2 * m), (X0 + m / 2, cy), "marble"), ((m, D_ - 2 * m), (X1 - m / 2, cy), "marble"),
-    ((W_ - 2 * m, band), (cx, Y0 + m + band / 2), "nero"), ((W_ - 2 * m, band), (cx, Y1 - m - band / 2), "nero"),
-    ((band, D_ - 2 * m - 2 * band), (X0 + m + band / 2, cy), "nero"), ((band, D_ - 2 * m - 2 * band), (X1 - m - band / 2, cy), "nero"),
-    ((W_ - 2 * m - 2 * band, D_ - 2 * m - 2 * band), (cx, cy), "marble"),
-]
-for (sx, sy), (px, py), key in slabs:
-    K.box(K.name("ROOM", "Floor"), (sx, sy, 0.2), (px, py, -0.1), M[key], lightmap=True)
+# ---------------------------------------------------------------------------- floor (casino.png, Grand Lobby)
+# Layers, bottom → top (1.5 mm apart): Calacatta slab · grout · 45° checker of Calacatta + Bardiglio tiles ·
+# Nero cabochons · the Greek-key band · the compass-rose medallion.
+K.material("grout", "MAT_Lobby_Grout", (0.06, 0.055, 0.05), 0.85)
+K.box(K.name("ROOM", "Floor"), (W_, D_, 0.2), (0, cy, -0.1), M["marble"], lightmap=True)
 K.collider("Floor", (X0 - 1, Y0 - 1, -0.5), (X1 + 1, Y1 + 1, 0))
 
-# nero cabochons at the tile grid (instanced), avoiding the medallion and stair
-cab = K.prototype(K.box(K.name("PROP", "Cabochon"), (0.16, 0.16, 0.004), (0, 0, -30), M["nero"]))
-for gx in np.arange(X0 + 1.4, X1 - 1.3, 1.2):
-    for gy in np.arange(Y0 + 1.4, STAIR_Y0 - 0.3, 1.2):
-        if math.hypot(gx, gy - MED_Y) < 3.3:
-            continue
-        K.linked(K.name("PROP", "Cabochon"), cab, (gx, gy, 0.002), rot=(0, 0, math.pi / 4))
-
-# medallion: stacked inlays (1–2 mm apart), compass rose
-for r, z, key in ((3.0, 0.001, "nero"), (2.7, 0.0022, "rosso"), (2.3, 0.0034, "marble"), (0.3, 0.007, "marble")):
-    K.cyl(K.name("ROOM", "Medallion"), r, r, 0.002, (0, MED_Y, z), M[key], segments=128, smooth_angle=None, lightmap=True)
-for R, r, z in ((2.82, 0.04, 0.0025), (1.15, 0.03, 0.0046), (0.32, 0.02, 0.0081)):
-    K.torus(K.name("ROOM", "MedallionRing"), R, r, (0, MED_Y, z - r * 0.8), M["gilt"], major=128, minor=6)
+MARGIN, BAND, GAP = 0.55, 0.36, 0.12
+BY1 = STAIR_Y0 - 0.1                                       # the band stops at the foot of the stairs
+band_o = (X0 + MARGIN, Y0 + MARGIN, X1 - MARGIN, BY1)
+band_i = (band_o[0] + BAND, band_o[1] + BAND, band_o[2] - BAND, band_o[3] - BAND)
+fld = (band_i[0] + GAP, band_i[1] + GAP, band_i[2] - GAP, band_i[3] - GAP)
+Z_GROUT, Z_TILE, Z_CAB, Z_BAND, Z_KEY = 0.0008, 0.0016, 0.0024, 0.0016, 0.0024
+MED_R = 3.4
 
 
-def star(name, outer, inner, points, rot, z, mat):
+def flat(name, polys, mat, z, lightmap=True, uv_jitter=None):
+    """Flat faces at height z; UV0 in metres (optionally offset/rotated per face for vein variety)."""
     bm = bmesh.new()
-    verts = []
-    for i in range(points * 2):
-        rr = outer if i % 2 == 0 else inner
-        a = i / (points * 2) * 2 * math.pi + rot
-        verts.append(bm.verts.new((rr * math.cos(a), MED_Y + rr * math.sin(a), z)))
-    bm.faces.new(verts)
-    return K.obj(name, bm, mat, lightmap=True)
+    uv = bm.loops.layers.uv.verify()
+    for k, poly in enumerate(polys):
+        if len(poly) < 3:
+            continue
+        f = bm.faces.new([bm.verts.new((x, y, z)) for x, y in poly])
+        if f.normal.z < 0:
+            f.normal_flip()
+        ox, oy, rot = uv_jitter[k] if uv_jitter else (0, 0, 0)
+        c, s_ = math.cos(rot), math.sin(rot)
+        for loop in f.loops:
+            x, y = loop.vert.co.x, loop.vert.co.y
+            loop[uv].uv = (x * c - y * s_ + ox, x * s_ + y * c + oy)
+    return K.obj(name, bm, mat, uv=None, lightmap=lightmap)
 
 
-star(K.name("ROOM", "MedallionStar"), 2.2, 0.55, 8, math.pi / 8, 0.0048, M["nero"])
-star(K.name("ROOM", "MedallionStar"), 2.0, 0.4, 4, 0, 0.006, M["rosso"])
+def clip(poly, rect):
+    """Sutherland–Hodgman against an axis-aligned rectangle (x0, y0, x1, y1)."""
+    x0, y0, x1, y1 = rect
+    for inside, cut in ((lambda p: p[0] >= x0, lambda a, b: (x0, a[1] + (b[1] - a[1]) * (x0 - a[0]) / (b[0] - a[0]))),
+                        (lambda p: p[0] <= x1, lambda a, b: (x1, a[1] + (b[1] - a[1]) * (x1 - a[0]) / (b[0] - a[0]))),
+                        (lambda p: p[1] >= y0, lambda a, b: (a[0] + (b[0] - a[0]) * (y0 - a[1]) / (b[1] - a[1]), y0)),
+                        (lambda p: p[1] <= y1, lambda a, b: (a[0] + (b[0] - a[0]) * (y1 - a[1]) / (b[1] - a[1]), y1))):
+        out = []
+        for i, a in enumerate(poly):
+            b = poly[(i + 1) % len(poly)]
+            if inside(b):
+                if not inside(a):
+                    out.append(cut(a, b))
+                out.append(b)
+            elif inside(a):
+                out.append(cut(a, b))
+        poly = out
+        if not poly:
+            break
+    return poly
+
+
+def rect_poly(x0, y0, x1, y1):
+    return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+
+# grout bed under the checker
+flat(K.name("ROOM", "FloorGrout"), [rect_poly(*fld)], M["grout"], Z_GROUT)
+
+# 45° checker, symmetric about the medallion; 2 mm joints; each tile's veining offset/rotated
+S, JOINT = 0.72, 0.001
+r2 = math.sqrt(0.5)
+tiles = {"marble": [], "bardiglio": []}
+jit = {"marble": [], "bardiglio": []}
+rngf = np.random.default_rng(7)
+for i in range(-20, 21):
+    for j in range(-20, 21):
+        u0, u1, v0, v1 = i * S + JOINT, (i + 1) * S - JOINT, j * S + JOINT, (j + 1) * S - JOINT
+        corners = [((u - v) * r2, MED_Y + (u + v) * r2) for u, v in ((u0, v0), (u1, v0), (u1, v1), (u0, v1))]
+        cxy = (sum(p[0] for p in corners) / 4, sum(p[1] for p in corners) / 4)
+        if math.hypot(cxy[0], cxy[1] - MED_Y) < MED_R - 0.6:
+            continue                                          # hidden under the medallion
+        poly = clip(corners, fld)
+        if len(poly) < 3:
+            continue
+        key = "marble" if (i + j) % 2 == 0 else "bardiglio"
+        tiles[key].append(poly)
+        jit[key].append((rngf.random() * 4, rngf.random() * 4, rngf.integers(4) * math.pi / 2))
+for key in tiles:
+    flat(K.name("ROOM", f"FloorTile{key.capitalize()}"), tiles[key], M[key], Z_TILE, uv_jitter=jit[key])
+
+# Nero cabochons at the checker's corners (instanced)
+cab = K.prototype(K.box(K.name("PROP", "Cabochon"), (0.12, 0.12, 0.003), (0, 0, -30), M["nero"]))
+for i in range(-20, 21):
+    for j in range(-20, 21):
+        u, v = i * S, j * S
+        x, y = (u - v) * r2, MED_Y + (u + v) * r2
+        if fld[0] + 0.1 < x < fld[2] - 0.1 and fld[1] + 0.1 < y < fld[3] - 0.1 and math.hypot(x, y - MED_Y) > MED_R + 0.1:
+            K.linked(K.name("PROP", "Cabochon"), cab, (x, y, Z_CAB))
+
+# Greek-key band: Nero ground, Calacatta meander, fillets both sides
+ox0, oy0, ox1, oy1 = band_o
+ix0, iy0, ix1, iy1 = band_i
+flat(K.name("ROOM", "FloorBand"), [rect_poly(ox0, oy0, ox1, iy0), rect_poly(ox0, iy1, ox1, oy1),
+                                   rect_poly(ox0, iy0, ix0, iy1), rect_poly(ix1, iy0, ox1, iy1)], M["nero"], Z_BAND)
+LW, PAD = 0.03, 0.055
+Hk = BAND - 2 * PAD                                          # key height across the band
+Pk = Hk * 1.25                                               # one key per period
+
+
+def key_run(a0, a1):
+    """Meander segments in band-local (a along, b across) coords, as rectangles."""
+    rects = [(a0, -LW / 2, a1, LW / 2), (a0, Hk - LW / 2, a1, Hk + LW / 2)]   # fillets
+    n = int((a1 - a0) // Pk)
+    start = a0 + ((a1 - a0) - n * Pk) / 2
+    for k in range(n):
+        a = start + k * Pk
+        pts = [(a, 0), (a, Hk * 0.8), (a + Pk * 0.72, Hk * 0.8), (a + Pk * 0.72, Hk * 0.3), (a + Pk * 0.36, Hk * 0.3), (a + Pk * 0.36, Hk * 0.55)]
+        for (p0, q0), (p1, q1) in zip(pts, pts[1:]):
+            rects.append((min(p0, p1) - LW / 2, min(q0, q1) - LW / 2, max(p0, p1) + LW / 2, max(q0, q1) + LW / 2))
+    return rects
+
+
+key_polys = []
+for side in ("front", "back", "left", "right"):
+    if side in ("front", "back"):
+        a0, a1 = ix0, ix1
+        base = oy0 + PAD if side == "front" else oy1 - PAD
+        sgn = 1 if side == "front" else -1
+        for (pa0, pb0, pa1, pb1) in key_run(a0, a1):
+            key_polys.append(rect_poly(pa0, base + sgn * pb0, pa1, base + sgn * pb1) if sgn > 0 else rect_poly(pa0, base - pb1, pa1, base - pb0))
+    else:
+        a0, a1 = iy0, iy1
+        base = ox0 + PAD if side == "left" else ox1 - PAD
+        sgn = 1 if side == "left" else -1
+        for (pa0, pb0, pa1, pb1) in key_run(a0, a1):
+            key_polys.append(rect_poly(base + pb0, pa0, base + pb1, pa1) if sgn > 0 else rect_poly(base - pb1, pa0, base - pb0, pa1))
+# corner blocks: Calacatta square with a Nero lozenge
+for cx_, cy_ in ((ox0 + BAND / 2, oy0 + BAND / 2), (ox1 - BAND / 2, oy0 + BAND / 2), (ox0 + BAND / 2, oy1 - BAND / 2), (ox1 - BAND / 2, oy1 - BAND / 2)):
+    h_ = BAND / 2 - PAD / 2
+    key_polys.append(rect_poly(cx_ - h_, cy_ - h_, cx_ + h_, cy_ + h_))
+flat(K.name("ROOM", "FloorKey"), key_polys, M["marble"], Z_KEY)
+
+
+# ---------------------------------------------------------------------------- compass-rose medallion
+def disc(name, r, z, mat, seg=160):
+    return flat(name, [[(r * math.cos(2 * math.pi * k / seg), MED_Y + r * math.sin(2 * math.pi * k / seg)) for k in range(seg)]], mat, z)
+
+
+def ring(name, r0, r1, z, mat, seg=160):
+    polys = []
+    for k in range(seg):
+        a, b = 2 * math.pi * k / seg, 2 * math.pi * (k + 1) / seg
+        polys.append([(r0 * math.cos(a), MED_Y + r0 * math.sin(a)), (r1 * math.cos(a), MED_Y + r1 * math.sin(a)),
+                      (r1 * math.cos(b), MED_Y + r1 * math.sin(b)), (r0 * math.cos(b), MED_Y + r0 * math.sin(b))])
+    return flat(name, polys, mat, z)
+
+
+zc = 0.003
+disc(K.name("ROOM", "Medallion"), MED_R, zc, M["nero"])
+ring(K.name("ROOM", "Medallion"), 2.93, 3.28, zc + 0.0008, M["rosso"])
+teeth = []                                                   # sawtooth of Calacatta on the Rosso band
+NT = 48
+for k in range(NT):
+    a0, a1, am = 2 * math.pi * k / NT, 2 * math.pi * (k + 1) / NT, 2 * math.pi * (k + 0.5) / NT
+    teeth.append([(2.96 * math.cos(a0), MED_Y + 2.96 * math.sin(a0)), (2.96 * math.cos(a1), MED_Y + 2.96 * math.sin(a1)), (3.25 * math.cos(am), MED_Y + 3.25 * math.sin(am))])
+flat(K.name("ROOM", "MedallionTeeth"), teeth, M["marble"], zc + 0.0016)
+disc(K.name("ROOM", "Medallion"), 2.9, zc + 0.0016, M["marble"])
+ring(K.name("ROOM", "MedallionLine"), 2.06, 2.12, zc + 0.0024, M["nero"])
+
+
+def rays(n, r_tip, r_base, half_w, rot, z, mat_a, mat_b, tag):
+    """Faceted compass rays: each ray is two triangles (left half mat_a, right half mat_b)."""
+    left, right = [], []
+    for k in range(n):
+        a = rot + 2 * math.pi * k / n
+        d = Vector((math.cos(a), math.sin(a), 0))
+        t = Vector((-d.y, d.x, 0))
+        tip = d * r_tip
+        base = d * r_base
+        c = (0.0, MED_Y)
+        P = lambda v: (v.x + c[0], v.y + c[1])  # noqa: E731
+        left.append([P(Vector((0, 0, 0)) + base * 0), P(tip), P(base + t * half_w)])
+        right.append([P(Vector((0, 0, 0))), P(base - t * half_w), P(tip)])
+    flat(K.name("ROOM", f"Medallion{tag}A"), left, mat_a, z)
+    flat(K.name("ROOM", f"Medallion{tag}B"), right, mat_b, z)
+
+
+rays(8, 2.1, 0.62, 0.3, math.pi / 8, zc + 0.0032, M["rosso"], M["nero"], "RayMinor")
+rays(8, 2.82, 0.75, 0.38, 0.0, zc + 0.004, M["nero"], M["bardiglio"], "RayMajor")
+ring(K.name("ROOM", "MedallionCore"), 0.62, 0.9, zc + 0.0048, M["rosso"])
+disc(K.name("ROOM", "MedallionCore"), 0.62, zc + 0.0048, M["marble"])
+rays(8, 0.56, 0.16, 0.12, math.pi / 8, zc + 0.0056, M["nero"], M["bardiglio"], "RayCore")
+for R, r, z in ((3.29, 0.018, zc + 0.002), (2.92, 0.015, zc + 0.0024), (0.905, 0.014, zc + 0.0056), (0.62, 0.012, zc + 0.0064)):
+    K.torus(K.name("ROOM", "MedallionRing"), R, r, (0, MED_Y, z - r * 0.7), M["gilt"], major=160, minor=6)
+
 
 # coffered ceiling: slab, moulded beams, gilt rosettes, ceiling rose
 K.box(K.name("ROOM", "Ceiling"), (W_, D_, 0.3), (0, cy, H + 0.15), M["ceiling"], lightmap=True)
@@ -230,35 +378,115 @@ for (x, y, z0) in ((-3.8, 11.0, 0.0), (3.8, 11.0, 0.0), (-3.8, 17.2, LAND), (3.8
 A.chandelier(0, MED_Y, scale=1.0, drop=1.6, point_cd=90, key_cd=150)
 A.audio("Chandelier", (0, MED_Y, 4.6), "crystal", gain=0.3, interval=(9, 22))
 
-# centre table with a floral arrangement
-K.lathe(K.name("TABLE", "Centre"), [(0, 0), (0.42, 0), (0.4, 0.05), (0.12, 0.14), (0.08, 0.35), (0.12, 0.6), (0.16, 0.74), (0, 0.74)], (0, MED_Y, 0), M["walnut"], segments=40)
-K.cyl(K.name("TABLE", "CentreTop"), 0.78, 0.78, 0.05, (0, MED_Y, 0.765), M["nero"], segments=64, bevel=0.012)
-K.torus(K.name("TABLE", "CentreRim"), 0.78, 0.018, (0, MED_Y, 0.765), M["gilt"], major=64, minor=6)
-K.lathe(K.name("PROP", "Urn"), [(0, 0), (0.14, 0), (0.15, 0.03), (0.08, 0.1), (0.1, 0.18), (0.24, 0.36), (0.26, 0.5), (0.19, 0.6), (0.23, 0.68), (0.24, 0.72), (0, 0.72)],
-        (0, MED_Y, 0.79), M["gilt"], segments=40)
-K.collider("CentreTable", (-0.8, MED_Y - 0.8, 0), (0.8, MED_Y + 0.8, 0.9))
-rose = K.prototype(K.lathe(K.name("PROP", "Rose"), [(0, 0), (0.035, 0.01), (0.045, 0.035), (0.03, 0.06), (0, 0.055)], (0, 0, -30), M["petal"], segments=10))
-leaf = K.prototype(K.lathe(K.name("PROP", "Leaf"), [(0, 0), (0.03, 0.05), (0, 0.16)], (0, 0, -30), M["leaf"], segments=4, smooth_angle=None))
-for k in range(90):
-    # dome of roses
-    u, v = RNG.random(), RNG.random()
-    th, ph = 2 * math.pi * u, math.acos(1 - v * 0.95)
-    r = 0.42
-    p = (r * math.sin(ph) * math.cos(th), MED_Y + r * math.sin(ph) * math.sin(th), 1.45 + r * math.cos(ph) * 0.8)
-    K.linked(K.name("PROP", "Rose"), rose, p, rot=(ph * math.cos(th), ph * math.sin(th), RNG.random() * 6))
-for k in range(60):
-    th = 2 * math.pi * k / 60 + RNG.random() * 0.1
-    tilt = 0.9 + RNG.random() * 0.5
-    K.linked(K.name("PROP", "Leaf"), leaf, (0.3 * math.cos(th), MED_Y + 0.3 * math.sin(th), 1.35 + RNG.random() * 0.1),
-             rot=(tilt * math.sin(th) * -1, tilt * math.cos(th), 0))
+# centre table with a grand floral arrangement (flora.py: modelled roses, leaves, greenery)
+K.lathe(K.name("TABLE", "Centre"), [(0, 0), (0.5, 0), (0.48, 0.06), (0.16, 0.16), (0.1, 0.36), (0.15, 0.6), (0.2, 0.74), (0, 0.74)], (0, MED_Y, 0), M["walnut"], segments=48)
+K.cyl(K.name("TABLE", "CentreTop"), 0.95, 0.95, 0.05, (0, MED_Y, 0.765), M["nero"], segments=72, bevel=0.012)
+K.torus(K.name("TABLE", "CentreRim"), 0.95, 0.02, (0, MED_Y, 0.765), M["gilt"], major=72, minor=6)
+K.lathe(K.name("PROP", "Urn"), [(0, 0), (0.17, 0), (0.18, 0.035), (0.1, 0.12), (0.12, 0.21), (0.29, 0.42), (0.31, 0.58), (0.23, 0.7), (0.28, 0.79), (0.29, 0.84), (0, 0.84)],
+        (0, MED_Y, 0.79), M["gilt"], segments=48)
+K.collider("CentreTable", (-0.98, MED_Y - 0.98, 0), (0.98, MED_Y + 0.98, 0.9))
+flora.arrangement(K, (0, MED_Y), 0.79 + 0.84, radius=0.55, height=0.58, reds=95, ivories=70, leaves=200, sprays=22)
+
+# ---------------------------------------------------------------------------- furnishing (photoscanned, CC0)
+# Poly Haven models imported as instanced prototypes (mansion.prop / place; scripts/fetch-models.mjs).
+A.prop("sofa_02", "Chesterfield")
+A.prop("Sofa_01", "LouisSofa", tint={"Sofa": (0.62, 0.5, 0.36)})             # cream silk → antique gold
+A.prop("gothic_coffee_table", "CoffeeTable", scale=0.72, decimate=0.45)
+A.prop("ClassicConsole_01", "Console")
+A.prop("ornate_mirror_01", "Mirror", scale=2.1, origin="back")
+A.prop("brass_candleholders", "Candelabra", pick=["candleholder_03"], decimate=0.4)
+A.prop("antique_ceramic_vase_01", "Vase")
+A.prop("mantel_clock_01", "MantelClock", decimate=0.4)
+A.prop("marble_bust_01", "Bust", decimate=0.6)
+A.prop("horse_statue_01", "Horse", scale=4.2, decimate=0.6)
+A.prop("vintage_grandfather_clock_01", "GrandfatherClock")
+A.prop("potted_plant_02", "Plant", pick=["leaves", "dirt"], scale=1.45, decimate=0.3)       # its terracotta pot → our jardinière
 
 
-for (gx, gy, face) in ((5.9, -0.4, 1), (-5.9, 9.6, -1), (5.9, 9.6, 1)):
-    A.lamp_table(gx, gy)
-    A.club_chair((gx, gy - 1.25), 0)
-    A.club_chair((gx - face * 1.25, gy + 0.2), -face * math.pi / 2)
-    A.club_chair((gx, gy + 1.3), math.pi)
-A.console(-6.9, -1.4, math.pi / 2)
+def seating(cx_, cy_, face, sofa):
+    """A conversation group on an antique rug (face = -1 west side, +1 east side): the sofa against the
+    wall facing into the room, two bergères opposite angled in, a carved coffee table between, oil lamps
+    on pedestals at the sofa's ends."""
+    A.rug(f"SeatRug{K.idx('seatrug')}", cx_, cy_, 3.3, 3.3 / 1.1469, math.pi / 2, "Rug_Kazak", fringe=True)
+    sx = cx_ + face * 1.65
+    A.place(sofa, (sx, cy_, 0.011), face * math.pi / 2, collide=(0.9, 0.42, 0.8))
+    A.place("CoffeeTable", (cx_ + face * 0.2, cy_, 0.011), 0, collide=(0.52, 0.52, 0.42))
+    for dy in (-0.8, 0.8):
+        A.club_chair((cx_ - face * 1.05, cy_ + dy), -face * math.pi / 2 + face * (dy / 0.8) * 0.4)
+    for dy in (-1.3, 1.3):
+        A.lamp_table(sx + face * 0.05, cy_ + dy, candela=6)
+
+
+seating(-5.6, 0.35, -1, "Chesterfield")
+seating(5.6, 0.35, 1, "Chesterfield")
+seating(-5.6, 8.55, -1, "LouisSofa")
+seating(5.6, 8.55, 1, "LouisSofa")
+
+
+def console_group(wx, wy, rz, z0=0.0, clock=False):
+    """Carved gilt console against the wall point (wx, wy) (rz: 0 = facing +Y), an ornate mirror above,
+    candelabra and a chinoiserie vase or mantel clock on top."""
+    n = Vector((-math.sin(rz), math.cos(rz), 0))                 # into the room
+    t = Vector((math.cos(rz), math.sin(rz), 0))                  # along the wall
+    base = Vector((wx, wy, z0))
+    A.place("Console", tuple(base + n * 0.42), rz, collide=(0.78, 0.32, 0.95))
+    A.place("Mirror", tuple(base + n * 0.07 + Vector((0, 0, 1.98))), rz)
+    A.place("Candelabra", tuple(base + n * 0.4 + t * 0.48 + Vector((0, 0, 0.95))), rz)
+    A.place("MantelClock" if clock else "Vase", tuple(base + n * 0.4 - t * 0.42 + Vector((0, 0, 0.95))), rz)
+    K.light(K.name("LIGHT", "Candelabra"), "POINT", tuple(base + n * 0.4 + t * 0.48 + Vector((0, 0, 1.85))), 5, rng=5, bake_only=True)
+
+
+console_group(-3.2, Y0, 0, clock=False)          # front wall, either side of the entrance
+console_group(3.2, Y0, 0, clock=True)
+console_group(-3.15, Y1, math.pi, LAND, clock=True)   # landing, either side of the apartments door
+console_group(3.15, Y1, math.pi, LAND, clock=False)
+
+
+def pedestal(x, y, top_mat="nero"):
+    """Marble pedestal (plinth, fluted-look shaft, moulded cap) for a bust or statue; top at 1.12 m."""
+    K.box(K.name("PROP", "PedestalBase"), (0.5, 0.5, 0.14), (x, y, 0.07), M["nero"], bevel=0.012, segments=2, lightmap=True)
+    K.box(K.name("PROP", "PedestalShaft"), (0.36, 0.36, 0.84), (x, y, 0.14 + 0.42), M["marble"], bevel=0.01, segments=2, lightmap=True)
+    K.box(K.name("PROP", "PedestalCap"), (0.48, 0.48, 0.12), (x, y, 0.98 + 0.06), M[top_mat], bevel=0.012, segments=2, lightmap=True)
+    K.box(K.name("PROP", "PedestalCap"), (0.42, 0.42, 0.04), (x, y, 1.1), M["gilt"], bevel=0.006)
+    K.collider(f"BustPedestal_{K.idx('ped')}", (x - 0.26, y - 0.26, 0), (x + 0.26, y + 0.26, 1.7))
+
+
+# busts flanking both gallery doors, looking into the room
+for sx in (-1, 1):
+    for dy in (-1.95, 1.95):
+        px_, py_ = sx * (X1 - 0.5), DOOR_Y + dy
+        pedestal(px_, py_)
+        A.place("Bust", (px_, py_, 1.12), -sx * math.pi / 2)
+
+# porcelain horses on plinths at the foot of the stair (casino.png: statues flank the staircase)
+for sx in (-1, 1):
+    x_, y_ = sx * 3.55, STAIR_Y0 + 0.35
+    K.box(K.name("PROP", "StatuePlinth"), (0.62, 0.62, 0.18), (x_, y_, 0.09), M["nero"], bevel=0.015, segments=2, lightmap=True)
+    K.box(K.name("PROP", "StatuePlinth"), (0.5, 0.5, 0.72), (x_, y_, 0.18 + 0.36), M["rosso"], bevel=0.012, segments=2, lightmap=True)
+    K.box(K.name("PROP", "StatuePlinth"), (0.6, 0.6, 0.08), (x_, y_, 0.94), M["nero"], bevel=0.012, segments=2, lightmap=True)
+    A.place("Horse", (x_, y_, 0.98), sx * math.pi / 2 + math.pi)
+    K.collider(f"Statue_{K.idx('statue')}", (x_ - 0.32, y_ - 0.32, 0), (x_ + 0.32, y_ + 0.32, 2.0))
+
+# the long-case clock beside the stair
+A.place("GrandfatherClock", (X0 + 0.45, 13.6, 0), -math.pi / 2, collide=(0.32, 0.25, 2.2))
+
+
+def jardiniere_plant(x, y, z=0.0):
+    """A leafy plant in a brass jardinière (the scan's terracotta pot is replaced)."""
+    K.lathe(K.name("PROP", "Jardiniere"), [(0, 0), (0.16, 0), (0.17, 0.03), (0.12, 0.08), (0.2, 0.2), (0.3, 0.36), (0.32, 0.46), (0.3, 0.48), (0, 0.48)],
+            (x, y, z), M["brass"], segments=40)
+    A.place("Plant", (x, y, z + 0.2), 0)
+    K.collider(f"Plant_{K.idx('plant')}", (x - 0.34, y - 0.34, z), (x + 0.34, y + 0.34, z + 1.3))
+
+
+for x_, y_ in ((X0 + 0.55, Y0 + 0.55), (X1 - 0.55, Y0 + 0.55), (X1 - 0.55, 13.6), (-6.2, STAIR_Y0 + 0.4), (6.2, STAIR_Y0 + 0.4)):
+    jardiniere_plant(x_, y_)
+for x_ in (X0 + 0.6, X1 - 0.6):
+    jardiniere_plant(x_, Y1 - 0.6, LAND)
+
+# two lesser chandeliers over the seating groups
+for x_ in (-5.6, 5.6):
+    A.chandelier(x_, 4.45, scale=0.62, drop=1.4, point_cd=26, key=False, tiers=2)
 
 # moonlight through the east windows (bake-only)
 K.light("LIGHT_Lobby_Moon_01", "SPOT", (X1 + 3, 3.0, 5.0), 25, color=(0.55, 0.63, 0.85), rng=30, bake_only=True,

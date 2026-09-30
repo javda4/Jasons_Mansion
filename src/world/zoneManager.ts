@@ -9,7 +9,7 @@ import type { LightPool } from '../render/lightPool';
 import type { MaterialKey } from '../render/materials';
 import type { ProbeManager } from '../render/probe';
 import type { DoorSystem, ZoneAvailability } from './doors';
-import type { ZoneInstance } from './roomBuilder';
+import type { AnchorDef, ZoneInstance } from './roomBuilder';
 import type { SoundEmitterDef } from '../audio/audioEngine';
 import { decide, type ZoneGraph } from './streamingPolicy';
 
@@ -99,6 +99,28 @@ export class ZoneManager implements System, ZoneAvailability {
   /** Forward a game event to whichever loaded zone owns the table. */
   gameEvent(tableId: string, event: { type: string; [k: string]: unknown }): void {
     for (const z of this.zones.values()) z.instance?.onGameEvent?.(tableId, event);
+  }
+
+  /**
+   * Hand a table's latest engine snapshot to the zone that presents it (src/tables); resolves when the
+   * 3D animation finishes. `state = null` clears the table.
+   */
+  gameState(tableId: string, state: unknown | null, events: { type: string; [k: string]: unknown }[]): Promise<void> {
+    const jobs: Promise<void>[] = [];
+    for (const z of this.zones.values()) {
+      const r = z.instance?.onGameState?.(tableId, state, events);
+      if (r) jobs.push(r);
+    }
+    return Promise.all(jobs).then(() => {});
+  }
+
+  /** Presentation anchors of a table (seat, focus, card spots…), from whichever loaded zone owns it. */
+  anchorsFor(tableId: string): AnchorDef[] {
+    for (const z of this.zones.values()) {
+      const found = z.instance?.anchors?.filter((a) => a.tableId === tableId);
+      if (found?.length) return found;
+    }
+    return [];
   }
 
   /** Sound emitters of the zones currently drawn (the audio engine polls this). */
@@ -366,7 +388,7 @@ function disposeTree(root: Object3D): void {
   root.traverse((o) => {
     const m = o as Mesh;
     if (!m.isMesh) return;
-    m.geometry.dispose();
+    if (!m.geometry.userData.shared) m.geometry.dispose();   // runtime cards/chips/reels share cached geometry
     const mats = Array.isArray(m.material) ? m.material : [m.material];
     for (const mat of mats) {
       if (mat.userData.shared) continue;

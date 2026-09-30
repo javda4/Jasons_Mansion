@@ -68,6 +68,14 @@ export async function createRenderer(canvas: HTMLCanvasElement, forceWebGL: bool
   return { renderer, backend };
 }
 
+
+/** Only true light sources bloom (threshold ≥ 1 in linear HDR); highlights on gilt stay crisp. */
+const BLOOM = { strength: 0.2, radius: 0.45, threshold: 1.0 };
+/** Linear HDR ceiling applied before TRAA (see the anti-firefly note in the high tier). */
+const FIREFLY_CLAMP = 20;
+/** Share of a metal's reflectance that SSR adds (the env probe already supplies the broad reflection). */
+const METAL_SSR = 0.45;
+
 /**
  * Quality-tiered post stack, all authored once in TSL so it compiles for WebGPU and WebGL2:
  *  - high:   depth/normal/velocity/reflectivity pre-pass → GTAO (ambient term) + SSR
@@ -80,6 +88,8 @@ export class PostStack {
   readonly pipeline: RenderPipeline;
   /** How strongly clearcoated dielectrics (marble, lacquer) take screen-space reflections. */
   readonly ssrStrength = uniform(0.35);
+  /** Linear exposure multiplier applied before tone mapping (live; 1 = the authored look). */
+  get exposure(): { value: number } { return EXPOSURE; }
   /** SSR ray-march quality (0–1); tuned for 60 fps at 2× DPR on the reference machine. */
   ssrQuality = 0.25;
   /** Per-channel ceiling on the SSR contribution (linear HDR units). */
@@ -138,7 +148,7 @@ export class PostStack {
         // walnut glossy, so feed reflectivity = max(metalness, clearcoat × strength) and a clearcoat-aware
         // roughness. Material properties only exist in a pass that runs the lighting model, so the
         // beauty pass writes them next to its colour.
-        const reflectivity = max(metalness, clearcoat.mul(this.ssrStrength));
+        const reflectivity = max(metalness.mul(METAL_SSR), clearcoat.mul(this.ssrStrength));
         const glossRough = mix(roughness, min(roughness, clearcoatRoughness), clearcoat);
         scenePass.setMRT(mrt({ output, metalrough: vec2(reflectivity, glossRough) }));
         scenePass.getTexture('metalrough').type = UnsignedByteType;
@@ -158,20 +168,25 @@ export class PostStack {
         this.ssr = null;
       }
 
+      // Anti-firefly: sub-pixel emitters (candle bulbs ≈ 40×) jitter in and out of pixels under TRAA; clamping
+      // the extreme tail before the temporal resolve keeps them steady without dimming anything visible.
+      beauty = min(beauty, vec3(FIREFLY_CLAMP)) as unknown as TslNode;
       const traaPass = traa(beauty, prePassDepth, prePassVelocity, camera);
       traaPass.useSubpixelCorrection = false;
-      const bloomPass = bloom(scenePass.getTextureNode('output'), 0.22, 0.45, 0.85);
+      // Bloom reads the *resolved* image: blooming the raw jittered frame made every bulb's halo shimmer.
+      const resolved = (traaPass as unknown as { getTextureNode(): Parameters<typeof bloom>[0] }).getTextureNode(); // (missing from the .d.ts)
+      const bloomPass = bloom(resolved, BLOOM.strength, BLOOM.radius, BLOOM.threshold);
       pipeline.outputNode = this.debugView === 'ssr' && ssrPass ? ssrPass : grade(traaPass.add(bloomPass) as unknown as TslNode);
       this.disposables.push(prePass, aoPass, traaPass, bloomPass);
     } else if (tier === 'medium') {
       pipeline.outputColorTransform = false;
-      const bloomPass = bloom(scenePass, 0.22, 0.45, 0.85);
+      const bloomPass = bloom(scenePass, BLOOM.strength, BLOOM.radius, BLOOM.threshold);
       // SMAA must run on display-referred (tone-mapped sRGB) colour
       pipeline.outputNode = smaa(renderOutput(grade(scenePass.add(bloomPass) as unknown as TslNode)));
       this.disposables.push(bloomPass);
     } else {
       pipeline.outputColorTransform = true;
-      pipeline.outputNode = scenePass;
+      pipeline.outputNode = (scenePass as unknown as TslNode).mul(EXPOSURE) as unknown as typeof pipeline.outputNode;
     }
     pipeline.needsUpdate = true;
   }
@@ -187,8 +202,11 @@ export class PostStack {
  */
 type TslNode = ReturnType<typeof vec3>;
 
+/** Scene exposure in linear light (eye adaptation, e.g. when seated at a brightly lit table). */
+const EXPOSURE = uniform(1);
+
 function grade(color: TslNode) {
-  const c = color.rgb.mul(vec3(1.035, 1.0, 0.955));
+  const c = color.rgb.mul(vec3(1.035, 1.0, 0.955)).mul(EXPOSURE);
   const luma = c.dot(vec3(0.2126, 0.7152, 0.0722));
   const saturated = mix(vec3(luma), c, float(1.06));
   const vignette = float(1).sub(smoothstep(0.35, 1.1, length(screenUV.sub(0.5).mul(vec2(1.6, 1.2)))).mul(0.14));

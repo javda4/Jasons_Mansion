@@ -82,3 +82,16 @@ because every unique material × lightmap variant compiles a new pipeline. Strea
 the neighbouring galleries behind the curtain, and doors hold closed until a zone is ready, so the
 player never sees an uncompiled zone. Further cuts would come from fewer unique zone-local
 materials (merge `MAT_<Zone>_*` variants into the shared library).
+
+## V2 realism pass (2026-09-30, Playwright Chromium, WebGPU, tier high, 1200×689 @ 2× DPR)
+
+| Zone | GLB | Lightmap | Triangles (authored) | Notes |
+|---|---|---|---|---|
+| Grand Lobby | 19.4 MB | 4096² · 4.3 MB | 1.08 M | 16 photoscanned props (512² data maps, decimated where dense), ~165 modelled roses, new marble floor |
+| West / East Gallery | 5.0 MB each | 2048² · 1.1 MB | 181 k / 193 k | three antique runners each (Met photographs) |
+| Poker / Baccarat | 5.1 / 4.4 MB | 2048² | 262 k / 183 k | red velvet tub chairs (~1.5 k tris each), bergères, oil lamps |
+| Blackjack / Roulette / Slots | 2.9 / 3.7 / 2.1 MB | 2048² | 284 k / 313 k / 306 k | |
+
+Lobby from the entrance: 87–100 fps, ~300–350 draw calls (all passes). Poker Room: 120 fps, 135 draw calls.
+Budget notes: scanned props' normal/ORM maps are encoded at 512² (build-assets `toktx` pattern rule) — at 1k
+the lobby GLB was 37 MB (> 25 MB budget). The potted plant scan is decimated to 30 % (70 k → ~20 k tris).

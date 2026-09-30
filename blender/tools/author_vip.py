@@ -206,7 +206,7 @@ M = {
     "paint_a": material("MAT_Vip_PaintingA", rough=0.45, base_tex=TEX_PAINT_A),
     "paint_b": material("MAT_Vip_PaintingB", rough=0.45, base_tex=TEX_PAINT_B),
     "mirror": material("MAT_Vip_Mirror", (0.9, 0.86, 0.78), 0.04, metal=1),
-    "soot": material("MAT_Vip_Firebrick", (0.05, 0.03, 0.02), 0.95),
+    "soot": material("MAT_Vip_Firebrick", (0.018, 0.015, 0.013), 0.97),
 }
 M["candle"].node_tree.nodes["Principled BSDF"].inputs["Emission Color"].default_value = (1, 0.76, 0.48, 1)
 M["candle"].node_tree.nodes["Principled BSDF"].inputs["Emission Strength"].default_value = 40
@@ -651,11 +651,11 @@ for ring in range(5):
         k += 1
 
 # ------------------------------------------------------------------ lights (physical: candela via watts())
-point_light("LIGHT_Vip_Chandelier_01", (0, 5.6, cz - 0.2), 40, rng=16, flicker=True)
+point_light("LIGHT_Vip_Chandelier_01", (0, 5.6, cz - 0.2), 40, rng=16)
 spot_light("LIGHT_Vip_Chandelier_02", (0, 5.6, cz - 0.4), 75, math.radians(115), 0.9, rng=14, shadow=True)
 point_light("LIGHT_Vip_Fire_01", (0, D - 0.55, 0.45), 22, color=(1.0, 0.5, 0.2), rng=7, flicker=True)
-point_light("LIGHT_Vip_Sconce_01", (-1.65, D - 0.4, 2.7), 4, rng=5, flicker=True)
-point_light("LIGHT_Vip_Sconce_02", (1.65, D - 0.4, 2.7), 4, rng=5, flicker=True)
+point_light("LIGHT_Vip_Sconce_01", (-1.65, D - 0.4, 2.7), 4, rng=5)
+point_light("LIGHT_Vip_Sconce_02", (1.65, D - 0.4, 2.7), 4, rng=5)
 spot_light("LIGHT_Vip_Moon_01", (W / 2 + 2.5, D / 2, 4.5), 18, math.radians(70), 1.0, color=(0.55, 0.63, 0.85), rng=20)
 bpy.data.objects["LIGHT_Vip_Moon_01"].rotation_euler = (0, math.radians(-60), 0)
 

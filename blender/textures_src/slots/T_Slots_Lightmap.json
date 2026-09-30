@@ -2,11 +2,11 @@
   "zone": "slots",
   "size": 2048,
   "samples": 256,
-  "encodeScale": 0.5359872277137194,
-  "intensity": 5.8613199926244794,
-  "p99_5": 1.8657160997390747,
-  "max": 13.712945938110352,
-  "coverage": 0.3769087791442871,
+  "encodeScale": 0.5349186387014024,
+  "intensity": 5.873028954864041,
+  "p99_5": 1.8694431781768799,
+  "max": 14.35118293762207,
+  "coverage": 0.37301206588745117,
   "objects": [
     "ROOM_Slots_Lightmapped_01",
     "ROOM_Slots_Lightmapped_02",
@@ -28,5 +28,5 @@
     "LIGHT_Slots_Sconce_10",
     "LIGHT_Slots_Sconce_11"
   ],
-  "seconds": 255.5
+  "seconds": 146.2
 }

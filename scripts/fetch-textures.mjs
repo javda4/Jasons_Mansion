@@ -52,6 +52,11 @@ async function fetchJson(url) {
 }
 
 const manifest = { generated: new Date().toISOString(), source: 'polyhaven.com (CC0)', materials: {} };
+// keep sets produced by other scripts (make-carpets `met:<id>`, make-game-textures `generated:…`)
+try {
+  const prev = JSON.parse(await readFile(path.join(OUT_DIR, 'textures.json'), 'utf8'));
+  for (const [k, v] of Object.entries(prev.materials ?? {})) if (/^(met|generated):/.test(String(v.source ?? ''))) manifest.materials[k] = v;
+} catch { /* first run */ }
 
 await mkdir(SRC_DIR, { recursive: true });
 await mkdir(OUT_DIR, { recursive: true });

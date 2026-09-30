@@ -21,3 +21,12 @@ blender/textures_src/ambientcg/**/*.zip
 CLAUDE.local.md
 .env
 .env.*
+
+# licensed third-party pack (Kraffing Casino Pack V1): source never published; only optimised build output ships
+blender/props/kraffing/
+# room sources that embed the licensed pack (packed textures): local only — regenerate with the author scripts
+blender/rooms/poker/*.blend
+blender/rooms/blackjack/*.blend
+blender/rooms/roulette/*.blend
+blender/rooms/slots/*.blend
+blender/rooms/vip/*.blend

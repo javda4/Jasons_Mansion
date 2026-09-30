@@ -24,6 +24,7 @@ from mathutils import Vector
 import kit
 
 UPV = (0, 0, 1)
+RUG_SHEEN = (0.42, 0.12, 0.08)   # wool pile catches light in the dye's colour, not white
 ART_DIR = os.path.join(kit.ROOT, "blender", "textures_src", "art")
 P_FRAME = [(0, 0), (0, 0.022), (0.012, 0.03), (0.03, 0.03), (0.045, 0.018), (0.05, 0)]
 P_PANEL = [(0, 0), (0, 0.012), (0.025, 0.02), (0.05, 0.02), (0.06, 0)]
@@ -34,18 +35,19 @@ def library_materials(K):
     K.material("marble", "MAT_Marble_Calacatta", (0.85, 0.8, 0.72), 0.2, coat=1, lib="Marble_Calacatta")
     K.material("nero", "MAT_Marble_Nero", (0.05, 0.045, 0.04), 0.2, coat=1, lib="Marble_Calacatta")
     K.material("rosso", "MAT_Marble_Rosso", (0.35, 0.1, 0.08), 0.2, coat=1, lib="Marble_Calacatta")
-    K.material("walnut", "MAT_Wood_WalnutPolished", (0.3, 0.19, 0.12), 0.45, coat=1, lib="Wood_WalnutPolished")
-    K.material("walnut_dark", "MAT_Wood_WalnutDark", (0.12, 0.07, 0.05), 0.5, coat=1, lib="Wood_WalnutPolished")
+    K.material("bardiglio", "MAT_Marble_Bardiglio", (0.45, 0.46, 0.47), 0.2, coat=1, lib="Marble_Calacatta")
+    K.material("walnut", "MAT_Wood_WalnutPolished", (0.3, 0.19, 0.12), 0.55, coat=0.22, coat_rough=0.38, lib="Wood_WalnutPolished")
+    K.material("walnut_dark", "MAT_Wood_WalnutDark", (0.12, 0.07, 0.05), 0.6, coat=0.12, coat_rough=0.45, lib="Wood_WalnutPolished")
     K.material("damask", "MAT_Fabric_DamaskOxblood", (0.3, 0.05, 0.05), 0.9, sheen=0.4, lib="Fabric_Damask")
     K.material("damask_green", "MAT_Fabric_DamaskForest", (0.1, 0.2, 0.13), 0.9, sheen=0.4, lib="Fabric_Damask")
     K.material("damask_gold", "MAT_Fabric_DamaskGold", (0.4, 0.29, 0.13), 0.9, sheen=0.5, lib="Fabric_Damask")
-    K.material("carpet", "MAT_Fabric_CarpetCrimson", (0.35, 0.05, 0.05), 1.0, sheen=0.6, lib="Fabric_Damask")
-    K.material("carpet_green", "MAT_Fabric_CarpetForest", (0.1, 0.16, 0.12), 1.0, sheen=0.6, lib="Fabric_Damask")
+    K.material("carpet", "MAT_Fabric_CarpetCrimson", (0.3, 0.06, 0.04), 1.0, sheen=0.4, lib="Carpet_Gul")
+    K.material("carpet_green", "MAT_Fabric_CarpetForest", (0.16, 0.12, 0.08), 1.0, sheen=0.4, lib="Carpet_Gul")
     K.material("velvet", "MAT_Fabric_VelvetRed", (0.22, 0.02, 0.02), 0.85, sheen=1.0, lib="Fabric_Velvet")
     K.material("felt", "MAT_Fabric_FeltGreen", (0.1, 0.35, 0.18), 1.0, sheen=0.5, lib="Fabric_Felt")
-    K.material("leather", "MAT_Leather_Oxblood", (0.25, 0.06, 0.05), 0.6, coat=0.4, coat_rough=0.3, lib="Leather_Oxblood")
-    K.material("brass", "MAT_Brass_Aged", (0.72, 0.54, 0.29), 0.32, metal=1)
-    K.material("gilt", "MAT_Gold_Gilt", (0.85, 0.68, 0.36), 0.22, metal=1)
+    K.material("leather", "MAT_Leather_Oxblood", (0.25, 0.06, 0.05), 0.7, coat=0.12, coat_rough=0.5, lib="Leather_Oxblood")
+    K.material("brass", "MAT_Brass_Aged", (0.6, 0.45, 0.24), 0.52, metal=1)
+    K.material("gilt", "MAT_Gold_Gilt", (0.72, 0.56, 0.29), 0.46, metal=1)
     K.material("crystal", "MAT_Crystal_Clear", (1, 1, 1), 0.02)
     K.material("candle", "MAT_Emissive_Candle", (0, 0, 0), 0.5, emis_color=(1, 0.76, 0.48), emis_strength=40)
     K.material("shade", "MAT_Fabric_LampShade", (0.9, 0.83, 0.66), 0.9, emis_color=(1, 0.72, 0.44), emis_strength=1.6)
@@ -105,6 +107,7 @@ class Mansion:
         self._sconce = {}
         self._chair = {}
         self._dining = {}
+        self._props = {}
         if sea:
             K.material("sea", f"MAT_{K.zone}_SeaView", (0, 0, 0), 0.1, emis_tex=sea, emis_strength=1.1)
 
@@ -306,7 +309,7 @@ class Mansion:
             K.tube(K.name("PROP", "SconceArm"), [root + Vector((0, 0, -0.08)), root + right * (s * 0.14) + n * 0.12 + Vector((0, 0, -0.14)), tip - Vector((0, 0, 0.04))], 0.011, M["gilt"])
             K.linked(K.name("PROP", "SconceCandle"), S["candle"], tuple(tip + Vector((0, 0, 0.02))))
             K.linked(K.name("PROP", "SconceShade"), S["shade"], tuple(tip + Vector((0, 0, 0.08))))
-        K.light(K.name("LIGHT", "Sconce"), "POINT", tuple(root + n * 0.3 + Vector((0, 0, 0.12))), candela, rng=7, bake_only=True, flicker=True)
+        K.light(K.name("LIGHT", "Sconce"), "POINT", tuple(root + n * 0.3 + Vector((0, 0, 0.12))), candela, rng=7, bake_only=True)
 
     # ------------------------------------------------------------------ doors & plaques
     def double_door(self, did, center, wall_normal, w, h, base, prompt, target=None, locked=False, depth=None):
@@ -370,7 +373,9 @@ class Mansion:
         for i, line in enumerate(lines):
             size = height * (0.3 if i == 0 else 0.15)
             z = c.z + (height * 0.14 if len(lines) > 1 and i == 0 else -height * 0.24 if i else 0)
-            txt = K.text(K.name("PROP", "PlaqueText"), line.upper(), size, M["gilt"], extrude=0.004,
+            if "letters" not in M:   # gold leaf that catches the light: the aged trim gilt reads too dark here
+                K.material("letters", f"MAT_{K.zone}_PlaqueLetters", (0.9, 0.7, 0.36), 0.28, metal=1, emis_color=(1.0, 0.8, 0.5), emis_strength=0.9)
+            txt = K.text(K.name("PROP", "PlaqueText"), line.upper(), size, M["letters"], extrude=0.004,
                          loc=tuple(Vector((c.x, c.y, z)) + n * 0.045), rot=(math.pi / 2, 0, rz))
             if txt.dimensions.x > width - 0.2:
                 s = (width - 0.2) / txt.dimensions.x
@@ -464,57 +469,166 @@ class Mansion:
                 a = 2 * math.pi * i / cnt + ring * 0.3
                 link("crystal", (x + rr * math.cos(a), y + rr * math.sin(a), cz - (0.95 + ring * 0.1) * s), rot=(math.pi, 0, 0))
         link("pendant", (x, y, cz - 1.85 * s), rot=(math.pi, 0, 0), sc=(1.8, 1.8, 2.2))
-        K.light(K.name("LIGHT", "Chandelier"), "POINT", (x, y, cz - 0.5 * s), point_cd, rng=22 * max(s, 0.6), flicker=True)
+        K.light(K.name("LIGHT", "Chandelier"), "POINT", (x, y, cz - 0.5 * s), point_cd, rng=22 * max(s, 0.6))  # electric: steady
         if key:
             K.light(K.name("LIGHT", "ChandelierKey"), "SPOT", (x, y, cz - 2.0 * s), key_cd or point_cd * 1.7, rng=16, shadow=True, angle=2.1, blend=0.9)
 
     # ------------------------------------------------------------------ furniture
-    def club_chair(self, loc, rz):
-        K, M, C = self.K, self.M, self._chair
-        if not C:
-            C["base"] = K.prototype(K.box(K.name("CHAIR", "ClubBase"), (0.84, 0.82, 0.38), (0, 0, -30), M["leather"], bevel=0.05, segments=3))
-            C["back"] = K.prototype(K.box(K.name("CHAIR", "ClubBack"), (0.84, 0.24, 0.56), (0, 0, -30), M["leather"], bevel=0.08, subsurf=2))
-            C["seat"] = K.prototype(K.box(K.name("CHAIR", "ClubSeat"), (0.6, 0.6, 0.15), (0, 0, -30), M["leather"], bevel=0.05, subsurf=2))
-            C["arm"] = K.prototype(K.cyl(K.name("CHAIR", "ClubArm"), 0.12, 0.12, 0.82, (0, 0, -30), M["leather"], rot=(math.pi / 2, 0, 0), subsurf=1))
-        c, s = math.cos(rz), math.sin(rz)
+    # red velvet over the bergère's grey upholstery (multiplied → glTF baseColorFactor); the frame darkens to mahogany
+    VELVET_TINT = (0.5, 0.07, 0.065)
 
-        def at(dx, dy, dz):
-            return (loc[0] + dx * c - dy * s, loc[1] + dx * s + dy * c, dz)
-        K.linked(K.name("CHAIR", "ClubBase"), C["base"], at(0, 0, 0.24), rot=(0, 0, rz))
-        K.linked(K.name("CHAIR", "ClubBack"), C["back"], at(0, -0.32, 0.66), rot=(0, 0, rz))
-        K.linked(K.name("CHAIR", "ClubSeat"), C["seat"], at(0, 0.06, 0.49), rot=(0, 0, rz))
-        for sx in (-1, 1):
-            K.linked(K.name("CHAIR", "ClubArm"), C["arm"], at(sx * 0.4, 0, 0.6), rot=(math.pi / 2, 0, rz))
-        K.collider(f"Chair_{K.idx('chair')}", (loc[0] - 0.45, loc[1] - 0.45, 0), (loc[0] + 0.45, loc[1] + 0.45, 0.95))
+    def prop(self, pid, key, **kw):
+        """A Poly Haven prototype, imported once per zone (kit.import_prop)."""
+        if key not in self._props:
+            self._props[key] = self.K.import_prop(pid, key, **kw)
+        return self._props[key]
+
+    def place(self, key, loc, rz=0.0, scale=1.0, collide=None):
+        """Instance a prototype; `collide` = (half-x, half-y, height) for an axis-aligned collider."""
+        K = self.K
+        p = self._props[key]
+        K.linked(K.name("PROP", key), p, loc, rot=(0, 0, rz), scale=(scale,) * 3)
+        if collide:
+            hx, hy, hz = collide
+            if abs(math.sin(rz)) > 0.7:
+                hx, hy = hy, hx
+            K.collider(f"{key}_{K.idx('c' + key)}", (loc[0] - hx, loc[1] - hy, loc[2]), (loc[0] + hx, loc[1] + hy, loc[2] + hz))
+
+    def club_chair(self, loc, rz):
+        """Louis XVI bergère (Poly Haven ArmChair_01, photoscanned) in red velvet; faces local +Y after rz."""
+        self.prop("ArmChair_01", "Bergere", tint={"Armchair": self.VELVET_TINT})
+        self.place("Bergere", (loc[0], loc[1], 0), rz, collide=(0.42, 0.4, 1.0))
 
     def dining_chair(self, loc, rz, collide=True):
-        """Upholstered velvet table chair with a walnut frame (faces local +Y after rz)."""
+        """Table seat: the red velvet tub chair (casino.png, poker room). Kept as an alias for call sites."""
+        self.tub_chair(loc, rz, collide)
+
+    def _tub_back(self, name):
+        """Barrel back of a tub chair: a velvet shell wrapping ~230° with a rolled top and channel tufting."""
+        K, M = self.K, self.M
+        a, b, cy = 0.3, 0.29, -0.01             # plan ellipse (x, y semi-axes; centre y)
+        t0, t1 = math.radians(152), math.radians(388)
+        N, T, R = 54, 0.1, 0.045                # arc samples (6 per channel), shell thickness, top-roll radius
+        CH = 9                                   # tufted channels
+        bm = bmesh.new()
+        rings = []
+        for i in range(N + 1):
+            t = t0 + (t1 - t0) * i / N
+            u = (t - math.radians(270)) / math.radians(118)
+            h = 0.86 - 0.2 * u * u               # arms low, back high
+            P = Vector((a * math.cos(t), cy + b * math.sin(t), 0))
+            n = Vector((math.cos(t) / a, math.sin(t) / b, 0)).normalized()
+            s_ = i / N
+            ripple = 0.018 * (0.5 - 0.5 * math.cos(2 * math.pi * CH * s_))   # channel ridges
+            prof = [(0.0, 0.4), (0.0, h - R)]
+            for k in range(1, 8):
+                ph = math.pi * k / 8
+                prof.append((R - R * math.cos(ph), h - R + R * math.sin(ph)))
+            prof += [(T - ripple, h - R), (T - ripple * 0.6, 0.62), (T + 0.03, 0.43)]  # tucks in behind the cushion
+            rings.append([bm.verts.new(P - n * d + Vector((0, 0, z))) for d, z in prof])
+        for i in range(N):
+            for j in range(len(rings[0]) - 1):
+                bm.faces.new((rings[i][j], rings[i + 1][j], rings[i + 1][j + 1], rings[i][j + 1]))
+        bm.faces.new(list(reversed(rings[0])))
+        bm.faces.new(rings[-1])
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        return K.obj(name, bm, M["velvet"], smooth_angle=80)
+
+    @staticmethod
+    def _loft(K, name, mat, a, b, cy, levels, cap_top=True, seg=48, **kw):
+        """Closed elliptical loft: levels = [(z, scale), ...] bottom → top."""
+        bm = bmesh.new()
+        rings = []
+        for z, sc in levels:
+            rings.append([bm.verts.new((a * sc * math.cos(2 * math.pi * k / seg), cy + b * sc * math.sin(2 * math.pi * k / seg), z)) for k in range(seg)])
+        for r0, r1 in zip(rings, rings[1:]):
+            for k in range(seg):
+                bm.faces.new((r0[k], r0[(k + 1) % seg], r1[(k + 1) % seg], r1[k]))
+        bm.faces.new(list(reversed(rings[0])))
+        if cap_top:
+            bm.faces.new(rings[-1])
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        return K.obj(name, bm, mat, **kw)
+
+    def tub_chair(self, loc, rz, collide=True):
+        """Red velvet tub chair: barrel back with channel tufting, domed cushion, walnut plinth, turned legs.
+        Faces local +Y after rz; seat height 0.49 m."""
         K, M, C = self.K, self.M, self._dining
         if not C:
-            C["seat"] = K.prototype(K.box(K.name("CHAIR", "TableSeat"), (0.46, 0.44, 0.09), (0, 0, -30), M["velvet"], bevel=0.035, subsurf=2))
-            C["back"] = K.prototype(K.box(K.name("CHAIR", "TableBack"), (0.44, 0.07, 0.5), (0, 0, -30), M["velvet"], bevel=0.03, subsurf=2))
-            C["frame"] = K.prototype(K.box(K.name("CHAIR", "TableFrame"), (0.5, 0.48, 0.05), (0, 0, -30), M["walnut"], bevel=0.01))
-            C["backframe"] = K.prototype(K.box(K.name("CHAIR", "TableBackFrame"), (0.5, 0.05, 0.56), (0, 0, -30), M["walnut"], bevel=0.012))
-            C["leg"] = K.prototype(K.lathe(K.name("CHAIR", "TableLeg"), [(0, 0), (0.018, 0), (0.024, 0.1), (0.02, 0.3), (0.026, 0.42), (0, 0.42)], (0, 0, -30), M["walnut"], segments=10))
+            C["back"] = K.prototype(self._tub_back(K.name("CHAIR", "TubBack")))
+            C["body"] = K.prototype(self._loft(K, K.name("CHAIR", "TubBody"), M["velvet"], 0.3, 0.29, -0.01,
+                                               [(0.15, 0.93), (0.17, 1.0), (0.37, 1.0), (0.395, 0.97), (0.4, 0.93)], seg=40, smooth_angle=80))
+            C["plinth"] = K.prototype(self._loft(K, K.name("CHAIR", "TubPlinth"), M["walnut_dark"], 0.305, 0.295, -0.01,
+                                                 [(0.12, 1.0), (0.155, 1.02), (0.165, 0.99)], seg=40, smooth_angle=60))
+            C["cushion"] = K.prototype(self._loft(K, K.name("CHAIR", "TubCushion"), M["velvet"], 0.24, 0.245, 0.025,
+                                                  [(0.4, 1.0), (0.44, 1.02), (0.465, 1.02), (0.482, 0.97), (0.492, 0.84), (0.497, 0.45)], seg=40, smooth_angle=80))
+            C["leg"] = K.prototype(K.lathe(K.name("CHAIR", "TubLeg"), [(0, 0), (0.016, 0), (0.02, 0.02), (0.026, 0.06), (0.03, 0.1), (0.034, 0.125), (0, 0.125)],
+                                           (0, 0, -30), M["walnut_dark"], segments=12))
+            C["cap"] = K.prototype(K.cyl(K.name("CHAIR", "TubLegCap"), 0.017, 0.017, 0.012, (0, 0, -30), M["brass"], segments=10))
         c, s = math.cos(rz), math.sin(rz)
 
         def at(dx, dy, dz):
             return (loc[0] + dx * c - dy * s, loc[1] + dx * s + dy * c, dz)
-        K.linked(K.name("CHAIR", "TableFrame"), C["frame"], at(0, 0, 0.44), rot=(0, 0, rz))
-        K.linked(K.name("CHAIR", "TableSeat"), C["seat"], at(0, 0.01, 0.5), rot=(0, 0, rz))
-        K.linked(K.name("CHAIR", "TableBackFrame"), C["backframe"], at(0, -0.23, 0.78), rot=(-0.1, 0, rz))
-        K.linked(K.name("CHAIR", "TableBack"), C["back"], at(0, -0.19, 0.8), rot=(-0.1, 0, rz))
-        for dx, dy in ((-0.2, -0.19), (0.2, -0.19), (-0.2, 0.19), (0.2, 0.19)):
-            K.linked(K.name("CHAIR", "TableLeg"), C["leg"], at(dx, dy, 0))
+        for key in ("back", "body", "plinth", "cushion"):
+            K.linked(K.name("CHAIR", C[key].name.split("_")[2]), C[key], at(0, 0, 0), rot=(0, 0, rz))
+        for dx, dy in ((-0.21, -0.2), (0.21, -0.2), (-0.21, 0.18), (0.21, 0.18)):
+            K.linked(K.name("CHAIR", "TubLeg"), C["leg"], at(dx, dy, 0))
+            K.linked(K.name("CHAIR", "TubLegCap"), C["cap"], at(dx, dy, 0.006))
         if collide:
-            K.collider(f"Chair_{K.idx('chair')}", (loc[0] - 0.27, loc[1] - 0.27, 0), (loc[0] + 0.27, loc[1] + 0.27, 0.9))
+            K.collider(f"Chair_{K.idx('chair')}", (loc[0] - 0.3, loc[1] - 0.3, 0), (loc[0] + 0.3, loc[1] + 0.3, 0.9))
+
+    def rug(self, tag, cx, cy, length, width, rz, stem, fringe=True):
+        """A real carpet (scripts/make-carpets.mjs → textures_src/carpets/T_<stem>_*): 1 cm pile slab with
+        the photographed design on top (u across, v along) and knotted-wool fringes at both ends."""
+        K, M = self.K, self.M
+        key = f"rug_{stem}"
+        if key not in M:
+            base = os.path.join(kit.ROOT, "blender", "textures_src", "carpets", f"T_{stem}")
+            K.material(key, f"MAT_{K.zone}_{stem.replace('_', '')}", (1, 1, 1), 1.0, sheen=0.3, sheen_tint=RUG_SHEEN,
+                       base_tex=base + "_BaseColor.png", normal_tex=base + "_Normal.png", orm_tex=base + "_ORM.png", extension="EXTEND")
+        if "fringe" not in M:
+            K.material("fringe", f"MAT_{K.zone}_RugFringe", (0.5, 0.44, 0.33), 0.95, sheen=0.2)
+        c, s = math.cos(rz), math.sin(rz)
+        W, L, H = width / 2, length / 2, 0.011
+        bm = bmesh.new()
+        uv = bm.loops.layers.uv.verify()
+
+        def P(x, y, z):
+            return Vector((cx + x * c - y * s, cy + x * s + y * c, z))
+        top = [bm.verts.new(P(x, y, H)) for x, y in ((-W, -L), (W, -L), (W, L), (-W, L))]
+        bot = [bm.verts.new(P(x * 1.002, y * 1.002, 0.0005)) for x, y in ((-W, -L), (W, -L), (W, L), (-W, L))]
+        f = bm.faces.new(top)
+        for loop, (u, v) in zip(f.loops, ((0, 0), (1, 0), (1, 1), (0, 1))):
+            loop[uv].uv = (u, v)
+        for k in range(4):  # sides take the edge texels (the dyed selvedge)
+            f = bm.faces.new((bot[k], bot[(k + 1) % 4], top[(k + 1) % 4], top[k]))
+            e = ((0, 0), (1, 0), (1, 1), (0, 1))
+            for loop, idx in zip(f.loops, (k, (k + 1) % 4, (k + 1) % 4, k)):
+                loop[uv].uv = e[idx]
+        ob = K.obj(K.name("PROP", tag), bm, M[key], uv=None, lightmap=True)
+        if fringe:
+            fb = bmesh.new()
+            n = int(width / 0.008)
+            rnd = np.random.default_rng(sum(map(ord, tag)))  # deterministic (hash() is salted per run)
+            for end in (-1, 1):
+                for k in range(n):
+                    x = -W + (k + 0.5) * width / n
+                    ln = 0.055 + rnd.random() * 0.02
+                    dx = (rnd.random() - 0.5) * 0.012
+                    y0, y1 = end * L, end * (L + ln)
+                    q = [fb.verts.new(P(x + ox, y, z)) for (ox, y, z) in
+                         ((-0.0016, y0, H * 0.6), (0.0016, y0, H * 0.6), (0.0016 + dx, y1, 0.0015), (-0.0016 + dx, y1, 0.0015))]
+                    fb.faces.new(q if end > 0 else list(reversed(q)))
+            K.obj(K.name("PROP", f"{tag}Fringe"), fb, M["fringe"])   # box UV0 in metres (§6: every mesh has UV0)
+        return ob
 
     def lamp_table(self, x, y, candela=7):
-        K, M = self.K, self.M
-        K.lathe(K.name("TABLE", "Side"), [(0, 0), (0.2, 0), (0.18, 0.04), (0.05, 0.1), (0.04, 0.5), (0.08, 0.56), (0, 0.56)], (x, y, 0), M["walnut"], segments=24)
-        K.cyl(K.name("TABLE", "SideTop"), 0.34, 0.34, 0.035, (x, y, 0.575), M["nero"], segments=40, bevel=0.008)
-        self.table_lamp(x, y, 0.595, candela)
-        K.collider(f"SideTable_{K.idx('side')}", (x - 0.36, y - 0.36, 0), (x + 0.36, y + 0.36, 0.62))
+        """Mahogany pedestal stand with an antique oil lamp (both photoscanned); warm bake-only light."""
+        self.prop("side_table_tall_01", "Pedestal")
+        self.prop("vintage_oil_lamp", "OilLamp", scale=0.72)
+        self.place("Pedestal", (x, y, 0), collide=(0.2, 0.2, 0.8))
+        self.place("OilLamp", (x, y, 0.762))
+        self.K.light(self.K.name("LIGHT", "Lamp"), "POINT", (x, y, 0.762 + 0.3), candela, rng=6, bake_only=True)
 
     def table_lamp(self, x, y, z, candela=7):
         K, M = self.K, self.M

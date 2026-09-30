@@ -7,7 +7,7 @@ import re
 
 PREFIXES = (
     "ROOM", "COLLIDER", "TRIGGER", "PORTAL", "DOOR", "SPAWN", "INTERACT",
-    "TABLE", "CHAIR", "SLOT", "PROP", "LIGHT", "PROBE", "NAV", "AUDIO",
+    "TABLE", "CHAIR", "SLOT", "PROP", "LIGHT", "PROBE", "NAV", "AUDIO", "ANCHOR", "FX",
 )
 
 # PREFIX_Zone_Name[_Index][_Subindex][_LODn] — PascalCase segments, 2-digit indices
@@ -23,7 +23,14 @@ EXCLUDED_COLLECTION_PREFIXES = ("_WIP", "_REF")
 
 # Object types allowed per prefix
 MESH_PREFIXES = {"ROOM", "COLLIDER", "TRIGGER", "PORTAL", "DOOR", "INTERACT", "TABLE", "CHAIR", "SLOT", "PROP", "NAV"}
-EMPTY_PREFIXES = {"SPAWN", "PROBE", "AUDIO", "DOOR", "INTERACT", "PROP"}
+EMPTY_PREFIXES = {"SPAWN", "PROBE", "AUDIO", "DOOR", "INTERACT", "PROP", "ANCHOR", "FX"}
+# ANCHOR_ empties: where the runtime presents a game (seat, card spots, reels, wheel…).
+# extras: {"anchor": <role>, "tableId": <id>, ["index": n], …role data}; the empty's transform is the pose.
+ANCHOR_ROLES = {"seat", "focus", "dealerCards", "playerCards", "bankerCards", "board", "botCards", "bet", "pot",
+                "shoe", "discard", "chipTray", "reel", "wheel", "layout"}
+# FX_ empties: a runtime-simulated effect (src/fx) — things glTF can't carry (animated fire, …).
+# extras: {"effect": <kind>, …size}; the empty's origin is the effect's base centre.
+FX_EFFECTS = {"fire"}
 LIGHT_PREFIXES = {"LIGHT"}
 
 # Budgets checked at authoring time (the Node validator re-checks the optimised GLB)

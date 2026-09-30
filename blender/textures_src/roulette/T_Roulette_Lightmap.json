@@ -2,11 +2,11 @@
   "zone": "roulette",
   "size": 2048,
   "samples": 256,
-  "encodeScale": 0.47226404244708725,
-  "intensity": 6.652195321310703,
-  "p99_5": 2.117459535598755,
-  "max": 13.797503471374512,
-  "coverage": 0.3756103515625,
+  "encodeScale": 0.4704477802116009,
+  "intensity": 6.677877515282883,
+  "p99_5": 2.1256344318389893,
+  "max": 14.387029647827148,
+  "coverage": 0.37331628799438477,
   "objects": [
     "ROOM_Roulette_Lightmapped_01",
     "ROOM_Roulette_Lightmapped_02",
@@ -28,5 +28,5 @@
     "LIGHT_Roulette_Sconce_10",
     "LIGHT_Roulette_Sconce_11"
   ],
-  "seconds": 226.2
+  "seconds": 122.3
 }

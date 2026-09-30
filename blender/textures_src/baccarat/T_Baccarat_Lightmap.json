@@ -2,18 +2,19 @@
   "zone": "baccarat",
   "size": 2048,
   "samples": 256,
-  "encodeScale": 0.6076594016017344,
-  "intensity": 5.169989381072429,
-  "p99_5": 1.6456587314605713,
-  "max": 13.972030639648438,
-  "coverage": 0.3788590431213379,
+  "encodeScale": 0.6152476779163949,
+  "intensity": 5.1062243164072525,
+  "p99_5": 1.625361680984497,
+  "max": 13.14532470703125,
+  "coverage": 0.3817610740661621,
   "objects": [
     "ROOM_Baccarat_Lightmapped_01",
     "ROOM_Baccarat_Lightmapped_02",
     "ROOM_Baccarat_Lightmapped_03",
     "ROOM_Baccarat_Lightmapped_04",
     "ROOM_Baccarat_Lightmapped_05",
-    "ROOM_Baccarat_Lightmapped_06"
+    "ROOM_Baccarat_Lightmapped_06",
+    "ROOM_Baccarat_Lightmapped_07"
   ],
   "bakeOnlyLights": [
     "LIGHT_Baccarat_Sconce_01",
@@ -27,5 +28,5 @@
     "LIGHT_Baccarat_Lamp_01",
     "LIGHT_Baccarat_Lamp_02"
   ],
-  "seconds": 214.5
+  "seconds": 181.2
 }

@@ -144,6 +144,10 @@ for (const id of ids) {
     nameMergedNodes(z.zone),
     weld({ cleanup: false }),
     safePrune(),
+    // photoscanned props (Poly Haven map names): data maps at 512 — they're small on screen and UASTC is heavy
+    toktx({ encoder: sharp, mode: Mode.UASTC, slots: /^(normal|occlusion|metallicRoughness)/, pattern: /(_nor_gl|_arm|_rough|_metal)/i, level: 2, rdo: true, zstd: 18, resize: [512, 512] }),
+    // Kraffing pack (TX_… images, 2048² throughout): data maps at 1024 — the pieces are table-sized, UASTC is heavy
+    toktx({ encoder: sharp, mode: Mode.UASTC, slots: /^(normal|occlusion|metallicRoughness)/, pattern: /^TX_/, level: 2, rdo: true, zstd: 18, resize: [1024, 1024] }),
     toktx({ encoder: sharp, mode: Mode.ETC1S, slots: /^(baseColor|emissive)/, quality: 192, resize: [2048, 2048] }),
     toktx({ encoder: sharp, mode: Mode.UASTC, slots: /^(normal|occlusion|metallicRoughness)/, level: 2, rdo: true, zstd: 18, resize: [2048, 2048] }),
     meshopt({ encoder: MeshoptEncoder, level: 'medium' }),

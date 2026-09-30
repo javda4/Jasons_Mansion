@@ -1,9 +1,9 @@
-/* Game view: a lacquer-and-gilt sheet over the seated 3D view. The world stays visible above it. */
+/* Game controls: a slim lacquer-and-gilt bar along the bottom of the seated view. The table is the show. */
 .game {
   position: fixed;
   inset: auto 0 0 0;
-  margin: 0 auto;
-  width: min(980px, calc(100% - 32px));
+  margin: 0 auto 14px;
+  width: min(1100px, calc(100% - 24px));
   max-height: none;
   padding: 0;
   border: none;
@@ -11,128 +11,99 @@
   color: var(--ink);
   font-family: var(--serif);
   overflow: visible;
+  z-index: 20;
 }
-.game::backdrop { background: linear-gradient(to top, rgb(5 3 2 / 0.55), transparent 55%); }
-.game__panel {
-  margin-bottom: 16px;
-  padding: 18px 24px 20px;
-  background: linear-gradient(180deg, rgb(20 13 8 / 0.92), rgb(10 7 4 / 0.95));
-  border: 1px solid rgb(201 164 92 / 0.5);
-  outline: 1px solid rgb(201 164 92 / 0.18);
-  outline-offset: 5px;
-  box-shadow: 0 20px 60px rgb(0 0 0 / 0.6);
-  /* never taller than the lower part of the screen; scroll inside instead of clipping controls */
-  max-height: min(62vh, 620px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-color: var(--gold-deep) transparent;
+.game__bar {
+  padding: 10px 16px 12px;
+  background: linear-gradient(180deg, rgb(18 12 8 / 0.78), rgb(9 6 4 / 0.86));
+  backdrop-filter: blur(6px) saturate(1.1);
+  border: 1px solid rgb(201 164 92 / 0.45);
+  outline: 1px solid rgb(201 164 92 / 0.14);
+  outline-offset: 4px;
+  box-shadow: 0 16px 50px rgb(0 0 0 / 0.55);
+  animation: bar-in 320ms ease-out both;
 }
-.game__head {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  border-bottom: 1px solid rgb(201 164 92 / 0.25);
-  padding-bottom: 10px;
-  margin-bottom: 14px;
-}
+@keyframes bar-in { from { transform: translateY(18px); opacity: 0; } }
+.game__meta { display: flex; align-items: baseline; gap: 18px; min-height: 1.6em; }
 .game__title {
   margin: 0;
   font-family: var(--caps);
   font-weight: 400;
-  font-size: 18px;
-  letter-spacing: 0.24em;
+  font-size: 14px;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--gold);
+  white-space: nowrap;
 }
-.game__chips { margin-left: auto; font-size: 17px; color: var(--ink-dim); }
-.game__chips b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 .game__status {
-  min-height: 1.5em;
-  margin: 12px 0 0;
+  flex: 1;
+  margin: 0;
+  text-align: center;
   font-style: italic;
   font-size: 18px;
   color: var(--ink);
+  transition: color 200ms;
 }
-.game__status[data-tone='win'] { color: #e9c77a; }
-.game__status[data-tone='lose'] { color: #d98a7a; }
+.game__status[data-tone='win'] { color: #ecc977; text-shadow: 0 0 18px rgb(236 201 119 / 0.35); }
+.game__status[data-tone='lose'] { color: #d9998a; }
+.game__chips { font-size: 15px; color: var(--ink-dim); white-space: nowrap; }
+.game__chips b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; font-size: 17px; }
+
+.game__controls { display: flex; align-items: center; gap: 16px; margin-top: 8px; flex-wrap: wrap; }
+.game__body { display: flex; align-items: center; gap: 8px; flex: 1; flex-wrap: wrap; min-width: 0; }
+.game__info { font-size: 15px; color: var(--ink-dim); margin-right: 6px; font-variant-numeric: tabular-nums; }
+.game__info b { color: var(--ink); font-weight: 600; }
+.game__sep { width: 1px; align-self: stretch; background: rgb(201 164 92 / 0.25); margin: 0 4px; }
 
 .game button {
   font-family: var(--caps);
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink);
-  padding: 0.6em 1.3em;
-  background: linear-gradient(180deg, rgb(201 164 92 / 0.2), rgb(201 164 92 / 0.06));
+  padding: 0.62em 1.2em;
+  background: linear-gradient(180deg, rgb(201 164 92 / 0.22), rgb(201 164 92 / 0.06));
   border: 1px solid var(--gold-deep);
   cursor: pointer;
+  transition: background 120ms, opacity 160ms;
 }
-.game button:hover:not(:disabled), .game button:focus-visible { background: rgb(201 164 92 / 0.32); outline: 1px solid var(--gold); outline-offset: 2px; }
+.game button:hover:not(:disabled), .game button:focus-visible { background: rgb(201 164 92 / 0.34); outline: 1px solid var(--gold); outline-offset: 2px; }
 .game button:disabled { opacity: 0.35; cursor: default; }
-.game button[aria-pressed='true'] { background: rgb(201 164 92 / 0.45); border-color: var(--gold); }
-.game__leave { padding: 0.45em 1em !important; }
-.game__row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.game__row + .game__row { margin-top: 10px; }
-.game__label { font-size: 14px; color: var(--ink-dim); min-width: 5.5em; }
+.game button.primary { background: linear-gradient(180deg, rgb(201 164 92 / 0.5), rgb(160 118 48 / 0.3)); border-color: var(--gold); }
+.game__leave { padding: 0.5em 0.9em !important; }
+.game__leave kbd { font-size: 10px; opacity: 0.7; margin-left: 4px; }
 
-/* chips */
-.chip-btn { border-radius: 999px !important; min-width: 3.4em; padding: 0.55em 0.8em !important; }
-
-/* playing cards */
-.hand { display: flex; gap: 6px; min-height: 86px; align-items: center; }
-.hand__label { font-family: var(--caps); font-size: 12px; letter-spacing: 0.2em; color: var(--ink-dim); width: 7.5em; text-transform: uppercase; }
-.hand__total { font-variant-numeric: tabular-nums; color: var(--gold); margin-left: 8px; min-width: 2em; }
-.card {
-  width: 56px;
-  height: 80px;
-  border-radius: 6px;
-  background: linear-gradient(160deg, #fbf5e6, #efe3c8);
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.5), inset 0 0 0 1px rgb(0 0 0 / 0.12);
-  color: #1b1410;
-  display: grid;
-  place-items: center;
-  font-family: var(--caps);
-  font-size: 20px;
-  line-height: 1;
-  position: relative;
-  animation: card-in 280ms ease-out both;
+/* stake chips, drawn like the table's chips (colours match the chip atlas) */
+.game__stakes { display: flex; gap: 6px; }
+.game .chip {
+  --c: #1f4f95;
+  width: 42px; height: 42px; padding: 0; border-radius: 50%;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(circle at 50% 50%, #eee6d4 0 38%, var(--c) 39% 100%),
+    var(--c);
+  border: 3px dashed rgb(241 237 228 / 0.9);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.5), inset 0 0 0 2px var(--c);
+  letter-spacing: 0; font-family: var(--serif); font-size: 12px; font-weight: 700;
+  transition: transform 120ms;
 }
-.card small { display: block; font-size: 22px; text-align: center; }
-.card--red { color: #9c1c1c; }
-.card--back {
-  background: repeating-linear-gradient(45deg, #5a1414 0 6px, #6e1a1a 6px 12px);
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.5), inset 0 0 0 3px #c9a45c;
-}
-@keyframes card-in { from { transform: translateY(-14px) rotate(-4deg); opacity: 0; } }
+.game .chip span { color: var(--c); }
+.game .chip--1 { --c: #1d7a3e; }
+.game .chip--2 { --c: #161412; }
+.game .chip--3 { --c: #5a2a86; }
+.game .chip[aria-checked='true'] { transform: translateY(-5px); box-shadow: 0 8px 14px rgb(0 0 0 / 0.55), 0 0 0 2px var(--gold), inset 0 0 0 2px var(--c); }
+.game .chip:hover:not(:disabled) { background: radial-gradient(circle at 50% 50%, #fff7e4 0 38%, var(--c) 39% 100%), var(--c); }
 
-/* roulette */
-.rl-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
-.rl-num { padding: 0.45em 0 !important; font-family: var(--serif) !important; font-size: 15px !important; letter-spacing: 0 !important; }
-.rl-num[data-c='r'] { background: rgb(150 24 24 / 0.75) !important; }
-.rl-num[data-c='b'] { background: rgb(20 16 14 / 0.85) !important; }
-.rl-zero { background: rgb(20 100 50 / 0.8) !important; }
-.rl-result { font-family: var(--caps); font-size: 34px; width: 2.2em; height: 2.2em; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--gold); }
-.rl-history { display: flex; gap: 4px; font-variant-numeric: tabular-nums; color: var(--ink-dim); }
-.rl-spinning { animation: rl-spin 900ms cubic-bezier(.2,.7,.2,1); }
-@keyframes rl-spin { from { transform: rotate(-720deg); opacity: 0.4; } }
+/* roulette extras */
+.rl-last { font-family: var(--caps); font-size: 18px; width: 2.1em; height: 2.1em; border-radius: 50%; display: inline-grid; place-items: center; border: 1px solid var(--gold); }
+.rl-history { display: inline-flex; gap: 5px; font-variant-numeric: tabular-nums; color: var(--ink-dim); font-size: 14px; }
+.rl-history .r { color: #e07a7a; }
+.rl-num-input { width: 3.4em; background: rgb(0 0 0 / 0.35); color: var(--ink); border: 1px solid var(--gold-deep); font: inherit; padding: 0.35em 0.4em; }
+.rl-hint { font-size: 13px; color: var(--ink-dim); font-style: italic; }
 
-/* slots */
-.reels { display: flex; gap: 10px; }
-.reel {
-  width: 96px; height: 96px; display: grid; place-items: center; font-size: 46px;
-  background: linear-gradient(180deg, #8a8070, #fbf4e4 30%, #fbf4e4 70%, #8a8070);
-  border: 2px solid var(--gold); border-radius: 8px; color: #1b1410;
-}
-.reel--spin { animation: reel 600ms steps(8) both; }
-@keyframes reel { from { transform: translateY(-30px); filter: blur(2px); } }
-
-@media (prefers-reduced-motion: reduce) {
-  .card, .reel--spin, .rl-spinning { animation: none; }
-}
-@media (max-width: 640px) {
-  .game__panel { padding: 14px; max-height: 72vh; }
-  .game__head { flex-wrap: wrap; gap: 8px 16px; }
-  .game__title { font-size: 15px; }
-  .card { width: 44px; height: 64px; font-size: 16px; }
-  .rl-grid { grid-template-columns: repeat(6, 1fr); }
+@media (prefers-reduced-motion: reduce) { .game__bar { animation: none; } }
+@media (max-width: 760px) {
+  .game__meta { flex-wrap: wrap; gap: 4px 12px; }
+  .game__status { order: 3; flex-basis: 100%; text-align: left; font-size: 16px; }
+  .game .chip { width: 36px; height: 36px; }
 }

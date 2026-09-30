@@ -24,3 +24,12 @@ the world → table → game hand-off. Keep them behind the engine interface so 
    (code rooms: `tableVolume()` in `src/rooms/shared/props.ts`; Blender rooms: custom properties on
    an `INTERACT_<Zone>_<Name>` mesh). `tableId` must be unique and stable.
 6. **Play money only.** Chips come from `Wallet`; never add payments, deposits or real stakes.
+
+## Presenting a new game on its table (V2)
+1. Author the table in `blender/tools/casino_props.py` with `interact(...)` plus `anchor(...)` empties for
+   `seat`, `focus` and whatever the game lays out (add new roles to `conventions.ANCHOR_ROLES` and
+   `validate-assets.mjs` together — it's a contract change).
+2. Add a presenter: either a card-table subclass in `src/tables/cardPresenters.ts` or a room runtime module
+   (`src/rooms/<zone>/runtime.ts`) that sets `inst.onGameState` and returns a promise that resolves when
+   the animation is done. Build with `CardTable`, `chipPile`, `movePile` and `Tweens` from `src/tables`.
+3. Give the HUD a compact renderer in `src/ui/games/` (info + buttons only; honour `ui.busy`).

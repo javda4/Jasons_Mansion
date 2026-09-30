@@ -38,6 +38,10 @@ export interface AssetManifest {
 const ENHANCERS: Record<string, () => Promise<(inst: ZoneInstance) => void>> = {
   roulette: () => import('../rooms/roulette/runtime').then((m) => m.enhanceRoulette),
   slots: () => import('../rooms/slots/runtime').then((m) => m.enhanceSlots),
+  // card tables: cards dealt from the shoe, chips staked and paid on the felt (src/tables)
+  blackjack: () => import('../tables/cardPresenters').then((m) => (inst: ZoneInstance) => m.attachCardTables(inst, 'blackjack')),
+  baccarat: () => import('../tables/cardPresenters').then((m) => (inst: ZoneInstance) => m.attachCardTables(inst, 'baccarat')),
+  poker: () => import('../tables/cardPresenters').then((m) => (inst: ZoneInstance) => m.attachCardTables(inst, 'poker')),
 };
 
 const hallWest: Transform2 = LOBBY_SLOTS.west;
@@ -105,6 +109,7 @@ export function buildZoneGraph(manifest: AssetManifest): ZoneManifestEntry[] {
         return async (mats: Record<MaterialKey, Material>) => {
           const inst = await loadGlbZone(id, `${assetUrl(z.asset)}?v=${z.hash}`, mats, z.lightmap && { url: `${assetUrl(z.lightmap.url)}?v=${z.lightmap.hash}`, intensity: z.lightmap.intensity });
           enhance?.(inst);
+          if (inst.effects?.length) (await import('../fx/effects')).attachEffects(inst);
           return inst;
         };
       },

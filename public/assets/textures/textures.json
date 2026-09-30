@@ -169,6 +169,101 @@
           "hash": "dd95c1ae2fe1da0d"
         }
       }
+    },
+    "Carpet_Gul": {
+      "source": "met:452598",
+      "tileMetres": [
+        0.77,
+        0.517
+      ],
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Carpet_Gul_BaseColor.jpg",
+          "bytes": 255759,
+          "hash": "a26a9b4afdeb3e36"
+        },
+        "Normal": {
+          "url": "/assets/textures/T_Carpet_Gul_Normal.jpg",
+          "bytes": 754688,
+          "hash": "7f531ee0825c89b9"
+        },
+        "ORM": {
+          "url": "/assets/textures/T_Carpet_Gul_ORM.jpg",
+          "bytes": 23334,
+          "hash": "3ee94f94cc6c993b"
+        }
+      }
+    },
+    "Card_Atlas": {
+      "source": "generated:make-game-textures",
+      "meta": {
+        "size": 2048,
+        "cell": [
+          204,
+          285
+        ],
+        "cols": 10,
+        "suits": "SHDC",
+        "ranks": [
+          2,
+          14
+        ],
+        "back": 52
+      },
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Card_Atlas_BaseColor.png",
+          "bytes": 387718,
+          "hash": "8269d12376e6387c"
+        }
+      }
+    },
+    "Chip_Atlas": {
+      "source": "generated:make-game-textures",
+      "meta": {
+        "denoms": [
+          10,
+          25,
+          100,
+          500
+        ],
+        "grid": 2,
+        "faceRadius": 0.244140625,
+        "rimInner": 0.235
+      },
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Chip_Atlas_BaseColor.png",
+          "bytes": 238208,
+          "hash": "77aebde8314ea100"
+        }
+      }
+    },
+    "Slot_Reel": {
+      "source": "generated:make-game-textures",
+      "meta": {
+        "stops": [
+          "seven",
+          "cherry",
+          "bell",
+          "lemon",
+          "bar",
+          "cherry",
+          "diamond",
+          "lemon",
+          "bell",
+          "cherry",
+          "bar",
+          "lemon"
+        ]
+      },
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Slot_Reel_BaseColor.png",
+          "bytes": 167820,
+          "hash": "f66fc00ffc29b889"
+        }
+      }
     }
   }
 }

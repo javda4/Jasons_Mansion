@@ -31,7 +31,7 @@ export interface LightDef {
   penumbra?: number;
   /** Candidate for the single shadow-casting slot. */
   castShadow?: boolean;
-  /** Gentle candle flicker. */
+  /** Open flame (fireplace, real candles) — never electric fittings. */
   flicker?: boolean;
   /** Owning zone id — set by the ZoneManager on registration. */
   zone?: string;
@@ -74,6 +74,32 @@ export interface ZoneInstance {
    * it never decides outcomes) — e.g. the roulette wheel spinning up.
    */
   onGameEvent?: (tableId: string, event: { type: string; [k: string]: unknown }) => void;
+  /**
+   * State-driven presentation (src/tables): reconcile a table's 3D cards/chips/reels with the engine's
+   * snapshot; the promise resolves when the animation finishes (the HUD waits for it). `state = null`
+   * clears the table (the guest left).
+   */
+  onGameState?: (tableId: string, state: unknown | null, events: { type: string; [k: string]: unknown }[]) => Promise<void> | void;
+  /** Game presentation anchors (the `ANCHOR_` role): seats, card spots, reels, wheels — see src/tables. */
+  anchors?: AnchorDef[];
+  /** Runtime-simulated effects (the `FX_` prefix): hearth fire, … — see src/fx. */
+  effects?: EffectDef[];
+}
+
+/** An `FX_` marker: the effect kind, its node (origin = the effect's base centre) and its size extras. */
+export interface EffectDef {
+  effect: string;
+  node: Object3D;
+  extras: Record<string, unknown>;
+}
+
+/** An authored pose the table presenters build on; `node` stays in the zone graph so its world transform is live. */
+export interface AnchorDef {
+  role: string;
+  tableId: string;
+  index: number;
+  node: Object3D;
+  extras: Record<string, unknown>;
 }
 
 const _q = new Quaternion();

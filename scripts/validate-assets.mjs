@@ -12,7 +12,11 @@ import validator from 'gltf-validator';
 import { validateExtras } from '../src/interaction/schema.ts';
 import { isLibraryMaterial } from '../src/render/materialNames.ts';
 
-const PREFIXES = ['ROOM', 'COLLIDER', 'TRIGGER', 'PORTAL', 'DOOR', 'SPAWN', 'INTERACT', 'TABLE', 'CHAIR', 'SLOT', 'PROP', 'LIGHT', 'PROBE', 'NAV', 'AUDIO'];
+const PREFIXES = ['ROOM', 'COLLIDER', 'TRIGGER', 'PORTAL', 'DOOR', 'SPAWN', 'INTERACT', 'TABLE', 'CHAIR', 'SLOT', 'PROP', 'LIGHT', 'PROBE', 'NAV', 'AUDIO', 'ANCHOR', 'FX'];
+/** FX_ effects the runtime simulates (src/fx/effects.ts). */
+const FX_EFFECTS = new Set(['fire']);
+/** ANCHOR_ roles the runtime presenters understand (src/tables/anchors.ts). */
+const ANCHOR_ROLES = new Set(['seat', 'focus', 'dealerCards', 'playerCards', 'bankerCards', 'board', 'botCards', 'bet', 'pot', 'shoe', 'discard', 'chipTray', 'reel', 'wheel', 'layout']);
 const NAME_RE = new RegExp(`^(${PREFIXES.join('|')})_([A-Z][A-Za-z0-9]*)(?:_(?:[A-Z][A-Za-z0-9]*|\\d{2}))*(?:_LOD\\d)?$`);
 const MATERIAL_RE = /^MAT_[A-Z][A-Za-z0-9]*_[A-Z][A-Za-z0-9]*$/;
 
@@ -54,6 +58,15 @@ export async function validateZoneGlb(file, { zone, lightmapped = false } = {}) 
     const extras = node.getExtras();
     if (extras && extras.interactable !== undefined) {
       for (const e of validateExtras(extras)) errors.push(`node "${name}": extras ${e}`);
+    }
+    if (m[1] === 'ANCHOR') {
+      if (node.getMesh()) errors.push(`node "${name}": ANCHOR_ must be an empty`);
+      if (!ANCHOR_ROLES.has(extras?.anchor)) errors.push(`node "${name}": extras.anchor must be a known role`);
+      if (typeof extras?.tableId !== 'string') errors.push(`node "${name}": extras.tableId is required`);
+    }
+    if (m[1] === 'FX') {
+      if (node.getMesh()) errors.push(`node "${name}": FX_ must be an empty`);
+      if (!FX_EFFECTS.has(extras?.effect)) errors.push(`node "${name}": extras.effect must be a known effect`);
     }
     const mesh = node.getMesh();
     if (mesh) {

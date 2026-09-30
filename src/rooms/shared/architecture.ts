@@ -140,7 +140,7 @@ export function wall(b: RoomBuilder, origin: Place, len: number, h: number, o: W
       sconce(b, P({ pos: [px, sy, 0.19] }));
       b.light({
         name: `Sconce_${b.next()}`, kind: 'point', position: point(origin, [px, sy + 0.1, 0.45]),
-        color: WARM, intensity: o.sconceIntensity ?? 5, range: 6, flicker: true,
+        color: WARM, intensity: o.sconceIntensity ?? 5, range: 6,
       });
     }
   }
@@ -286,7 +286,7 @@ export function hangChandelier(b: RoomBuilder, x: number, z: number, ceilingY: n
     g.rotation.x = Math.sin(t * 0.29 + phase + 1.3) * 0.0028;
   });
   const cy = ceilingY - drop - 0.7 * s;
-  b.light({ name: `Chandelier_${b.next()}`, kind: 'point', position: { x, y: cy, z }, color: WARM, intensity: o.intensity ?? 90 * s * s, range: 22 * s, flicker: true });
+  b.light({ name: `Chandelier_${b.next()}`, kind: 'point', position: { x, y: cy, z }, color: WARM, intensity: o.intensity ?? 90 * s * s, range: 22 * s });
   if (o.key) {
     b.light({
       name: `Chandelier_Key_${b.next()}`, kind: 'spot', position: { x, y: cy - 0.3, z }, target: { x, y: 0, z },

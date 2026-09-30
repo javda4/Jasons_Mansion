@@ -3,7 +3,7 @@ import { assetUrl } from './assetUrl';
 
 /** Shape of the generated `public/assets/textures/textures.json` (see scripts/fetch-textures.mjs). */
 interface TextureManifest {
-  materials: Record<string, { maps: Partial<Record<MapKind, { url: string; bytes: number; hash: string }>> }>;
+  materials: Record<string, { meta?: Record<string, unknown>; maps: Partial<Record<MapKind, { url: string; bytes: number; hash: string }>> }>;
 }
 export type MapKind = 'BaseColor' | 'Normal' | 'ORM';
 export type MaterialTextures = Partial<Record<MapKind, Texture>>;
@@ -14,6 +14,7 @@ export type MaterialTextures = Partial<Record<MapKind, Texture>>;
  */
 export class TextureLibrary {
   private sets = new Map<string, MaterialTextures>();
+  private metas = new Map<string, Record<string, unknown>>();
   totalBytes = 0;
 
   constructor(private readonly anisotropy: number) {}
@@ -28,6 +29,7 @@ export class TextureLibrary {
     for (const [name, entry] of Object.entries(manifest.materials)) {
       const set: MaterialTextures = {};
       this.sets.set(name, set);
+      if (entry.meta) this.metas.set(name, entry.meta);
       for (const [kind, map] of Object.entries(entry.maps) as [MapKind, { url: string; bytes: number; hash: string }][]) {
         total++;
         this.totalBytes += map.bytes;
@@ -45,14 +47,19 @@ export class TextureLibrary {
     await Promise.all(jobs);
   }
 
-  /** Returns clones (sharing GPU source) with a tiling repeat applied. */
-  get(name: string, repeat = 1): MaterialTextures {
+  /** Layout metadata shipped with a generated set (e.g. an atlas grid), if any. */
+  meta<T = Record<string, unknown>>(name: string): T | undefined {
+    return this.metas.get(name) as T | undefined;
+  }
+
+  /** Returns clones (sharing GPU source) with a tiling repeat applied (tiles per UV unit; UVs are metres). */
+  get(name: string, repeat = 1, repeatY = repeat): MaterialTextures {
     const set = this.sets.get(name);
     if (!set) throw new Error(`Texture set "${name}" missing from manifest`);
     const out: MaterialTextures = {};
     for (const [k, t] of Object.entries(set) as [MapKind, Texture][]) {
       const c = t.clone();
-      c.repeat.set(repeat, repeat);
+      c.repeat.set(repeat, repeatY);
       out[k] = c;
     }
     return out;

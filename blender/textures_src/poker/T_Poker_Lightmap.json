@@ -2,11 +2,11 @@
   "zone": "poker",
   "size": 2048,
   "samples": 256,
-  "encodeScale": 0.44593527666502863,
-  "intensity": 7.044952077091785,
-  "p99_5": 2.2424778938293457,
-  "max": 13.952381134033203,
-  "coverage": 0.3743901252746582,
+  "encodeScale": 0.45063275254555746,
+  "intensity": 6.971514244899873,
+  "p99_5": 2.219101905822754,
+  "max": 13.911123275756836,
+  "coverage": 0.3750290870666504,
   "objects": [
     "ROOM_Poker_Lightmapped_01",
     "ROOM_Poker_Lightmapped_02",
@@ -29,5 +29,5 @@
     "LIGHT_Poker_Sconce_11",
     "LIGHT_Poker_Lamp_01"
   ],
-  "seconds": 229.0
+  "seconds": 116.2
 }

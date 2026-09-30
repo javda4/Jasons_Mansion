@@ -79,7 +79,39 @@ define the contract change (name prefix, `extras` key, manifest field, event) be
 
 ## 3. Current status & how to work
 
-**Status:** Greenfield. The repository is empty apart from this file. No technology is locked in.
+**Status (2026-09-30):** Phases 1–6 are complete and the **V2 realism pass** is in progress in this folder
+(`~/Desktop/CasinoV2`). V1 (`~/Desktop/Casino`) is the frozen baseline that was first published.
+The technology is decided and documented in `docs/architecture.md`:
+- **Stack:** Three.js r186 `WebGPURenderer` (WebGL2 fallback) · TSL post stack (GTAO, SSR, TRAA, bloom, AgX)
+  · TypeScript + Vite · Vitest · Blender 5.2 · glTF-Transform (KTX2 ETC1S/UASTC + Meshopt) · Cycles lightmaps.
+- **World:** Lobby (hub, **no games**) → West/East Galleries → Poker, Blackjack, Baccarat, Roulette and Slot
+  rooms, plus the Salon Privé. Every zone is Blender-authored, baked and streamed from the manifest.
+- **Games:** placeholder engines (`src/games`) played on the 3D tables via `ANCHOR_` presenters (§9).
+
+**Design direction the user has set (keep to it):**
+- Photoreal over stylised. Nothing glossy: satin wood and walls (clearcoat ≤ 0.2); only marble stays polished.
+- Real sources over procedural: photoscans (Poly Haven), real carpet photos (Met), the licensed pack (§6).
+- Electric lights never flicker; only fire does. Gilt and brass are aged and rough, not mirror-bright.
+- Card tables must read clearly while seated: no glare on cards (see §8 "Seated table lighting").
+- Follow `casino.png` for mood (Persian runners, red velvet tub chairs, marble medallion floor).
+
+### Making a change (the loop for future updates)
+
+1. Decide the layer (§2). For a cross-layer change, update the contract (prefix / extras / manifest)
+   *and* its validators in the same change.
+2. Author content through the Blender scripts (never by hand in `public/assets/`):
+   - game rooms: `blender/tools/author_room.py` + `casino_props.py`;
+   - Salon Privé: its `vip_*.py` patch scripts;
+   - lobby: `author_lobby.py`.
+3. Lit zone changed? Re-bake it: `npm run bake -- <zone>`. Anchor-only changes can patch both
+   `<zone>.blend` and `<zone>_baked.blend` and skip the bake.
+4. `npm run build:assets -- <zone>`, then `npm run typecheck && npm test && npm run build`.
+5. Verify in a browser with a fresh automation browser (see §15), seated at each affected table, and
+   check the console.
+6. Update `docs/` and this file in the same change.
+
+For a *new* technology decision, the original rule still applies: research current docs first and record an
+ADR / architecture section before substantial code.
 
 ### Mandatory order of work (implementation rule)
 
@@ -233,6 +265,8 @@ Full detail belongs in `docs/blender-pipeline.md` and `docs/asset-guidelines.md`
 | `PROBE_` | Reflection/irradiance probe location | Env-map capture point |
 | `NAV_` | Navigation mesh | Hidden; used for pathfinding (NPCs later) |
 | `AUDIO_` | Positional sound emitter | Empty with `extras.sound` |
+| `FX_` | Runtime-simulated effect (hearth fire, …) — things glTF can't carry | Empty with `extras.effect` (+ size); `src/fx` spawns it |
+| `ANCHOR_` | Game-presentation pose (seat, focus, card spots, bet spots, shoe, reels, wheel, layout) | Empty with `extras.anchor` (role) + `tableId` [+ `index`, role data]; src/tables builds on it |
 | `LOD1_` / `LOD2_` suffix `_LOD1` | Level-of-detail variants | See LOD rule below |
 
 Examples: `ROOM_Poker_Main`, `DOOR_Poker_Entrance`, `COLLIDER_Poker_Main`, `SPAWN_Poker_Main`,
@@ -242,7 +276,7 @@ Examples: `ROOM_Poker_Main`, `DOOR_Poker_Entrance`, `COLLIDER_Poker_Main`, `SPAW
 - Collections mirror structure: `ZONE_Poker` › `VISUAL`, `COLLISION`, `LOGIC` (spawns, triggers,
   portals, interaction points), `LIGHTS`, `PROBES`, `NAV`. Collections whose name starts with `_WIP`
   or `_REF` are never exported.
-- Materials: `MAT_<Surface>_<Variant>` (e.g. `MAT_Marble_Calacatta`, `MAT_Wood_WalnutPolished`,
+- Materials: `MAT_<Surface>_<Variant>` (e.g. `MAT_Marble_Calacatta`, `MAT_Marble_Bardiglio`, `MAT_Wood_WalnutPolished`,
   `MAT_Brass_Aged`). Share materials from the material library; no duplicate `.001` copies.
   **Library materials are matched by name** (`src/render/materialNames.ts`): the build strips their
   textures and the runtime substitutes the shared material. UV0 for tiling materials is in metres.
@@ -254,6 +288,22 @@ Examples: `ROOM_Poker_Main`, `DOOR_Poker_Entrance`, `COLLIDER_Poker_Main`, `SPAW
 - **Lightmaps:** objects with custom property `lightmap` are joined per material, unwrapped to UV1 and
   baked by `npm run bake -- <zone>` (Cycles, GPU) into `<zone>_baked.blend` + `T_<Zone>_Lightmap.png/json`;
   that baked file is what gets exported. Details: `docs/blender-pipeline.md`.
+- **Photoscanned props** (Poly Haven, CC0) come in through `K.import_prop` as instanced prototypes; **real
+  carpets** (Met, CC0) through `scripts/make-carpets.mjs` + `Mansion.rug`. See docs/blender-pipeline.md (V2).
+- **Licensed pack (Kraffing Casino Pack V1):** source GLBs live in `blender/props/kraffing/`.
+  - **Git-ignored. Never commit or publish the pack's source files.**
+  - Import with `K.import_pack` (`casino_props.pack_proto`). It keeps the pack origin, bakes a turn plus
+    `PACK_SCALE` 0.86 and names materials `MAT_Kraffing_*`.
+  - `kr_*_table`, `kr_slot_machine` and `kr_decor` place pieces and emit anchors calibrated to the printed
+    felts (orthographic top renders; m/px noted in code).
+  - The pack's stools, coins and cards are dropped.
+  - Poker_Table_2 and Roulette_Table_2 are not used yet: each needs its own felt calibration.
+  - Details: docs/architecture.md "Licensed asset pack".
+- **Salon Privé** (`vip.blend` is the source of truth after its bootstrap). `npm run author:vip`
+  re-runs the bootstrap and then these patch scripts:
+  - `vip_sofas.py`: the lobby's Louis sofas;
+  - `vip_fire.py`: logs, grate, ash bed and the `FX_` fire;
+  - `vip_pack.py`: the pool table and jukebox.
 - Textures: `T_<Material>_<Map>.<ext>` with map suffixes `BaseColor`, `Normal`, `ORM`
   (occlusion-roughness-metallic packed), `Emissive`, `Lightmap`.
 
@@ -387,6 +437,27 @@ NPCs (dealers, guests, bartenders, staff, security) are **later**; leave extensi
 Minimal and diegetic-first. Casino name top-left, interaction prompt bottom-center, ESC menu.
 UI fades when not needed. The optional mansion map is secondary, never the primary navigation.
 
+### Seated table lighting (V2)
+While the player is seated (`src/main.ts`), these settings apply:
+- `SEAT_FOV`: the view narrows per game.
+- `SEAT_EXPOSURE`: a linear exposure eases in (`post.exposure`, applied before AgX). Card games run at
+  ×0.7 of the base value.
+- `TABLE_LAMP`: a soft feature spot lights the table, only where the room's fittings leave the felt dim.
+- `OVERHEAD_DIM`: the fittings right over the table fade to 15 % (`LightPool.setDim`), used for poker
+  and baccarat.
+
+Zone felts (`MAT_<Zone>_Felt*`) are made matte at load, and runtime card stock is matte. Tune these
+values, never the room lights, when a table reads too bright or dark.
+
+### Runtime effects (`FX_`)
+Things glTF can't carry are simulated at runtime from an `FX_` empty (`extras.effect`, see `src/fx`).
+Current effect: `fire` (the Salon Privé hearth), made of:
+- flame tongues from noise, in one draw call;
+- ember and coal glow on `MAT_*_LogBark / _LogEnd / _Ashes`;
+- sparks.
+
+Firelight stays a flickering `LIGHT_`.
+
 ### Debug mode (dev builds only, compiled out of production)
 FPS, frame time, draw calls, triangles, texture memory (where available), current zone, loaded
 zones + states, loading queue, player/camera coordinates, collider wireframes, interaction ray.
@@ -394,6 +465,11 @@ zones + states, loading queue, player/camera coordinates, collider wireframes, i
 ---
 
 ## 9. Game systems (Layer 4) — separated from the world
+
+**Presentation (V2):** games are played *on the 3D table*. Blender tables carry `ANCHOR_` empties; room
+runtime modules (`src/rooms/<game>/runtime.ts`, `src/tables/cardPresenters.ts`) reconcile cards, chips,
+reels, ball and dolly with each engine snapshot via `ZoneInstance.onGameState` and return a promise the
+HUD waits for. The HUD (`src/ui/gameView.ts`) is a slim, non-modal control bar — it never draws cards.
 
 ```
 3D WORLD ─▶ INTERACTION SYSTEM ─▶ GAME SESSION ─▶ <Game> ENGINE (pure logic)
@@ -456,20 +532,45 @@ room, a casino game, and a Blender asset. Update docs in the same change as the 
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Vite dev server on http://localhost:5173 |
+| `npm run dev` | Vite dev server on http://localhost:5173 (debug page: `/?debug`) |
+| `npm run preview` | Serve the production `dist/` build on http://localhost:4173 (what GitHub Pages serves) |
 | `npm run build` | Type-check + production build to `dist/` (debug code stripped via `__DEBUG__`) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` | Vitest unit tests (collision, later game engines) |
 | `npm run fetch-textures` | Download CC0 PBR sources → `blender/textures_src/` (normalised to power-of-two), publish web copies + `textures.json` → `public/assets/textures/` |
 | `npm run build:assets [-- <zone>] [--skip-export]` | Blender validate+export → glTF-Transform optimise (KTX2, Meshopt, instancing, merge) → validate → `public/assets/rooms/` + generated `manifest.json` |
 | `npm run validate:assets -- <file.glb>` | glTF-Validator + naming/extras/budget checks on an optimised GLB |
-| `npm run author:vip` / `npm run author:lobby` | Re-generate a bootstrap `.blend` from its script (overwrites hand edits) |
+| `npm run author:vip` / `npm run author:lobby` | Re-generate a bootstrap `.blend` from its script (overwrites hand edits; `author:vip` then re-applies `vip_sofas/vip_fire/vip_pack.py`) |
 | `npm run bake -- <zone> [size] [samples]` | Cycles GPU lightmap bake → `<zone>_baked.blend` + lightmap PNG/JSON (slow; run after editing a lit zone) |
 | `npm run bake:all` | Re-bake all eight lit zones and rebuild every asset (≈ 25–30 min on an M1 Max) |
 | `blender -b --factory-startup --python blender/tools/author_room.py -- <zone>` | Re-generate a game room's `.blend` (also `author_hallway.py -- hall_west\|hall_east`) |
 | `npm run fetch-art` | Public-domain paintings (Met Open Access, CC0) → `blender/textures_src/art/` + `public/assets/art/` |
+| `npm run fetch-models` | CC0 photoscanned furniture/decor from Poly Haven → `blender/props/polyhaven/` (imported with `K.import_prop`) |
+| `npm run make-game-textures` | Card/chip atlases + reel strip (runtime, with layout `meta` in textures.json), printed felts, wheel ring, slot marquee/pay glass (`blender/textures_src/games/`) |
+| `npm run make-carpets` | Real antique carpets (Met Open Access) → rug textures in `blender/textures_src/carpets/` + the seamless `Carpet_Gul` library set |
 | `blender -b blender/rooms/<zone>/<zone>.blend --python blender/tools/validate_zone.py -- <Zone>` | Authoring-time validation only |
 
 In-app keys: WASD/mouse, Shift, E (interact), Esc (pause / leave table), M (mute), `` ` `` (debug overlay, dev only).
 URL flags: `?debug` (overlay + collider wireframes; `` ` `` toggles), `?quality=high|medium|low`,
 `?webgl` (force the WebGL2 fallback). KTX-Software lives in `.tools/ktx/` (see docs/blender-pipeline.md).
+
+## 15. Repository, publishing & testing
+
+- **GitHub:** `javda4/riviera-casino` (public). Pushing `main` runs `.github/workflows/pages.yml`, which
+  builds with `BASE_PATH=/riviera-casino/` and deploys to **https://javda4.github.io/riviera-casino/**.
+  Large binaries (`.blend`, textures, GLB, KTX2, audio) go through Git LFS (`.gitattributes`).
+- **Never publish**, and keep all of these in `.gitignore`:
+  - `.claude/`, `.mcp.json`, `.env*`, `CLAUDE.local.md` (developer and third-party service config);
+  - the reference photos (`PHOTO-*.jpg`, `casino.png`);
+  - the licensed pack sources (`blender/props/kraffing/`).
+- **Commit identity:** use the GitHub noreply address, never a personal email.
+- **Removing something that was already pushed:** rewriting history is not enough. The repository must be
+  deleted and recreated. That needs the `delete_repo` token scope, which the user grants with
+  `gh auth refresh -h github.com -s delete_repo`.
+- **Licence note:** the built room GLBs embed the Kraffing pack's textures (compressed). Confirm the pack's
+  licence allows use on a public website before publishing rooms that contain it.
+- **Browser testing:** use a fresh automation browser (Playwright MCP), not the user's own Chrome. Kill
+  stale automation Chrome processes: they starve the GPU and wedge screenshots. Seat helpers used in
+  testing: activate the table's `casinoTable` handler, then drive `gameView.send(...)`.
+- **Dev server:** Claude runs it on port 5174 (`npx vite --port 5174 --strictPort`), a background task with
+  a 2-hour limit. The user's default is 5173.

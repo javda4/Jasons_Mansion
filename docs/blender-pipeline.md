@@ -117,3 +117,25 @@ Authoring notes learned the hard way:
   instance nodes after their mesh, so a leftover `…_01.001` mesh name fails the naming validator.
 - **Small text on repeated props** — use `K.text(..., extrude=0, resolution=2)`; extruded, high-resolution
   curves multiply by every instance (the reel symbols were 1 M triangles before this).
+
+## V2 realism pass (2026-09-30)
+
+| Source | Script | Lands in | Used as |
+|---|---|---|---|
+| Poly Haven photoscanned models (CC0): Chesterfield, Louis XV sofa, bergère, carved console, ornate mirror, marble bust, porcelain horse, grandfather + mantel clocks, candelabra, chinoiserie vase, oil lamp, pedestal stand, leafy plant | `npm run fetch-models` (`scripts/fetch-models.mjs`) | `blender/props/polyhaven/<id>/` (glTF, 1k) | `K.import_prop(pid, key, …)` → one instanced prototype per zone; `Mansion.prop()` / `Mansion.place()` |
+| The Met Open Access photographs of real antique carpets (CC0) | `npm run make-carpets` (`scripts/make-carpets.mjs`) | `blender/textures_src/carpets/T_<Rug>_*` (whole rugs) + library set `Carpet_Gul` (seamless tile, `textures.json`) | `Mansion.rug()` (gallery runners, lobby area rugs, with modelled fringes); `MAT_Fabric_CarpetCrimson/Forest` |
+| Modelled flowers | `blender/tools/flora.py` | generated petal/leaf maps in `textures_src/flora/` | `flora.arrangement()` — ~165 roses + leaves + greenery, all instanced |
+
+Contract notes:
+- **`K.import_prop`** rotates a scan to face local +Y, puts its origin on the floor (or on the back plane for
+  wall-hung pieces), applies scale to the mesh, renames materials `MAT_<Key>_<Part>`, converts glass
+  transmission to alpha blend (no transmission pass at runtime) and can recolour via `tint` (exported as
+  `baseColorFactor`). Scans are *zone* materials: their textures ship (KTX2) in the zone GLB.
+- **New library material `MAT_Marble_Bardiglio`** (blue-grey marble) — `materialNames.ts`, `materials.ts`,
+  `mansion.library_materials` updated together.
+- **Carpets** keep the photographed design and colour; the pile (fibre normal, AO, roughness) is synthesised
+  because museum photos are lit flat. Runners use the whole rug (borders + ends) at its true aspect.
+- **Table chairs** are red velvet tub chairs (`Mansion.tub_chair`, barrel back with channel tufting), after the
+  casino.png poker room; `dining_chair` is an alias so every table picked them up.
+- **Gloss**: wood/leather/damask runtime finishes are satin (clearcoat 0.1–0.2, rough 0.4+); only marble keeps a
+  polished clearcoat.

@@ -7,6 +7,8 @@ import { MOVEMENT as M } from '../player/movementConfig';
 export interface CameraPose {
   position: Vector3;
   lookAt: Vector3;
+  /** Field of view while seated (a slight "lean in" so cards and reels read); defaults to the walking FOV. */
+  fov?: number;
 }
 
 const _up = new Vector3(0, 1, 0);
@@ -23,19 +25,22 @@ export class FirstPersonCamera implements System {
   readonly camera: PerspectiveCamera;
   private bobPhase = 0;
   private bobAmp = 0;
-  private seat: { position: Vector3; quaternion: Quaternion } | null = null;
+  private seat: { position: Vector3; quaternion: Quaternion; fov?: number } | null = null;
+  private baseFov: number;
   private seatBlend = 0; // 0 = walking view, 1 = seated view
   private walkPos = new Vector3();
   private walkQuat = new Quaternion();
 
   constructor(private readonly player: PlayerState, fov = 68) {
     this.camera = new PerspectiveCamera(fov, innerWidth / innerHeight, 0.05, 120);
+    this.baseFov = fov;
     this.camera.rotation.order = 'YXZ';
   }
 
   get seated(): boolean { return this.seat !== null; }
 
   setFov(fov: number): void {
+    this.baseFov = fov;
     this.camera.fov = fov;
     this.camera.updateProjectionMatrix();
   }
@@ -49,7 +54,7 @@ export class FirstPersonCamera implements System {
   setSeat(pose: CameraPose | null): void {
     if (!pose) { this.seat = null; return; }
     _m.lookAt(pose.position, pose.lookAt, _up);
-    this.seat = { position: pose.position.clone(), quaternion: new Quaternion().setFromRotationMatrix(_m) };
+    this.seat = { position: pose.position.clone(), quaternion: new Quaternion().setFromRotationMatrix(_m), fov: pose.fov };
   }
 
   update(dt: number): void {
@@ -82,10 +87,15 @@ export class FirstPersonCamera implements System {
       this.walkQuat.copy(c.quaternion);
       c.position.copy(_pos.copy(this.walkPos).lerp(s.position, t));
       c.quaternion.copy(_quat.copy(this.walkQuat).slerp(s.quaternion, t));
+      const fov = this.baseFov + ((s.fov ?? this.baseFov) - this.baseFov) * t;
+      if (Math.abs(fov - c.fov) > 0.01) { c.fov = fov; c.updateProjectionMatrix(); }
+    } else if (c.fov !== this.baseFov) {
+      c.fov = this.baseFov;
+      c.updateProjectionMatrix();
     }
     if (this.seat) this.lastSeat = this.seat;
     else if (this.seatBlend === 0) this.lastSeat = null;
   }
 
-  private lastSeat: { position: Vector3; quaternion: Quaternion } | null = null;
+  private lastSeat: { position: Vector3; quaternion: Quaternion; fov?: number } | null = null;
 }

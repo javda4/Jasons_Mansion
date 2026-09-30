@@ -1,11 +1,11 @@
-import { Box3, Group, InstancedMesh, MeshBasicMaterial, Matrix4, Mesh, Quaternion, Vector3, type Light, type Material, type MeshStandardMaterial, type Object3D, type SpotLight, type Texture, type WebGPURenderer } from 'three/webgpu';
+import { Box3, Group, InstancedMesh, MeshBasicMaterial, Matrix4, Mesh, Quaternion, Vector3, type Light, type Material, type MeshPhysicalMaterial, type MeshStandardMaterial, type Object3D, type SpotLight, type Texture, type WebGPURenderer } from 'three/webgpu';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import type { Aabb, Vec3 } from '../physics/types';
 import { isLibraryMaterial, type MaterialKey } from '../render/materialNames';
 import type { DoorExtras } from '../interaction/schema';
-import type { DoorDef, LightDef, ZoneInstance } from '../world/roomBuilder';
+import type { AnchorDef, DoorDef, EffectDef, LightDef, ZoneInstance } from '../world/roomBuilder';
 import { assetUrl } from './assetUrl';
 
 /**
@@ -18,6 +18,8 @@ import { assetUrl } from './assetUrl';
  *   PROBE_*     → reflection-probe capture point
  *   LIGHT_*     → KHR_lights_punctual → LightDef (the LightPool owns all real lights);
  *                 extras: castShadow, flicker; bakeOnly lights live only in the lightmap
+ *   ANCHOR_*      → game-presentation poses (extras: anchor role, tableId, index) — src/tables
+ *   FX_*        → runtime-simulated effects (extras: effect kind + size), e.g. hearth fire — src/fx
  *   DOOR_<Zone>_<Id> → empty with door extras (+ `collider`), leaves DOOR_…_L/_R pivot on their
  *                 origins (hinges); local +Y (Blender +Z) points to the owning room
  *   TEXCOORD_1  → baked lightmap (hybrid lighting; see blender/tools/bake_lightmap.py)
@@ -61,6 +63,8 @@ export async function loadGlbZone(id: string, url: string, materials: Record<Mat
   const remove: Object3D[] = [];
   const doorNodes: Object3D[] = [];
   const sounds: ZoneInstance['sounds'] = [];
+  const anchors: AnchorDef[] = [];
+  const effects: EffectDef[] = [];
   const byName = new Map<string, Object3D>();
 
   root.traverse((o) => {
@@ -94,6 +98,13 @@ export async function loadGlbZone(id: string, url: string, materials: Record<Mat
       });
     } else if (name.startsWith('DOOR_') && o.userData.interactionType === 'door') {
       doorNodes.push(o);
+    } else if (name.startsWith('ANCHOR_') && typeof o.userData.anchor === 'string') {
+      // stays in the graph (zone transforms move it); presenters read its world pose on demand
+      const { anchor, tableId, index, ...extras } = o.userData as { anchor: string; tableId: string; index?: number };
+      anchors.push({ role: anchor, tableId, index: Number(index ?? 0), node: o, extras });
+    } else if (name.startsWith('FX_') && typeof o.userData.effect === 'string') {
+      const { effect, ...extras } = o.userData as { effect: string };
+      effects.push({ effect, node: o, extras });
     }
     const mesh = o as Mesh;
     if (mesh.isMesh && name.startsWith('INTERACT_')) {
@@ -104,6 +115,7 @@ export async function loadGlbZone(id: string, url: string, materials: Record<Mat
     if (mesh.isMesh) {
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       const swapped = mats.map((m) => (isLibraryMaterial(m.name) ? materials[m.name] : m));
+      for (const m of swapped) if (FELT.test(m.name)) matteCloth(m);
       mesh.material = Array.isArray(mesh.material) ? swapped : swapped[0];
       const emissiveOnly = swapped.every((m) => m.name.startsWith('MAT_Emissive') || /Fire|SeaView|Window/.test(m.name));
       mesh.castShadow = !emissiveOnly;
@@ -117,7 +129,21 @@ export async function loadGlbZone(id: string, url: string, materials: Record<Mat
 
   if (!bounds) throw new Error(`${id}: GLB has no TRIGGER_*_Bounds`);
   if (!probe) throw new Error(`${id}: GLB has no PROBE_ node`);
-  return { id, root, colliders, lights, doors, bounds, spawn, probe, animate: [], sounds };
+  return { id, root, colliders, lights, doors, bounds, spawn, probe, animate: [], sounds, anchors, effects };
+}
+
+/**
+ * Baize is a matte wool cloth: almost no specular. glTF's default dielectric F0 plus the room's bright
+ * environment laid a pale tan veil over every table (the felt read grey-green under a chandelier), so zone
+ * felts (`MAT_<Zone>_Felt*`) get their specular and environment reflections turned right down.
+ */
+const FELT = /^MAT_[A-Za-z]+_Felt/;
+function matteCloth(m: Material): void {
+  const p = m as MeshPhysicalMaterial;
+  if (p.userData.matteCloth) return;
+  p.userData.matteCloth = true;
+  if (p.isMeshPhysicalMaterial) p.specularIntensity = 0.1;
+  if ('envMapIntensity' in p) p.envMapIntensity = 0.35;
 }
 
 function isAncestor(a: Object3D, o: Object3D): boolean {

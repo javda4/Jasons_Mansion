@@ -87,7 +87,8 @@ class Zone:
 
     # ---- materials
     def material(self, key, name, base=(0.8, 0.8, 0.8), rough=0.5, metal=0.0, coat=0.0, coat_rough=0.03, sheen=0.0,
-                 lib=None, base_tex=None, emis_tex=None, emis_color=None, emis_strength=0.0, alpha=1.0):
+                 lib=None, base_tex=None, emis_tex=None, emis_color=None, emis_strength=0.0, alpha=1.0,
+                 normal_tex=None, orm_tex=None, normal_strength=1.0, extension="REPEAT", sheen_tint=None):
         m = bpy.data.materials.new(name)
         if bpy.app.version < (5, 0, 0):
             m.use_nodes = True
@@ -99,6 +100,8 @@ class Zone:
         b.inputs["Coat Weight"].default_value = coat
         b.inputs["Coat Roughness"].default_value = coat_rough
         b.inputs["Sheen Weight"].default_value = sheen
+        # Blender's default sheen tint is white → a white film over dyed fibres once exported (KHR_materials_sheen)
+        b.inputs["Sheen Tint"].default_value = (*(sheen_tint or base), 1)
         if lib:  # viewport preview for library materials; stripped by the asset build
             stem = os.path.join(LIB_TEX, f"T_{lib}")
             if os.path.exists(stem + "_BaseColor.jpg"):
@@ -114,7 +117,24 @@ class Zone:
         if base_tex:
             t = nt.nodes.new("ShaderNodeTexImage"); t.location = (-500, 300)
             t.image = bpy.data.images.load(base_tex, check_existing=True)
+            t.extension = extension
             nt.links.new(t.outputs["Color"], b.inputs["Base Color"])
+        if normal_tex:  # exported as the glTF normalTexture
+            t = nt.nodes.new("ShaderNodeTexImage"); t.location = (-700, -350)
+            t.image = bpy.data.images.load(normal_tex, check_existing=True)
+            t.image.colorspace_settings.name = "Non-Color"
+            t.extension = extension
+            nm = nt.nodes.new("ShaderNodeNormalMap"); nm.location = (-300, -350)
+            nm.inputs["Strength"].default_value = normal_strength
+            nt.links.new(t.outputs["Color"], nm.inputs["Color"]); nt.links.new(nm.outputs["Normal"], b.inputs["Normal"])
+        if orm_tex:  # G → roughness, B → metallic: exported as one glTF metallicRoughnessTexture
+            t = nt.nodes.new("ShaderNodeTexImage"); t.location = (-800, 0)
+            t.image = bpy.data.images.load(orm_tex, check_existing=True)
+            t.image.colorspace_settings.name = "Non-Color"
+            t.extension = extension
+            sep = nt.nodes.new("ShaderNodeSeparateColor"); sep.location = (-450, 0)
+            nt.links.new(t.outputs["Color"], sep.inputs["Color"])
+            nt.links.new(sep.outputs["Green"], b.inputs["Roughness"]); nt.links.new(sep.outputs["Blue"], b.inputs["Metallic"])
         if emis_tex:
             t = nt.nodes.new("ShaderNodeTexImage"); t.location = (-500, -100)
             t.image = bpy.data.images.load(emis_tex, check_existing=True)
@@ -230,6 +250,140 @@ class Zone:
         if stale is not None and stale is not target.data and stale.users == 0:
             bpy.data.meshes.remove(stale)
         target.data.name = target.name
+        return target
+
+    def import_prop(self, pid, key, pick=None, scale=1.0, origin="base", tint=None, face="+Y", decimate=None):
+        """Import a Poly Haven model (scripts/fetch-models.mjs) as ONE instanceable prototype.
+
+        - `pick`: keep only mesh objects whose name contains one of these substrings
+        - rotated so its front faces local +Y (our furniture convention), origin at the base centre
+          ("base") or the back centre ("back", for wall-hung pieces), scale applied to the mesh
+        - materials renamed MAT_<Key>_<Part> (the key names the surface); glass loses transmission (an extra render pass
+          at runtime) and becomes alpha-blended; `tint={substring: (r, g, b)}` multiplies a base colour
+          (exported as baseColorFactor); `decimate` = collapse ratio for dense scans
+        Place copies with K.linked(K.name("PROP", key), proto, loc, rot) → GPU instances after the build.
+        """
+        path = os.path.join(ROOT, "blender", "props", "polyhaven", pid, f"{pid}.gltf")
+        before = set(bpy.data.objects)
+        bpy.ops.import_scene.gltf(filepath=path)
+        new = [o for o in bpy.data.objects if o not in before]
+        meshes = [o for o in new if o.type == "MESH" and (not pick or any(p in o.name for p in pick))]
+        for o in new:
+            if o not in meshes:
+                bpy.data.objects.remove(o, do_unlink=True)
+        for o in meshes:  # bake transforms into the data, drop parents
+            o.data = o.data.copy() if o.data.users > 1 else o.data
+            o.data.transform(o.matrix_world)
+            o.parent = None
+            o.matrix_world = Matrix.Identity(4)
+        target = meshes[0]
+        if len(meshes) > 1:
+            bpy.ops.object.select_all(action="DESELECT")
+            for o in meshes:
+                o.select_set(True)
+            bpy.context.view_layer.objects.active = target
+            bpy.ops.object.join()
+        if decimate:  # scans can be dense for a real-time budget: collapse-decimate once, on the prototype
+            mod = target.modifiers.new("Decimate", "DECIMATE")
+            mod.ratio = decimate
+            dg = bpy.context.evaluated_depsgraph_get()
+            dense = target.data
+            target.data = bpy.data.meshes.new_from_object(target.evaluated_get(dg), preserve_all_data_layers=True, depsgraph=dg)
+            target.modifiers.clear()
+            if dense.users == 0:
+                bpy.data.meshes.remove(dense)
+        me = target.data
+        rot = {"+Y": Matrix.Rotation(math.pi, 4, "Z"), "-Y": Matrix.Identity(4)}[face]
+        me.transform(rot @ Matrix.Scale(scale, 4))
+        xs = [v.co for v in me.vertices]
+        lo = Vector((min(c.x for c in xs), min(c.y for c in xs), min(c.z for c in xs)))
+        hi = Vector((max(c.x for c in xs), max(c.y for c in xs), max(c.z for c in xs)))
+        if origin == "base":
+            me.transform(Matrix.Translation(Vector(((lo.x + hi.x) / -2, (lo.y + hi.y) / -2, -lo.z))))
+        else:  # back: wall-hung, the back plane at y = 0, centred in x and z
+            me.transform(Matrix.Translation(Vector(((lo.x + hi.x) / -2, -lo.y, (lo.z + hi.z) / -2))))
+        name = self.name("PROP", key)
+        target.name = name
+        me.name = name
+        for slot in target.material_slots:
+            m = slot.material
+            if m is None or m.name.startswith("MAT_"):
+                continue
+            part = m.name.replace(pid, "").strip("_- ")
+            part = "".join(w.capitalize() for w in part.replace("-", "_").split("_") if w)
+            b = m.node_tree.nodes.get("Principled BSDF")
+            if b is not None and b.inputs["Transmission Weight"].default_value > 0:
+                b.inputs["Transmission Weight"].default_value = 0
+                b.inputs["Alpha"].default_value = 0.22
+                b.inputs["Roughness"].default_value = 0.04
+                m.surface_render_method = "BLENDED"
+            for sub, rgb in (tint or {}).items():
+                if sub in m.name and b is not None and b.inputs["Base Color"].is_linked:
+                    src = b.inputs["Base Color"].links[0].from_socket
+                    mix = m.node_tree.nodes.new("ShaderNodeMix")
+                    mix.data_type, mix.blend_type = "RGBA", "MULTIPLY"
+                    mix.inputs["Factor"].default_value = 1.0
+                    m.node_tree.links.new(src, mix.inputs[6])
+                    mix.inputs[7].default_value = (*rgb, 1)
+                    m.node_tree.links.new(mix.outputs[2], b.inputs["Base Color"])
+            if part and part[0].isdigit():
+                part = "Main" + part
+            m.name = f"MAT_{key}_{part or 'Main'}"          # MAT_<Surface>_<Variant> (§6)
+        for c in list(target.users_collection):
+            c.objects.unlink(target)
+        self.wip.objects.link(target)
+        target["dims"] = [hi.x - lo.x, hi.y - lo.y, hi.z - lo.z]
+        return target
+
+    def import_pack(self, path, key, pick=None, scale=1.0, rz=0.0):
+        """Import a licensed pack model (blender/props/kraffing/<Name>.glb) as ONE instanceable prototype.
+
+        Unlike import_prop the pack's own origin is kept (floor centre of the piece), so separately imported
+        parts of one model (a roulette table and its wheel) stay registered to each other. `rz` turns the
+        model so its player side matches our convention and `scale` brings it to real-world size; both are
+        baked into the mesh. `pick` keeps only mesh objects whose name starts with one of the prefixes (the
+        pack's bar stools, loose coins and cards are dropped — the runtime deals real cards and chips).
+        Materials become MAT_Kraffing_<Name> (§6), shared between parts imported into one zone.
+        """
+        before = set(bpy.data.objects)
+        mats_before = set(bpy.data.materials)
+        bpy.ops.import_scene.gltf(filepath=path)
+        new = [o for o in bpy.data.objects if o not in before]
+        meshes = [o for o in new if o.type == "MESH" and (not pick or any(o.name.startswith(p) for p in pick))]
+        for o in new:
+            if o not in meshes:
+                bpy.data.objects.remove(o, do_unlink=True)
+        for o in meshes:
+            o.data = o.data.copy() if o.data.users > 1 else o.data
+            o.data.transform(o.matrix_world)
+            o.parent = None
+            o.matrix_world = Matrix.Identity(4)
+        target = meshes[0]
+        if len(meshes) > 1:
+            bpy.ops.object.select_all(action="DESELECT")
+            for o in meshes:
+                o.select_set(True)
+            bpy.context.view_layer.objects.active = target
+            bpy.ops.object.join()
+        target.data.transform(Matrix.Rotation(rz, 4, "Z") @ Matrix.Scale(scale, 4))
+        name = self.name("PROP", key)
+        target.name = target.data.name = name
+        for slot in target.material_slots:
+            m = slot.material
+            if m is None or m.name.startswith("MAT_"):
+                continue
+            stem = m.name.split(".")[0].removeprefix("TX_")
+            want = "MAT_Kraffing_" + "".join(w[:1].upper() + w[1:] for w in stem.replace("-", "_").split("_") if w)
+            have = bpy.data.materials.get(want)
+            if have is not None and have is not m:
+                slot.material = have           # the same pack material, already imported with another part
+            else:
+                m.name = want
+        for m in [m for m in bpy.data.materials if m not in mats_before and m.users == 0]:
+            bpy.data.materials.remove(m)
+        for c in list(target.users_collection):
+            c.objects.unlink(target)
+        self.wip.objects.link(target)
         return target
 
     def prototype(self, ob):

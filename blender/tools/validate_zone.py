@@ -50,6 +50,18 @@ def validate(zone: str):
             errors.append(f"{o.name}: a mesh cannot use prefix {prefix}_")
         if o.type == "EMPTY" and prefix not in C.EMPTY_PREFIXES:
             errors.append(f"{o.name}: an empty cannot use prefix {prefix}_")
+        if prefix == "ANCHOR":
+            if o.type != "EMPTY":
+                errors.append(f"{o.name}: ANCHOR_ must be an empty")
+            if o.get("anchor") not in C.ANCHOR_ROLES:
+                errors.append(f"{o.name}: extras.anchor must be one of {sorted(C.ANCHOR_ROLES)}")
+            if not isinstance(o.get("tableId"), str):
+                errors.append(f"{o.name}: extras.tableId is required")
+        if prefix == "FX":
+            if o.type != "EMPTY":
+                errors.append(f"{o.name}: FX_ must be an empty")
+            if o.get("effect") not in C.FX_EFFECTS:
+                errors.append(f"{o.name}: extras.effect must be one of {sorted(C.FX_EFFECTS)}")
         if o.type == "LIGHT" and prefix not in C.LIGHT_PREFIXES:
             errors.append(f"{o.name}: lights must be named LIGHT_…")
         if o.type == "LIGHT" and o.data.type not in {"POINT", "SPOT"}:

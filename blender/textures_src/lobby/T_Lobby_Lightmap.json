@@ -2,11 +2,11 @@
   "zone": "lobby",
   "size": 4096,
   "samples": 256,
-  "encodeScale": 1.0133320577001736,
-  "intensity": 3.1002598109052744,
-  "p99_5": 0.9868433475494385,
-  "max": 160.83023071289062,
-  "coverage": 0.30950671434402466,
+  "encodeScale": 0.6594385760743813,
+  "intensity": 4.764041364233805,
+  "p99_5": 1.5164414644241333,
+  "max": 154.83114624023438,
+  "coverage": 0.25727593898773193,
   "objects": [
     "ROOM_Lobby_Lightmapped_01",
     "ROOM_Lobby_Lightmapped_02",
@@ -15,7 +15,10 @@
     "ROOM_Lobby_Lightmapped_05",
     "ROOM_Lobby_Lightmapped_06",
     "ROOM_Lobby_Lightmapped_07",
-    "ROOM_Lobby_Lightmapped_08"
+    "ROOM_Lobby_Lightmapped_08",
+    "ROOM_Lobby_Lightmapped_09",
+    "ROOM_Lobby_Lightmapped_10",
+    "ROOM_Lobby_Lightmapped_11"
   ],
   "bakeOnlyLights": [
     "LIGHT_Lobby_Sconce_01",
@@ -38,7 +41,15 @@
     "LIGHT_Lobby_Lamp_02",
     "LIGHT_Lobby_Lamp_03",
     "LIGHT_Lobby_Lamp_04",
+    "LIGHT_Lobby_Lamp_05",
+    "LIGHT_Lobby_Lamp_06",
+    "LIGHT_Lobby_Lamp_07",
+    "LIGHT_Lobby_Lamp_08",
+    "LIGHT_Lobby_Candelabra_01",
+    "LIGHT_Lobby_Candelabra_02",
+    "LIGHT_Lobby_Candelabra_03",
+    "LIGHT_Lobby_Candelabra_04",
     "LIGHT_Lobby_Moon_01"
   ],
-  "seconds": 715.4
+  "seconds": 838.5
 }

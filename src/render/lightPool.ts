@@ -16,6 +16,8 @@ interface Slot<L extends PointLight | SpotLight> {
   light: L;
   def: LightDef | null;
   fade: number;
+  /** Local dimmer (see setDim), eased so the change is a gentle fade, never a pop. */
+  dim?: number;
 }
 
 const POINT_SLOTS = 10;
@@ -60,6 +62,35 @@ export class LightPool implements System {
     k.shadow.radius = 4;
     scene.add(k, k.target);
     this.key = { light: k, def: null, fade: 0 };
+  }
+
+  private feature: LightDef | null = null;
+
+  /**
+   * A presentation light that takes the free spot slot while it's set — e.g. the soft downlight over the
+   * table the guest sits at, so cards read (casino tables are lit brighter than the room). Cross-fades
+   * like any reassignment; the shader permutation never changes.
+   */
+  setFeature(def: LightDef | null): void {
+    this.feature = def;
+    this.sinceSelect = RESELECT_INTERVAL;
+  }
+
+  private dimArea: { x: number; z: number; r: number; f: number } | null = null;
+
+  /**
+   * Dim every fitting within `radius` (plan distance) of `at` to `factor` of its brightness — e.g. the
+   * pendants over the table the guest is playing at, so cards and chips don't glare. null restores.
+   * The feature light is never dimmed. Intensities only: no shader recompiles.
+   */
+  setDim(at: { x: number; z: number } | null, radius = 2, factor = 1): void {
+    this.dimArea = at ? { x: at.x, z: at.z, r: radius, f: factor } : null;
+  }
+
+  private dimFor(def: LightDef): number {
+    const a = this.dimArea;
+    if (!a || def === this.feature) return 1;
+    return Math.hypot(def.position.x - a.x, def.position.z - a.z) <= a.r ? a.f : 1;
   }
 
   /** Lights of zones that are currently visible; `zone` = the zone the player is in. */
@@ -130,7 +161,7 @@ export class LightPool implements System {
       return out;
     };
     this.wantedPoints = keep(this.points, ranked.filter((d) => d.kind === 'point'), POINT_SLOTS);
-    this.wantedSpots = keep(this.spots, ranked.filter((d) => d.kind === 'spot' && !d.castShadow), SPOT_SLOTS);
+    this.wantedSpots = this.feature ? new Set([this.feature]) : keep(this.spots, ranked.filter((d) => d.kind === 'spot' && !d.castShadow), SPOT_SLOTS);
     const keys = ranked.filter((d) => d.castShadow);
     this.wantedKey = keys.find((d) => d.zone === this.currentZone) ?? keys[0] ?? null;
   }
@@ -157,8 +188,10 @@ export class LightPool implements System {
     }
     for (const s of slots) {
       if (!s.def) { s.light.intensity = 0; continue; }
-      const f = s.def.flicker ? 1 + Math.sin(time * 7.3 + hash(s.def.id)) * 0.012 + Math.sin(time * 13.1 + hash(s.def.id) * 2) * 0.008 : 1;
-      s.light.intensity = s.def.intensity * smooth(s.fade) * f;
+      const f = s.def.flicker ? flame(time, hash(s.def.id)) : 1;
+      const want = this.dimFor(s.def);
+      s.dim = s.dim === undefined ? want : s.dim + (want - s.dim) * (1 - Math.exp(-3 * dt));
+      s.light.intensity = s.def.intensity * smooth(s.fade) * f * s.dim;
     }
   }
 }
@@ -200,4 +233,13 @@ function hash(s: string): number {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
   return (h % 1000) / 100;
+}
+
+/**
+ * Open-flame flicker (fireplaces, real candles) — irregular, per light, never in lockstep. Electric fittings
+ * (chandeliers, sconces, lamps) must not set `flicker`: steady light is what 1920s electric light looks like.
+ */
+function flame(t: number, seed: number): number {
+  const n = Math.sin(t * 2.1 + seed) * 0.5 + Math.sin(t * 5.7 + seed * 1.7) * 0.3 + Math.sin(t * 11.3 + seed * 2.9) * 0.2;
+  return 1 + 0.06 * n;
 }

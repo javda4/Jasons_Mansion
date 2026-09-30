@@ -7,6 +7,7 @@ Zone anchor: centre of the lobby doorway on the lobby wall's inner face, floor l
 runs along Blender +Y (glTF −Z). Rooms attach at the slots in src/rooms/shared/layout.ts (HALL_SLOTS):
 side doors at y = 10.15 on x = ±1.9, the end door at y = 20.
 """
+import json
 import math
 import os
 import sys
@@ -29,6 +30,7 @@ CONFIG = {
     }, (3, 6, 10, 1)),
 }
 ZONE, LINKS, ART = CONFIG[zone_id]
+RUNNER = {"hall_west": "Runner_Mamluk", "hall_east": "Runner_PalmTrees"}
 W, L, H, T = 3.8, 20.0, 4.9, 0.3
 hw = W / 2
 BAYS = 5
@@ -45,9 +47,13 @@ M = A.M
 
 # floor: polished walnut with a Nero band, crimson runner with gilt borders
 A.bordered_floor(-hw, hw, 0, L, M["walnut"], M["nero"], margin=M["walnut_dark"], m=0.25, bw=0.12)
-K.box(K.name("ROOM", "Runner"), (2.0, L - T - 0.45, 0.012), (0, (T + L - 0.4) / 2 + 0.05, 0.006), M["carpet"], lightmap=True)
-for s in (-1, 1):
-    K.box(K.name("ROOM", "RunnerBorder"), (0.04, L - T - 0.45, 0.014), (s * 0.88, (T + L - 0.4) / 2 + 0.05, 0.007), M["gilt"])
+# three matching antique runners laid end to end (real carpets, scripts/make-carpets.mjs)
+RUG = RUNNER[zone_id]
+aspect = json.load(open(os.path.join(kit.ROOT, "blender", "textures_src", "carpets", "carpets.json")))["rugs"][RUG]["aspect"]
+y0_, y1_, gap = T + 0.45, L - 0.5, 0.28
+rl = (y1_ - y0_ - 2 * gap) / 3
+for k in range(3):
+    A.rug(f"Runner{k + 1}", 0, y0_ + rl / 2 + k * (rl + gap), rl, min(2.1, rl / aspect), 0, RUG)
 A.coffered_ceiling(-hw, hw, T, L, spacing=1.9, beam_d=0.3)
 
 # walls
