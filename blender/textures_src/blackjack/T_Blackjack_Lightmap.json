@@ -1,0 +1,33 @@
+{
+  "zone": "blackjack",
+  "size": 2048,
+  "samples": 256,
+  "encodeScale": 0.5319475122285793,
+  "intensity": 5.905832025472171,
+  "p99_5": 1.8798847198486328,
+  "max": 13.961251258850098,
+  "coverage": 0.3889341354370117,
+  "objects": [
+    "ROOM_Blackjack_Lightmapped_01",
+    "ROOM_Blackjack_Lightmapped_02",
+    "ROOM_Blackjack_Lightmapped_03",
+    "ROOM_Blackjack_Lightmapped_04",
+    "ROOM_Blackjack_Lightmapped_05",
+    "ROOM_Blackjack_Lightmapped_06",
+    "ROOM_Blackjack_Lightmapped_07"
+  ],
+  "bakeOnlyLights": [
+    "LIGHT_Blackjack_Sconce_01",
+    "LIGHT_Blackjack_Sconce_02",
+    "LIGHT_Blackjack_Sconce_03",
+    "LIGHT_Blackjack_Sconce_04",
+    "LIGHT_Blackjack_Sconce_05",
+    "LIGHT_Blackjack_Sconce_06",
+    "LIGHT_Blackjack_Sconce_07",
+    "LIGHT_Blackjack_Sconce_08",
+    "LIGHT_Blackjack_Sconce_09",
+    "LIGHT_Blackjack_Sconce_10",
+    "LIGHT_Blackjack_Sconce_11"
+  ],
+  "seconds": 196.0
+}

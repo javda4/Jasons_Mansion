@@ -1,0 +1,32 @@
+{
+  "zone": "roulette",
+  "size": 2048,
+  "samples": 256,
+  "encodeScale": 0.47226404244708725,
+  "intensity": 6.652195321310703,
+  "p99_5": 2.117459535598755,
+  "max": 13.797503471374512,
+  "coverage": 0.3756103515625,
+  "objects": [
+    "ROOM_Roulette_Lightmapped_01",
+    "ROOM_Roulette_Lightmapped_02",
+    "ROOM_Roulette_Lightmapped_03",
+    "ROOM_Roulette_Lightmapped_04",
+    "ROOM_Roulette_Lightmapped_05",
+    "ROOM_Roulette_Lightmapped_06"
+  ],
+  "bakeOnlyLights": [
+    "LIGHT_Roulette_Sconce_01",
+    "LIGHT_Roulette_Sconce_02",
+    "LIGHT_Roulette_Sconce_03",
+    "LIGHT_Roulette_Sconce_04",
+    "LIGHT_Roulette_Sconce_05",
+    "LIGHT_Roulette_Sconce_06",
+    "LIGHT_Roulette_Sconce_07",
+    "LIGHT_Roulette_Sconce_08",
+    "LIGHT_Roulette_Sconce_09",
+    "LIGHT_Roulette_Sconce_10",
+    "LIGHT_Roulette_Sconce_11"
+  ],
+  "seconds": 226.2
+}

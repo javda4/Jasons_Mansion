@@ -1,0 +1,31 @@
+{
+  "zone": "hall_east",
+  "size": 2048,
+  "samples": 256,
+  "encodeScale": 0.38458330658989004,
+  "intensity": 8.168822202519332,
+  "p99_5": 2.600216865539551,
+  "max": 20.522279739379883,
+  "coverage": 0.30413150787353516,
+  "objects": [
+    "ROOM_HallEast_Lightmapped_01",
+    "ROOM_HallEast_Lightmapped_02",
+    "ROOM_HallEast_Lightmapped_03",
+    "ROOM_HallEast_Lightmapped_04",
+    "ROOM_HallEast_Lightmapped_05",
+    "ROOM_HallEast_Lightmapped_06"
+  ],
+  "bakeOnlyLights": [
+    "LIGHT_HallEast_Sconce_01",
+    "LIGHT_HallEast_Sconce_02",
+    "LIGHT_HallEast_Sconce_03",
+    "LIGHT_HallEast_Sconce_04",
+    "LIGHT_HallEast_Sconce_05",
+    "LIGHT_HallEast_Sconce_06",
+    "LIGHT_HallEast_Sconce_07",
+    "LIGHT_HallEast_Sconce_08",
+    "LIGHT_HallEast_Lamp_01",
+    "LIGHT_HallEast_Lamp_02"
+  ],
+  "seconds": 200.2
+}

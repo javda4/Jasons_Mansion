@@ -1,0 +1,33 @@
+{
+  "zone": "poker",
+  "size": 2048,
+  "samples": 256,
+  "encodeScale": 0.44593527666502863,
+  "intensity": 7.044952077091785,
+  "p99_5": 2.2424778938293457,
+  "max": 13.952381134033203,
+  "coverage": 0.3743901252746582,
+  "objects": [
+    "ROOM_Poker_Lightmapped_01",
+    "ROOM_Poker_Lightmapped_02",
+    "ROOM_Poker_Lightmapped_03",
+    "ROOM_Poker_Lightmapped_04",
+    "ROOM_Poker_Lightmapped_05",
+    "ROOM_Poker_Lightmapped_06"
+  ],
+  "bakeOnlyLights": [
+    "LIGHT_Poker_Sconce_01",
+    "LIGHT_Poker_Sconce_02",
+    "LIGHT_Poker_Sconce_03",
+    "LIGHT_Poker_Sconce_04",
+    "LIGHT_Poker_Sconce_05",
+    "LIGHT_Poker_Sconce_06",
+    "LIGHT_Poker_Sconce_07",
+    "LIGHT_Poker_Sconce_08",
+    "LIGHT_Poker_Sconce_09",
+    "LIGHT_Poker_Sconce_10",
+    "LIGHT_Poker_Sconce_11",
+    "LIGHT_Poker_Lamp_01"
+  ],
+  "seconds": 229.0
+}

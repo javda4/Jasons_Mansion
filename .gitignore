@@ -1,0 +1,23 @@
+node_modules/
+dist/
+.tools/
+blender/exports/
+*.blend1
+.DS_Store
+.claude/settings.local.json
+
+# browser-automation screenshots/logs
+.playwright-mcp/
+
+# personal reference images and machine-specific config — kept local, not published
+PHOTO-*.jpg
+casino.png
+.mcp.json
+# re-downloadable source archives (npm run fetch-textures)
+blender/textures_src/ambientcg/**/*.zip
+
+# developer-only tool config (Claude Code) — never published
+.claude/
+CLAUDE.local.md
+.env
+.env.*

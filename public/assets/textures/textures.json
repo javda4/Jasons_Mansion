@@ -1,0 +1,174 @@
+{
+  "generated": "2026-09-30T00:22:52.852Z",
+  "source": "polyhaven.com (CC0)",
+  "materials": {
+    "Marble_Calacatta": {
+      "polyhavenId": "marble_01",
+      "resolution": "2k",
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Marble_Calacatta_BaseColor.jpg",
+          "bytes": 1269188,
+          "hash": "d403786171716f86"
+        },
+        "Normal": {
+          "url": "/assets/textures/T_Marble_Calacatta_Normal.jpg",
+          "bytes": 409581,
+          "hash": "d5e17ccb2913adbf"
+        },
+        "ORM": {
+          "url": "/assets/textures/T_Marble_Calacatta_ORM.jpg",
+          "bytes": 214100,
+          "hash": "28a022c868faf8d8"
+        }
+      }
+    },
+    "Wood_WalnutPolished": {
+      "polyhavenId": "black_walnut_veneer_01",
+      "resolution": "2k",
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Wood_WalnutPolished_BaseColor.jpg",
+          "bytes": 2487539,
+          "hash": "131a5322d045f86d"
+        },
+        "Normal": {
+          "url": "/assets/textures/T_Wood_WalnutPolished_Normal.jpg",
+          "bytes": 1897687,
+          "hash": "8970308650c9e8b4"
+        },
+        "ORM": {
+          "url": "/assets/textures/T_Wood_WalnutPolished_ORM.jpg",
+          "bytes": 3431399,
+          "hash": "6d384b9c90729489"
+        }
+      }
+    },
+    "Fabric_Damask": {
+      "polyhavenId": "quatrefoil_jacquard_fabric",
+      "resolution": "1k",
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Fabric_Damask_BaseColor.jpg",
+          "bytes": 125686,
+          "hash": "7baf1674b30b22b4"
+        },
+        "Normal": {
+          "url": "/assets/textures/T_Fabric_Damask_Normal.jpg",
+          "bytes": 315371,
+          "hash": "88ada34a5de1f2c5"
+        },
+        "ORM": {
+          "url": "/assets/textures/T_Fabric_Damask_ORM.jpg",
+          "bytes": 391673,
+          "hash": "86b63444b8f3d84a"
+        }
+      }
+    },
+    "Leather_Oxblood": {
+      "polyhavenId": "brown_leather",
+      "resolution": "1k",
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Leather_Oxblood_BaseColor.jpg",
+          "bytes": 503348,
+          "hash": "7e9e1d6566d1fd91"
+        },
+        "Normal": {
+          "url": "/assets/textures/T_Leather_Oxblood_Normal.jpg",
+          "bytes": 863280,
+          "hash": "506a0b7650c2dea2"
+        },
+        "ORM": {
+          "url": "/assets/textures/T_Leather_Oxblood_ORM.jpg",
+          "bytes": 436931,
+          "hash": "8f40d242830b2c13"
+        }
+      }
+    },
+    "Fabric_Felt": {
+      "polyhavenId": "caban",
+      "resolution": "1k",
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Fabric_Felt_BaseColor.jpg",
+          "bytes": 214313,
+          "hash": "2c596a60232949ed"
+        },
+        "Normal": {
+          "url": "/assets/textures/T_Fabric_Felt_Normal.jpg",
+          "bytes": 169408,
+          "hash": "44db55ae095a39a0"
+        },
+        "ORM": {
+          "url": "/assets/textures/T_Fabric_Felt_ORM.jpg",
+          "bytes": 431896,
+          "hash": "2aee600035a5e11a"
+        }
+      }
+    },
+    "Fabric_Velvet": {
+      "polyhavenId": "velour_velvet",
+      "resolution": "1k",
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Fabric_Velvet_BaseColor.jpg",
+          "bytes": 243189,
+          "hash": "90d2a1bca05bf102"
+        },
+        "Normal": {
+          "url": "/assets/textures/T_Fabric_Velvet_Normal.jpg",
+          "bytes": 204025,
+          "hash": "4305b66fb6267b0b"
+        },
+        "ORM": {
+          "url": "/assets/textures/T_Fabric_Velvet_ORM.jpg",
+          "bytes": 412191,
+          "hash": "4b79ad49df777b08"
+        }
+      }
+    },
+    "Plaster_Ceiling": {
+      "polyhavenId": "plastered_wall",
+      "resolution": "1k",
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Plaster_Ceiling_BaseColor.jpg",
+          "bytes": 617080,
+          "hash": "73312ebb6eabc8e0"
+        },
+        "Normal": {
+          "url": "/assets/textures/T_Plaster_Ceiling_Normal.jpg",
+          "bytes": 1072153,
+          "hash": "504e1f7baf4b6871"
+        },
+        "ORM": {
+          "url": "/assets/textures/T_Plaster_Ceiling_ORM.jpg",
+          "bytes": 624131,
+          "hash": "cd927f46fa85b7e5"
+        }
+      }
+    },
+    "Metal_WornGold": {
+      "source": "ambientcg:Metal007",
+      "resolution": "1K",
+      "maps": {
+        "BaseColor": {
+          "url": "/assets/textures/T_Metal_WornGold_BaseColor.jpg",
+          "bytes": 1346052,
+          "hash": "1dcf5dd6249b9e0b"
+        },
+        "Normal": {
+          "url": "/assets/textures/T_Metal_WornGold_Normal.jpg",
+          "bytes": 653663,
+          "hash": "bb2d247f17c27660"
+        },
+        "ORM": {
+          "url": "/assets/textures/T_Metal_WornGold_ORM.jpg",
+          "bytes": 180529,
+          "hash": "dd95c1ae2fe1da0d"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Riviera Mansion Casino</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cinzel:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/ui/hud.css" />
+  </head>
+  <body>
+    <canvas id="viewport"></canvas>
+
+    <div id="hud" class="hud">
+      <header class="hud-brand">
+        <span class="hud-brand__name">Le Grand Riviera</span>
+        <span class="hud-brand__sub">Maison de Jeu · Est. 1924</span>
+      </header>
+      <div class="hud-reticle" aria-hidden="true"></div>
+      <div class="hud-toast" id="hud-toast" role="status" aria-live="polite"></div>
+      <div class="hud-prompt" id="hud-prompt" hidden>
+        <kbd>E</kbd><span id="hud-prompt-text"></span>
+      </div>
+    </div>
+
+    <div id="curtain" class="curtain">
+      <div class="curtain__inner">
+        <p class="curtain__eyebrow">Monte-Carlo · Côte d'Azur</p>
+        <h1 class="curtain__title">Le Grand Riviera</h1>
+        <p class="curtain__status" id="curtain-status">Lighting the chandeliers…</p>
+        <button class="curtain__enter" id="enter-btn" type="button" disabled>Enter the Mansion</button>
+        <p class="curtain__hint">
+          <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> walk · mouse look · <kbd>Shift</kbd> stroll faster ·
+          <kbd>Esc</kbd> pause
+        </p>
+      </div>
+    </div>
+
+    <div id="menu" class="menu" hidden>
+      <div class="menu__panel" role="dialog" aria-labelledby="menu-title">
+        <h2 id="menu-title" class="menu__title">Paused</h2>
+        <label class="menu__row">
+          <span>Picture quality</span>
+          <select id="quality-select">
+            <option value="high">High — ambient occlusion, temporal AA</option>
+            <option value="medium">Medium — bloom, SMAA</option>
+            <option value="low">Low — no post-processing</option>
+          </select>
+        </label>
+        <label class="menu__row">
+          <span>Mouse sensitivity</span>
+          <input id="sensitivity" type="range" min="0.2" max="3" step="0.05" value="1" />
+        </label>
+        <label class="menu__row">
+          <span>Volume <small>(M mutes)</small></span>
+          <input id="volume" type="range" min="0" max="1" step="0.02" value="0.8" />
+        </label>
+        <label class="menu__row">
+          <span>Field of view</span>
+          <input id="fov" type="range" min="55" max="90" step="1" value="68" />
+        </label>
+        <button class="curtain__enter" id="resume-btn" type="button">Resume</button>
+        <p class="menu__foot">Play-money entertainment only.</p>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

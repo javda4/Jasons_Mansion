@@ -1,0 +1,126 @@
+{
+  "source": "The Metropolitan Museum of Art — Open Access (CC0)",
+  "works": [
+    {
+      "id": "Ernest_Meissonier_437051",
+      "title": "A General and His Aide-de-camp",
+      "artist": "Ernest Meissonier",
+      "date": "1869",
+      "aspect": 1.4372,
+      "url": "/assets/art/Ernest_Meissonier_437051.jpg",
+      "src": "blender/textures_src/art/T_Art_Ernest_Meissonier_437051_BaseColor.jpg",
+      "metObjectId": 437051,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/437051"
+    },
+    {
+      "id": "Narcisse_Virgile_Diaz_de_la_Pen_a_459128",
+      "title": "Figures and a Dog in a Landscape",
+      "artist": "Narcisse-Virgile Diaz de la Peña",
+      "date": "1852",
+      "aspect": 0.6964,
+      "url": "/assets/art/Narcisse_Virgile_Diaz_de_la_Pen_a_459128.jpg",
+      "src": "blender/textures_src/art/T_Art_Narcisse_Virgile_Diaz_de_la_Pen_a_459128_BaseColor.jpg",
+      "metObjectId": 459128,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/459128"
+    },
+    {
+      "id": "Henri_Edmond_Cross_Henri_Edmond_Delacroi_459095",
+      "title": "Pines Along the Shore",
+      "artist": "Henri-Edmond Cross (Henri-Edmond Delacroix)",
+      "date": "1896",
+      "aspect": 1.198,
+      "url": "/assets/art/Henri_Edmond_Cross_Henri_Edmond_Delacroi_459095.jpg",
+      "src": "blender/textures_src/art/T_Art_Henri_Edmond_Cross_Henri_Edmond_Delacroi_459095_BaseColor.jpg",
+      "metObjectId": 459095,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/459095"
+    },
+    {
+      "id": "Jules_Coignet_438634",
+      "title": "View of Beirut",
+      "artist": "Jules Coignet",
+      "date": "1844",
+      "aspect": 1.5556,
+      "url": "/assets/art/Jules_Coignet_438634.jpg",
+      "src": "blender/textures_src/art/T_Art_Jules_Coignet_438634_BaseColor.jpg",
+      "metObjectId": 438634,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/438634"
+    },
+    {
+      "id": "Paul_Ce_zanne_435870",
+      "title": "Antoine Dominique Sauveur Aubert (born 1817), the Artist's Uncle",
+      "artist": "Paul Cézanne",
+      "date": "1866",
+      "aspect": 0.8144,
+      "url": "/assets/art/Paul_Ce_zanne_435870.jpg",
+      "src": "blender/textures_src/art/T_Art_Paul_Ce_zanne_435870_BaseColor.jpg",
+      "metObjectId": 435870,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/435870"
+    },
+    {
+      "id": "Peder_Balke_441379",
+      "title": "The North Cape by Moonlight",
+      "artist": "Peder Balke",
+      "date": "1848",
+      "aspect": 1.385,
+      "url": "/assets/art/Peder_Balke_441379.jpg",
+      "src": "blender/textures_src/art/T_Art_Peder_Balke_441379_BaseColor.jpg",
+      "metObjectId": 441379,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/441379"
+    },
+    {
+      "id": "Johan_Christian_Dahl_439343",
+      "title": "Copenhagen Harbor by Moonlight",
+      "artist": "Johan Christian Dahl",
+      "date": "1846",
+      "aspect": 1.532,
+      "url": "/assets/art/Johan_Christian_Dahl_439343.jpg",
+      "src": "blender/textures_src/art/T_Art_Johan_Christian_Dahl_439343_BaseColor.jpg",
+      "metObjectId": 439343,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/439343"
+    },
+    {
+      "id": "Jean_Le_on_Ge_ro_me_440723",
+      "title": "Bashi-Bazouk",
+      "artist": "Jean-Léon Gérôme",
+      "date": "1868–69",
+      "aspect": 0.8157,
+      "url": "/assets/art/Jean_Le_on_Ge_ro_me_440723.jpg",
+      "src": "blender/textures_src/art/T_Art_Jean_Le_on_Ge_ro_me_440723_BaseColor.jpg",
+      "metObjectId": 440723,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/440723"
+    },
+    {
+      "id": "Henri_Fantin_Latour_436295",
+      "title": "Portrait of a Woman",
+      "artist": "Henri Fantin-Latour",
+      "date": "1885",
+      "aspect": 0.8234,
+      "url": "/assets/art/Henri_Fantin_Latour_436295.jpg",
+      "src": "blender/textures_src/art/T_Art_Henri_Fantin_Latour_436295_BaseColor.jpg",
+      "metObjectId": 436295,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/436295"
+    },
+    {
+      "id": "Edgar_Degas_436152",
+      "title": "Portrait of a Woman in Gray",
+      "artist": "Edgar Degas",
+      "date": "ca. 1865",
+      "aspect": 0.7939,
+      "url": "/assets/art/Edgar_Degas_436152.jpg",
+      "src": "blender/textures_src/art/T_Art_Edgar_Degas_436152_BaseColor.jpg",
+      "metObjectId": 436152,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/436152"
+    },
+    {
+      "id": "Henri_Fantin_Latour_437995",
+      "title": "Roses in a Bowl",
+      "artist": "Henri Fantin-Latour",
+      "date": "1883",
+      "aspect": 1.3996,
+      "url": "/assets/art/Henri_Fantin_Latour_437995.jpg",
+      "src": "blender/textures_src/art/T_Art_Henri_Fantin_Latour_437995_BaseColor.jpg",
+      "metObjectId": 437995,
+      "metUrl": "https://www.metmuseum.org/art/collection/search/437995"
+    }
+  ]
+}
