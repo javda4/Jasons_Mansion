@@ -38,6 +38,40 @@
       "preload": false,
       "priority": 2,
       "lightmap": "textures_src/grand_salon/T_GrandSalon_Lightmap"
+    },
+    "library": {
+      "title": "Library",
+      "source": "rooms/library/library.blend",
+      "blend": "rooms/library/library_baked.blend",
+      "zone": "Library",
+      "neighbors": [
+        "stair_hall"
+      ],
+      "transform": {
+        "x": 10.3,
+        "z": -15,
+        "rotY": -1.5707963267948966
+      },
+      "preload": false,
+      "priority": 2,
+      "lightmap": "textures_src/library/T_Library_Lightmap"
+    },
+    "ballroom": {
+      "title": "Ballroom",
+      "source": "rooms/ballroom/ballroom.blend",
+      "blend": "rooms/ballroom/ballroom_baked.blend",
+      "zone": "Ballroom",
+      "neighbors": [
+        "grand_salon"
+      ],
+      "transform": {
+        "x": -26.6,
+        "z": -15,
+        "rotY": 1.5707963267948966
+      },
+      "preload": false,
+      "priority": 2,
+      "lightmap": "textures_src/ballroom/T_Ballroom_Lightmap"
     }
   }
 }

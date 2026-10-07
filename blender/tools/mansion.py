@@ -120,7 +120,7 @@ class Mansion:
 
     # ------------------------------------------------------------------ walls
     def wall(self, tag, axis, surface, normal, lo, hi, base=0.0, openings=(), windows=(), paintings=(),
-             pilasters=(), sconces=(), field=None, jambs=True, mass=True):
+             pilasters=(), sconces=(), field=None, jambs=True, mass=True, mirrors=()):
         """A dressed wall: mass with openings, skirting, wainscot with raised panels, chair rail, fabric
         field in gilt frames, fluted pilasters, frieze with dentils and a swept crown cornice.
         axis 'x': runs along X at y=surface; 'y': along Y at x=surface. `normal` (±1) points into the room.
@@ -209,7 +209,7 @@ class Mansion:
         for i in range(len(pilasters) - 1):
             a, b = pilasters[i], pilasters[i + 1]
             c = (a + b) / 2
-            if any(abs(c - oc) < 0.6 for oc, _, _ in openings) or any(abs(c - wc) < 0.6 for wc in windows):
+            if any(abs(c - oc) < 0.6 for oc, _, _ in openings) or any(abs(c - wc) < 0.6 for wc in list(windows) + list(mirrors)):
                 continue
             fw, fh = (b - a) - 0.9, FT - (base + 1.12) - 0.5
             if fh > 0.6 and fw > 0.5:
@@ -229,13 +229,17 @@ class Mansion:
 
         for c in windows:
             self.window(tag, P, n, t_dir, c, base)
+        for c in mirrors:   # an arcade of arched mirrors facing the windows (a galerie des glaces)
+            self.window(tag, P, n, t_dir, c, base, mirror=True)
         for c, idx in paintings:
             self.painting(tag, P, n, c, base, idx)
         for c in sconces:
             self.sconce(P, n, c, base)
 
-    def window(self, tag, P, n, t_dir, c, base, w=1.9):
+    def window(self, tag, P, n, t_dir, c, base, w=1.9, mirror=False):
         K, M = self.K, self.M
+        if mirror and "mirror" not in M:
+            K.material("mirror", f"MAT_{K.zone}_Mirror", (0.82, 0.83, 0.8), 0.04, metal=1.0)
         bottom, top = base + 1.35, min(base + 5.25, self.field_top - 0.55)
         hh = top - bottom
         bm = bmesh.new()
@@ -251,13 +255,15 @@ class Mansion:
             loop[uvl].uv = (u / w + 0.5, v / hh)
         if f.normal.dot(n) < 0:
             f.normal_flip()
-        K.obj(K.name("PROP", f"{tag}WindowView"), bm, M["sea"], uv=None)
+        K.obj(K.name("PROP", f"{tag}{'Mirror' if mirror else 'WindowView'}"), bm, M["mirror" if mirror else "sea"], uv=None)
         for zz in (bottom + hh * 0.26, bottom + hh * 0.52, bottom + hh * 0.75):
             K.box(K.name("PROP", f"{tag}Glazing"), (w, 0.04, 0.035) if abs(n.y) > 0.5 else (0.04, w, 0.035), tuple(P(c, 0.0, zz)), self.trim)
         K.box(K.name("PROP", f"{tag}Glazing"), (0.05, 0.04, hh) if abs(n.y) > 0.5 else (0.04, 0.05, hh), tuple(P(c, 0.0, bottom + hh / 2)), self.trim)
         arch = [P(c - w / 2, 0.0, bottom)] + [P(c + (w / 2) * math.cos(math.pi - math.pi * k / 16), 0.0, bottom + hh - w / 2 + (w / 2) * math.sin(math.pi * k / 16)) for k in range(17)] + [P(c + w / 2, 0.0, bottom)]
         K.sweep(K.name("ROOM", f"{tag}WindowSurround"), arch, n, [(0, 0), (0, 0.04), (0.05, 0.06), (0.12, 0.05), (0.14, 0)], M["gilt"], n1_hint=-t_dir)
         K.box(K.name("ROOM", f"{tag}WindowSill"), (w + 0.5, 0.3, 0.08) if abs(n.y) > 0.5 else (0.3, w + 0.5, 0.08), tuple(P(c, 0.15, bottom - 0.04)), M["nero"], bevel=0.01, lightmap=True)
+        if mirror:
+            return
         key = f"drape{round(self.field_top - base, 2)}"
         if key not in self._sconce:
             self._sconce[key] = K.prototype(K.cyl(K.name("PROP", "Drape"), 0.085, 0.085, self.field_top - base - 0.1, (0, 0, -20), M["velvet"], segments=12, subsurf=1))
@@ -501,11 +507,12 @@ class Mansion:
                 hx, hy = hy, hx
             K.collider(f"{key}_{K.idx('c' + key)}", (loc[0] - hx, loc[1] - hy, loc[2]), (loc[0] + hx, loc[1] + hy, loc[2] + hz))
 
-    def club_chair(self, loc, rz, z=0.0):
-        """Louis XVI bergère (Poly Haven ArmChair_01, photoscanned) in red velvet; faces local +Y after rz.
-        The house's default comfort chair (user preference: never the box-built leather armchairs)."""
-        self.prop("ArmChair_01", "Bergere", tint={"Armchair": self.VELVET_TINT})
-        self.place("Bergere", (loc[0], loc[1], z), rz, collide=(0.42, 0.4, 1.0))
+    def club_chair(self, loc, rz, z=0.0, tint=None, key="Bergere"):
+        """Louis XVI bergère (Poly Haven ArmChair_01, photoscanned), red velvet unless `tint` (with its own `key`, e.g.
+        green velvet in the Library); faces local +Y after rz. The house's default comfort chair (user preference:
+        never the box-built leather armchairs)."""
+        self.prop("ArmChair_01", key, tint={"Armchair": tint or self.VELVET_TINT})
+        self.place(key, (loc[0], loc[1], z), rz, collide=(0.42, 0.4, 1.0))
 
     def dining_chair(self, loc, rz, collide=True):
         """Table seat: the red velvet tub chair (casino.png, poker room). Kept as an alias for call sites."""

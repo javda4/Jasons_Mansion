@@ -26,6 +26,8 @@ const BEDS: Record<string, Partial<Record<SoundId, number>>> = {
   // a house at night: room air, and guests' voices drifting from the reception rooms
   stair_hall: { roomTone: 0.26, murmur: 0.04 },
   grand_salon: { roomTone: 0.22, murmur: 0.12 },   // guests at the baccarat table and round the fire
+  library: { roomTone: 0.2, murmur: 0.06 },        // a hushed room: the poker table's murmur, the fire
+  ballroom: { roomTone: 0.24, murmur: 0.16 },      // the roulette crowd under the chandeliers
 };
 const BED_SOUNDS: SoundId[] = ['roomTone', 'murmur', 'slotHall'];
 const CROSSFADE = 1.6; // seconds

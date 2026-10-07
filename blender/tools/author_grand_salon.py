@@ -54,7 +54,7 @@ A.wall("North", "y", X1, -1, 0, D, field=FIELD, pilasters=NORTH_P, windows=[3.2,
 A.wall("South", "y", X0, 1, 0, D, field=FIELD, pilasters=[0.0, 2.8, 6.2, 9.8, 13.2, D],
        paintings=[(4.5, 8), (11.5, 9), (14.6, 1), (1.4, 4)], sconces=[2.8, 6.2, 9.8, 13.2])
 A.coffered_ceiling(X0, X1, 0, D, spacing=2.7)
-A.double_door("Ballroom", (0, D, 0), (0, -1, 0), DOOR_W, DOOR_H, 0, "The Ballroom — not yet open", locked=True)
+A.double_door("Ballroom", (0, D, 0), (0, -1, 0), DOOR_W, DOOR_H, 0, "Enter the Ballroom", target="ballroom")
 # ceiling roses over the chandeliers
 for (x, y) in (SALON, TABLE):
     K.lathe(K.name("ROOM", "CeilingRose"), [(0, 0), (1.1, 0), (1.05, -0.04), (0.9, -0.07), (0.7, -0.09), (0.45, -0.1), (0.2, -0.14), (0, -0.16)],

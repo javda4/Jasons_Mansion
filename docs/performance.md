@@ -132,3 +132,12 @@ Dressing-density budget for furnished rooms, set from this room:
 - at most **0.8 M** authored triangles and **20 MB** of GLB per room;
 - every repeated prop instanced;
 - photoscans decimated to roughly 10k triangles or fewer each.
+
+## Mansion — Library and Ballroom (M3, 2026-10-07)
+
+| Room | GLB | Triangles | Lightmap | In the browser |
+|---|---|---|---|---|
+| Library | 16.1 MB | 0.42 M (10,554 books at 8 triangles each, one merged mesh per case run) | 4096² | 75–370 draw calls, 120 fps |
+| Ballroom | 5.5 MB | 0.32 M | 4096² | 190–436 draw calls, 120 fps |
+
+Both rooms are inside the per-room budget (0.8 M triangles, 20 MB).

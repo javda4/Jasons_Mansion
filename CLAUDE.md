@@ -551,6 +551,7 @@ room, a casino game, and a Blender asset. Update docs in the same change as the 
 | `npm run validate:assets -- <file.glb>` | glTF-Validator + naming/extras/budget checks on an optimised GLB |
 | `npm run author:stair_hall` | Re-generate the Stair Hall + Vestibule `.blend` (Mansion M1; overwrites hand edits) |
 | `npm run author:grand_salon` | Re-generate the Grand Salon `.blend` (Mansion M2; uses `furniture.py` for the hearth, piano, bureau and vitrines) |
+| `npm run author:library` / `npm run author:ballroom` | Re-generate the Library / Ballroom `.blend` (Mansion M3) |
 | `npm run author:vip` / `npm run author:lobby` | Casino-era bootstrap scripts (zones retired in the Mansion; kept for reference) |
 | `npm run bake -- <zone> [size] [samples]` | Cycles GPU lightmap bake → `<zone>_baked.blend` + lightmap PNG/JSON (slow; run after editing a lit zone) |
 | `npm run bake:all` | Re-bake all eight lit zones and rebuild every asset (≈ 25–30 min on an M1 Max) |
@@ -567,9 +568,9 @@ URL flags: `?debug` (overlay + collider wireframes; `` ` `` toggles), `?quality=
 
 ## 15. Repository, publishing & testing
 
-- **GitHub:** Mansion has **no remote yet** (the CasinoV2 `origin` was removed on purpose, so a push here can never
-  overwrite the live casino site). Ask the user before creating a repository for it. The CasinoV2 lines below describe
-  that project.
+- **GitHub:** Mansion is `javda4/Jasons_Mansion` (public). Pushing `main` runs `.github/workflows/pages.yml`, which
+  deploys to **https://javda4.github.io/Jasons_Mansion/** (the workflow derives `BASE_PATH` from the repo name).
+  The CasinoV2 lines below describe that older project.
 - **CasinoV2 GitHub:** `javda4/riviera-casino` (public). Pushing `main` runs `.github/workflows/pages.yml`, which
   builds with `BASE_PATH=/riviera-casino/` and deploys to **https://javda4.github.io/riviera-casino/**.
   Large binaries (`.blend`, textures, GLB, KTX2, audio) go through Git LFS (`.gitattributes`).

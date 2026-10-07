@@ -4,7 +4,7 @@
       "title": "Stair Hall",
       "asset": "/assets/rooms/stair_hall/stair_hall.glb",
       "bytes": 24868276,
-      "hash": "4e2ed8cb30ce8ded",
+      "hash": "c80d27ec58140448",
       "preload": true,
       "priority": 1,
       "neighbors": [
@@ -37,8 +37,8 @@
     "grand_salon": {
       "title": "Grand Salon",
       "asset": "/assets/rooms/grand_salon/grand_salon.glb",
-      "bytes": 18718000,
-      "hash": "4c79ad3905d29d56",
+      "bytes": 18717996,
+      "hash": "c96e820257d3e797",
       "preload": false,
       "priority": 2,
       "neighbors": [
@@ -65,7 +65,69 @@
         "materials": 62,
         "textureBytes": 15353979
       }
+    },
+    "library": {
+      "title": "Library",
+      "asset": "/assets/rooms/library/library.glb",
+      "bytes": 16446808,
+      "hash": "1f253c4946ca60e3",
+      "preload": false,
+      "priority": 2,
+      "neighbors": [
+        "stair_hall"
+      ],
+      "transform": {
+        "x": 10.3,
+        "z": -15,
+        "rotY": -1.5707963267948966
+      },
+      "dependencies": [
+        "textures/library"
+      ],
+      "lightmap": {
+        "url": "/assets/rooms/library/library_lightmap.ktx2",
+        "bytes": 1509974,
+        "hash": "36bbc9f219253c7d",
+        "intensity": 1.1340907967366747
+      },
+      "stats": {
+        "triangles": 424129,
+        "nodes": 138,
+        "materials": 49,
+        "textureBytes": 12427412
+      }
+    },
+    "ballroom": {
+      "title": "Ballroom",
+      "asset": "/assets/rooms/ballroom/ballroom.glb",
+      "bytes": 5635012,
+      "hash": "6ea8c9a9da0a1575",
+      "preload": false,
+      "priority": 2,
+      "neighbors": [
+        "grand_salon"
+      ],
+      "transform": {
+        "x": -26.6,
+        "z": -15,
+        "rotY": 1.5707963267948966
+      },
+      "dependencies": [
+        "textures/library"
+      ],
+      "lightmap": {
+        "url": "/assets/rooms/ballroom/ballroom_lightmap.ktx2",
+        "bytes": 5642478,
+        "hash": "0e543c2606def1ef",
+        "intensity": 6.260701777736052
+      },
+      "stats": {
+        "triangles": 324720,
+        "nodes": 142,
+        "materials": 30,
+        "textureBytes": 3203986
+      }
     }
   },
-  "generated": "2026-10-07T20:22:52.571Z"
+  "generated": "2026-10-07T21:09:57.497Z"
 }

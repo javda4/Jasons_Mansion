@@ -43,7 +43,7 @@ VX, VY0 = 4.0, -6.0                            # vestibule half-width, front wal
 ARCH_W, ARCH_H = 3.2, 3.2                      # ground-storey openings stay under the frieze (field top 3.7 m)
 DOOR_W, DOOR_H = 2.4, 3.2
 DOOR_Y = (3.6, 15.0)                           # side doors: gallery (south row), sea-front room (north row)
-BUILT = {"Salon": "grand_salon"}               # side doors whose rooms exist (blender/zones.json); the rest stay locked
+BUILT = {"Salon": "grand_salon", "Library": "library"}               # side doors whose rooms exist (blender/zones.json); the rest stay locked
 UP_W, UP_H = 1.9, 3.1                          # apartment doors
 SC = Vector((0.0, 12.5))                       # staircase centre = fountain
 R_C, SW = 5.4, 2.2
@@ -577,7 +577,7 @@ for s in (-1, 1):
     for y in DOOR_Y:
         for dy in (-1.95, 1.95):
             pedestal(wx - s * 0.5, y + dy)
-            A.place("Bust", (wx - s * 0.5, y + dy, 1.12), s * math.pi / 2)    # the scan faces local -Y: looks into the hall
+            A.place("Bust", (wx - s * 0.5, y + dy, 1.12), s * math.pi / 2)    # faces local +Y like every prop: looks into the hall
     chair_pair(wx - s * 0.62, 9.3, s * math.pi / 2)
     jardiniere_plant(wx - s * 0.55, Y0 + 0.55)
 A.place("GrandfatherClock", (X0 + 0.45, 17.95, 0), -math.pi / 2, collide=(0.32, 0.25, 2.2))

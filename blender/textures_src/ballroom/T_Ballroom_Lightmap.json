@@ -1,0 +1,43 @@
+{
+  "zone": "ballroom",
+  "size": 4096,
+  "samples": 256,
+  "encodeScale": 0.5017956077642517,
+  "intensity": 6.260701777736052,
+  "p99_5": 1.9928432703018188,
+  "max": 14.797269821166992,
+  "coverage": 0.4307709336280823,
+  "objects": [
+    "ROOM_Ballroom_Lightmapped_01",
+    "ROOM_Ballroom_Lightmapped_02",
+    "ROOM_Ballroom_Lightmapped_03",
+    "ROOM_Ballroom_Lightmapped_04",
+    "ROOM_Ballroom_Lightmapped_05",
+    "ROOM_Ballroom_Lightmapped_06",
+    "ROOM_Ballroom_Lightmapped_07"
+  ],
+  "bakeOnlyLights": [
+    "LIGHT_Ballroom_Sconce_01",
+    "LIGHT_Ballroom_Sconce_02",
+    "LIGHT_Ballroom_Sconce_03",
+    "LIGHT_Ballroom_Sconce_04",
+    "LIGHT_Ballroom_Sconce_05",
+    "LIGHT_Ballroom_Sconce_06",
+    "LIGHT_Ballroom_Sconce_07",
+    "LIGHT_Ballroom_Sconce_08",
+    "LIGHT_Ballroom_Sconce_09",
+    "LIGHT_Ballroom_Sconce_10",
+    "LIGHT_Ballroom_Sconce_11",
+    "LIGHT_Ballroom_Sconce_12",
+    "LIGHT_Ballroom_Sconce_13",
+    "LIGHT_Ballroom_Sconce_14",
+    "LIGHT_Ballroom_Sconce_15",
+    "LIGHT_Ballroom_Sconce_16",
+    "LIGHT_Ballroom_Sconce_17",
+    "LIGHT_Ballroom_Sconce_18",
+    "LIGHT_Ballroom_Sconce_19",
+    "LIGHT_Ballroom_Sconce_20",
+    "LIGHT_Ballroom_Moon_01"
+  ],
+  "seconds": 506.7
+}
