@@ -1,155 +1,16 @@
 {
-  "$comment": "Source registry of Blender-authored zones. The asset build turns this into public/assets/manifest.json (never edit that by hand). 'attach' hangs a zone off a parent zone's slot (layout.ts: LOBBY_SLOTS, HALL_SLOTS). Zones with 'lightmap' are exported from their *_baked.blend (npm run bake -- <zone>).",
+  "$comment": "Master layout and source registry of the Blender-authored zones (docs/mansion-plan.md). Each zone's transform places its local origin in the world (glTF frame: x east, z south; rotY a multiple of π/2). The asset build copies titles, neighbours and transforms into public/assets/manifest.json (never edit that by hand). Neighbours that are not built yet are kept here and dropped at runtime. Zones with 'lightmap' are exported from their *_baked.blend (npm run bake -- <zone>).",
   "zones": {
-    "lobby": {
-      "title": "Grand Lobby",
-      "source": "rooms/lobby/lobby.blend",
-      "blend": "rooms/lobby/lobby_baked.blend",
-      "zone": "Lobby",
-      "neighbors": [
-        "hall_west",
-        "hall_east"
-      ],
-      "transform": {
-        "x": 0,
-        "z": 0,
-        "rotY": 0
-      },
+    "stair_hall": {
+      "title": "Stair Hall",
+      "source": "rooms/stair_hall/stair_hall.blend",
+      "blend": "rooms/stair_hall/stair_hall_baked.blend",
+      "zone": "StairHall",
+      "neighbors": ["grand_salon", "library", "gallery_west", "gallery_east"],
+      "transform": { "x": 0, "z": 0, "rotY": 0 },
       "preload": true,
       "priority": 1,
-      "lightmap": "textures_src/lobby/T_Lobby_Lightmap"
-    },
-    "vip": {
-      "title": "Salon Priv\u00e9",
-      "blend": "rooms/vip/vip.blend",
-      "zone": "Vip",
-      "neighbors": [
-        "hall_east"
-      ],
-      "attach": {
-        "zone": "hall_east",
-        "slot": "end"
-      },
-      "preload": false,
-      "priority": 2
-    },
-    "hall_west": {
-      "title": "West Gallery",
-      "source": "rooms/hall_west/hall_west.blend",
-      "blend": "rooms/hall_west/hall_west_baked.blend",
-      "zone": "HallWest",
-      "neighbors": [
-        "lobby",
-        "poker",
-        "blackjack",
-        "baccarat"
-      ],
-      "attach": {
-        "zone": "lobby",
-        "slot": "west"
-      },
-      "preload": false,
-      "priority": 2,
-      "lightmap": "textures_src/hall_west/T_HallWest_Lightmap"
-    },
-    "hall_east": {
-      "title": "East Gallery",
-      "source": "rooms/hall_east/hall_east.blend",
-      "blend": "rooms/hall_east/hall_east_baked.blend",
-      "zone": "HallEast",
-      "neighbors": [
-        "lobby",
-        "roulette",
-        "slots",
-        "vip"
-      ],
-      "attach": {
-        "zone": "lobby",
-        "slot": "east"
-      },
-      "preload": false,
-      "priority": 2,
-      "lightmap": "textures_src/hall_east/T_HallEast_Lightmap"
-    },
-    "poker": {
-      "title": "Poker Room",
-      "source": "rooms/poker/poker.blend",
-      "blend": "rooms/poker/poker_baked.blend",
-      "zone": "Poker",
-      "neighbors": [
-        "hall_west"
-      ],
-      "attach": {
-        "zone": "hall_west",
-        "slot": "left"
-      },
-      "preload": false,
-      "priority": 2,
-      "lightmap": "textures_src/poker/T_Poker_Lightmap"
-    },
-    "blackjack": {
-      "title": "Blackjack Room",
-      "source": "rooms/blackjack/blackjack.blend",
-      "blend": "rooms/blackjack/blackjack_baked.blend",
-      "zone": "Blackjack",
-      "neighbors": [
-        "hall_west"
-      ],
-      "attach": {
-        "zone": "hall_west",
-        "slot": "right"
-      },
-      "preload": false,
-      "priority": 2,
-      "lightmap": "textures_src/blackjack/T_Blackjack_Lightmap"
-    },
-    "baccarat": {
-      "title": "Baccarat Room",
-      "source": "rooms/baccarat/baccarat.blend",
-      "blend": "rooms/baccarat/baccarat_baked.blend",
-      "zone": "Baccarat",
-      "neighbors": [
-        "hall_west"
-      ],
-      "attach": {
-        "zone": "hall_west",
-        "slot": "end"
-      },
-      "preload": false,
-      "priority": 2,
-      "lightmap": "textures_src/baccarat/T_Baccarat_Lightmap"
-    },
-    "roulette": {
-      "title": "Roulette Room",
-      "source": "rooms/roulette/roulette.blend",
-      "blend": "rooms/roulette/roulette_baked.blend",
-      "zone": "Roulette",
-      "neighbors": [
-        "hall_east"
-      ],
-      "attach": {
-        "zone": "hall_east",
-        "slot": "left"
-      },
-      "preload": false,
-      "priority": 2,
-      "lightmap": "textures_src/roulette/T_Roulette_Lightmap"
-    },
-    "slots": {
-      "title": "Slot Room",
-      "source": "rooms/slots/slots.blend",
-      "blend": "rooms/slots/slots_baked.blend",
-      "zone": "Slots",
-      "neighbors": [
-        "hall_east"
-      ],
-      "attach": {
-        "zone": "hall_east",
-        "slot": "right"
-      },
-      "preload": false,
-      "priority": 2,
-      "lightmap": "textures_src/slots/T_Slots_Lightmap"
+      "lightmap": "textures_src/stair_hall/T_StairHall_Lightmap"
     }
   }
 }

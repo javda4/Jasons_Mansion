@@ -108,7 +108,10 @@ The technology is decided and documented in `docs/architecture.md`:
 2. Author content through the Blender scripts (never by hand in `public/assets/`):
    - game rooms: `blender/tools/author_room.py` + `casino_props.py`;
    - Salon Privé: its `vip_*.py` patch scripts;
-   - lobby: `author_lobby.py`.
+   - lobby: `author_lobby.py` (casino era);
+  - Mansion rooms: `author_<room>.py` (Stair Hall: `author_stair_hall.py`), with `floors.py` / `flora.py` /
+    `mansion.py` as the shared kit. Placement comes from the `transform` in `blender/zones.json`;
+    a `tableId` must be `<gameType>_<NN>`.
 3. Lit zone changed? Re-bake it: `npm run bake -- <zone>`. Anchor-only changes can patch both
    `<zone>.blend` and `<zone>_baked.blend` and skip the bake.
 4. `npm run build:assets -- <zone>`, then `npm run typecheck && npm test && npm run build`.
@@ -546,7 +549,8 @@ room, a casino game, and a Blender asset. Update docs in the same change as the 
 | `npm run fetch-textures` | Download CC0 PBR sources → `blender/textures_src/` (normalised to power-of-two), publish web copies + `textures.json` → `public/assets/textures/` |
 | `npm run build:assets [-- <zone>] [--skip-export]` | Blender validate+export → glTF-Transform optimise (KTX2, Meshopt, instancing, merge) → validate → `public/assets/rooms/` + generated `manifest.json` |
 | `npm run validate:assets -- <file.glb>` | glTF-Validator + naming/extras/budget checks on an optimised GLB |
-| `npm run author:vip` / `npm run author:lobby` | Re-generate a bootstrap `.blend` from its script (overwrites hand edits; `author:vip` then re-applies `vip_sofas/vip_fire/vip_pack.py`) |
+| `npm run author:stair_hall` | Re-generate the Stair Hall + Vestibule `.blend` (Mansion M1; overwrites hand edits) |
+| `npm run author:vip` / `npm run author:lobby` | Casino-era bootstrap scripts (zones retired in the Mansion; kept for reference) |
 | `npm run bake -- <zone> [size] [samples]` | Cycles GPU lightmap bake → `<zone>_baked.blend` + lightmap PNG/JSON (slow; run after editing a lit zone) |
 | `npm run bake:all` | Re-bake all eight lit zones and rebuild every asset (≈ 25–30 min on an M1 Max) |
 | `blender -b --factory-startup --python blender/tools/author_room.py -- <zone>` | Re-generate a game room's `.blend` (also `author_hallway.py -- hall_west\|hall_east`) |

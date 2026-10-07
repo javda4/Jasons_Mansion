@@ -9,7 +9,7 @@ import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const OUT = path.join(ROOT, 'blender/props/polyhaven');
-const UA = { 'User-Agent': 'riviera-casino-asset-pipeline' };
+const UA = { 'User-Agent': 'riviera-mansion-asset-pipeline' };
 
 // id → resolution. Chosen for a 1920s Riviera salon (see docs/asset-guidelines.md).
 export const MODELS = {
@@ -29,6 +29,11 @@ export const MODELS = {
   brass_candleholders: '1k',
   vintage_oil_lamp: '1k',
   potted_plant_02: '1k',
+  // Mansion (docs/mansion-plan.md): Stair Hall
+  Chandelier_03: '1k',                 // brass candle-arm chandelier, crystal bobèches (under the galleries)
+  gothic_statue: '1k',                 // bronze robed figure (the fountain centrepiece)
+  lion_head: '1k',                     // bronze lion on a plinth
+  brass_vase_01: '1k',
 };
 
 const exists = (p) => access(p).then(() => true, () => false);

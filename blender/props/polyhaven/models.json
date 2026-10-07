@@ -210,6 +210,58 @@
         657.3865860700607,
         841.1787391305552
       ]
+    },
+    "Chandelier_03": {
+      "name": "Chandelier 03",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/Chandelier_03/Chandelier_03.gltf",
+      "authors": [
+        "Kirill Sannikov"
+      ],
+      "dimensions": [
+        780.4270684719086,
+        785.4602336883545,
+        1040.6459806239354
+      ]
+    },
+    "gothic_statue": {
+      "name": "Gothic Statue",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/gothic_statue/gothic_statue.gltf",
+      "authors": [
+        "Benny Weimer"
+      ],
+      "dimensions": [
+        1477.4640202522278,
+        1563.7580156326294,
+        1739.8978471755981
+      ]
+    },
+    "lion_head": {
+      "name": "Lion Head",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/lion_head/lion_head.gltf",
+      "authors": [
+        "Tina"
+      ],
+      "dimensions": [
+        320.7782953977585,
+        206.57429099082947,
+        436.3649595399668
+      ]
+    },
+    "brass_vase_01": {
+      "name": "Brass Vase 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/brass_vase_01/brass_vase_01.gltf",
+      "authors": [
+        "Rico Cilliers"
+      ],
+      "dimensions": [
+        227.3191586136818,
+        227.31918096542358,
+        692.4719526432455
+      ]
     }
   }
 }

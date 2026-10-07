@@ -306,7 +306,7 @@ class Mansion:
         K.linked(K.name("PROP", "SconcePlate"), S["plate"], tuple(root + Vector((0, 0, -0.2))), rot=(0, 0, rz), scale=(1, 0.35, 1))
         for s in (-1, 1):
             tip = root + right * (s * 0.27) + n * 0.14 + Vector((0, 0, 0.04))
-            K.tube(K.name("PROP", "SconceArm"), [root + Vector((0, 0, -0.08)), root + right * (s * 0.14) + n * 0.12 + Vector((0, 0, -0.14)), tip - Vector((0, 0, 0.04))], 0.011, M["gilt"])
+            K.tube(K.name("PROP", "SconceArm"), [root + Vector((0, 0, -0.08)), root + right * (s * 0.14) + n * 0.12 + Vector((0, 0, -0.14)), tip - Vector((0, 0, 0.04))], 0.011, M["gilt"], resolution=5, bevel_res=2)
             K.linked(K.name("PROP", "SconceCandle"), S["candle"], tuple(tip + Vector((0, 0, 0.02))))
             K.linked(K.name("PROP", "SconceShade"), S["shade"], tuple(tip + Vector((0, 0, 0.08))))
         K.light(K.name("LIGHT", "Sconce"), "POINT", tuple(root + n * 0.3 + Vector((0, 0, 0.12))), candela, rng=7, bake_only=True)
@@ -449,7 +449,7 @@ class Mansion:
                 tip = Vector((x + R * ca, y + R * sa, z))
                 K.tube(K.name("PROP", "ChandelierArm"), [Vector((x + 0.15 * s * ca, y + 0.15 * s * sa, z - 0.18 * s)),
                                                           Vector((x + R * 0.45 * ca, y + R * 0.45 * sa, z - 0.32 * s)),
-                                                          Vector((x + R * 0.85 * ca, y + R * 0.85 * sa, z - 0.2 * s)), tip], 0.014 * s, M["gilt"])
+                                                          Vector((x + R * 0.85 * ca, y + R * 0.85 * sa, z - 0.2 * s)), tip], 0.014 * s, M["gilt"], resolution=5, bevel_res=2)
                 link("cup", tip)
                 link("candle", tip + Vector((0, 0, 0.12)))
                 link("flame", tip + Vector((0, 0, 0.195)))
@@ -494,10 +494,11 @@ class Mansion:
                 hx, hy = hy, hx
             K.collider(f"{key}_{K.idx('c' + key)}", (loc[0] - hx, loc[1] - hy, loc[2]), (loc[0] + hx, loc[1] + hy, loc[2] + hz))
 
-    def club_chair(self, loc, rz):
-        """Louis XVI bergère (Poly Haven ArmChair_01, photoscanned) in red velvet; faces local +Y after rz."""
+    def club_chair(self, loc, rz, z=0.0):
+        """Louis XVI bergère (Poly Haven ArmChair_01, photoscanned) in red velvet; faces local +Y after rz.
+        The house's default comfort chair (user preference: never the box-built leather armchairs)."""
         self.prop("ArmChair_01", "Bergere", tint={"Armchair": self.VELVET_TINT})
-        self.place("Bergere", (loc[0], loc[1], 0), rz, collide=(0.42, 0.4, 1.0))
+        self.place("Bergere", (loc[0], loc[1], z), rz, collide=(0.42, 0.4, 1.0))
 
     def dining_chair(self, loc, rz, collide=True):
         """Table seat: the red velvet tub chair (casino.png, poker room). Kept as an alias for call sites."""
@@ -577,7 +578,7 @@ class Mansion:
         if collide:
             K.collider(f"Chair_{K.idx('chair')}", (loc[0] - 0.3, loc[1] - 0.3, 0), (loc[0] + 0.3, loc[1] + 0.3, 0.9))
 
-    def rug(self, tag, cx, cy, length, width, rz, stem, fringe=True):
+    def rug(self, tag, cx, cy, length, width, rz, stem, fringe=True, z0=0.0):
         """A real carpet (scripts/make-carpets.mjs → textures_src/carpets/T_<stem>_*): 1 cm pile slab with
         the photographed design on top (u across, v along) and knotted-wool fringes at both ends."""
         K, M = self.K, self.M
@@ -594,7 +595,7 @@ class Mansion:
         uv = bm.loops.layers.uv.verify()
 
         def P(x, y, z):
-            return Vector((cx + x * c - y * s, cy + x * s + y * c, z))
+            return Vector((cx + x * c - y * s, cy + x * s + y * c, z0 + z))
         top = [bm.verts.new(P(x, y, H)) for x, y in ((-W, -L), (W, -L), (W, L), (-W, L))]
         bot = [bm.verts.new(P(x * 1.002, y * 1.002, 0.0005)) for x, y in ((-W, -L), (W, -L), (W, L), (-W, L))]
         f = bm.faces.new(top)
@@ -624,8 +625,8 @@ class Mansion:
 
     def lamp_table(self, x, y, candela=7):
         """Mahogany pedestal stand with an antique oil lamp (both photoscanned); warm bake-only light."""
-        self.prop("side_table_tall_01", "Pedestal")
-        self.prop("vintage_oil_lamp", "OilLamp", scale=0.72)
+        self.prop("side_table_tall_01", "Pedestal", decimate=0.4)
+        self.prop("vintage_oil_lamp", "OilLamp", scale=0.72, decimate=0.4)
         self.place("Pedestal", (x, y, 0), collide=(0.2, 0.2, 0.8))
         self.place("OilLamp", (x, y, 0.762))
         self.K.light(self.K.name("LIGHT", "Lamp"), "POINT", (x, y, 0.762 + 0.3), candela, rng=6, bake_only=True)

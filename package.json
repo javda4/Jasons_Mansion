@@ -1,5 +1,5 @@
 {
-  "name": "riviera-mansion-casino",
+  "name": "riviera-mansion",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -15,6 +15,7 @@
     "author:vip": "blender -b --factory-startup --python blender/tools/author_vip.py && blender -b blender/rooms/vip/vip.blend --python blender/tools/vip_sofas.py && blender -b blender/rooms/vip/vip.blend --python blender/tools/vip_fire.py && blender -b blender/rooms/vip/vip.blend --python blender/tools/vip_pack.py",
     "bake": "node scripts/bake.mjs",
     "author:lobby": "blender -b --factory-startup --python blender/tools/author_lobby.py",
+    "author:stair_hall": "blender -b --factory-startup --python blender/tools/author_stair_hall.py",
     "fetch-art": "node scripts/fetch-art.mjs",
     "bake:all": "sh scripts/bake-all.sh",
     "make-carpets": "node scripts/make-carpets.mjs",

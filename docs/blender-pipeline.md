@@ -59,10 +59,19 @@ are never exported.
 
 ## Registering a zone
 
-Add it to `blender/zones.json` (title, blend path, PascalCase zone segment, neighbours, and either
-`attach: { zone, slot }` to hang off a gallery slot or an explicit `transform`). The build writes the
-manifest entry (asset URL, bytes, hash, stats); `src/world/zoneGraph.ts` merges manifest zones into
-the graph at startup and wires neighbour links.
+Add it to `blender/zones.json`, the master layout. Each entry has:
+- a title, the blend path and a PascalCase zone segment;
+- neighbours;
+- an explicit world `transform { x, z, rotY }` (glTF axes; `rotY` a multiple of π/2, because colliders stay
+  axis-aligned).
+
+The build:
+- refuses zones without a valid transform;
+- writes the manifest entry (asset URL, bytes, hash, stats, transform);
+- drops zones that are no longer in the registry.
+
+At startup `src/world/zoneGraph.ts` builds the graph from the manifest alone. It makes neighbour links symmetric,
+ignores neighbours that aren't built yet, and starts the player in the preloaded zone.
 
 ## Measured (Salon Privé demo)
 

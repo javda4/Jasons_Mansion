@@ -23,15 +23,8 @@ export interface SoundEmitterDef {
 
 /** Per-zone ambience beds: layers of looping sounds crossfaded as the player moves (§8 Audio). */
 const BEDS: Record<string, Partial<Record<SoundId, number>>> = {
-  lobby: { roomTone: 0.28, murmur: 0.07 },
-  hall_west: { roomTone: 0.2, murmur: 0.035 },
-  hall_east: { roomTone: 0.2, murmur: 0.035 },
-  poker: { roomTone: 0.22, murmur: 0.2 },
-  blackjack: { roomTone: 0.22, murmur: 0.22 },
-  baccarat: { roomTone: 0.2, murmur: 0.14 },
-  roulette: { roomTone: 0.22, murmur: 0.24 },
-  slots: { roomTone: 0.18, murmur: 0.14, slotHall: 0.22 },
-  vip: { roomTone: 0.16 },
+  // a house at night: room air, and guests' voices drifting from the reception rooms
+  stair_hall: { roomTone: 0.26, murmur: 0.04 },
 };
 const BED_SOUNDS: SoundId[] = ['roomTone', 'murmur', 'slotHall'];
 const CROSSFADE = 1.6; // seconds

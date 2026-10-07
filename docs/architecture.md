@@ -1,4 +1,4 @@
-# Architecture Report — Riviera Mansion Casino
+# Architecture Report — Mansion (fork of the Riviera Mansion Casino)
 
 Status: **accepted for Phase 1** (2026-09-29). Revisit each decision at the phase noted.
 Priority order: `REALISM → PERFORMANCE → MODULARITY → EXTENSIBILITY → GAME INTEGRATION`.
@@ -38,18 +38,33 @@ generated `public/assets/manifest.json` → `src/loading/glbZone.ts` builds the 
 code zones. Meshopt over Draco: faster decode, works with instancing. Demo: the Salon Privé,
 9.4 MB raw → 661 KiB. Full detail: `docs/blender-pipeline.md`.
 
-## D. Streaming — **implemented (Phase 4 slice)**
+## D. Streaming — **implemented (Phase 4 slice; Mansion layout 2026-10-07)**
 
-Zone graph in `src/world/zoneGraph.ts` (stand-in for the generated manifest): lobby → west/east
-galleries → poker, blackjack, baccarat, roulette, slots (+ a locked VIP door). Each zone module is
-its own code-split chunk. `ZoneManager` runs `unloaded → loading → loaded(hidden) → active →
-unloading`; the pure policy in `streamingPolicy.ts` (unit-tested) gives priority 1 = current,
-2 = one portal away, 3 = two away only when idle, and unloads zones beyond two hops after 20 s.
-Loading = dynamic import → build → apply manifest transform → `compileAsync` (off-screen) →
-per-zone probe capture → register doors/colliders. Doors (`world/doors.ts`) hold closed with an
-"unlatch" nudge until the zone behind them is ready, and close themselves when the player walks
-away. Visibility is portal-based: current zone + zones seen through open doors (two deep).
-Future: GLB loading in workers, memory ceilings per tier.
+**Zone graph.** The graph is generated: `blender/zones.json` (the master layout) → `build-assets` →
+`public/assets/manifest.json` → `src/world/zoneGraph.ts`. Every zone is a Blender GLB placed by an explicit world
+transform. The casino's slot-based layout (`LOBBY_SLOTS` / `HALL_SLOTS`) and the code-built fallback rooms were
+removed for the Mansion. The floor plan is in `docs/mansion-plan.md`.
+
+**Zone states and policy.** `ZoneManager` runs `unloaded → loading → loaded(hidden) → active → unloading`. The pure
+policy in `streamingPolicy.ts` (unit-tested):
+- current zone = priority 1;
+- one portal away = priority 2;
+- two away = priority 3, loaded only when idle;
+- zones beyond two hops unload after 20 s.
+
+**Loading a zone:**
+1. fetch and decode the GLB;
+2. attach the game presenters for whatever tables it holds (`src/tables/attach.ts`, keyed by the `tableId` prefix);
+3. apply the manifest transform;
+4. `compileAsync` (off-screen);
+5. capture the zone's probe;
+6. register its doors and colliders.
+
+**Doors and visibility.** Doors (`world/doors.ts`) hold closed with an "unlatch" nudge until the zone behind them
+is ready, and close themselves when the player walks away. Visibility is portal-based: the current zone plus the
+zones seen through open doors, two deep.
+
+**Future:** GLB loading in workers; memory ceilings per tier.
 
 ## E. Collision — **custom kinematic capsule behind an interface**
 

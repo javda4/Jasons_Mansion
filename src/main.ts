@@ -14,7 +14,7 @@ import { PlayerController, createPlayerState } from './player/controller';
 import { Input } from './player/input';
 import { DoorSystem } from './world/doors';
 import { initGlbLoader } from './loading/glbZone';
-import { buildZoneGraph, type AssetManifest } from './world/zoneGraph';
+import { buildZoneGraph, startZone, type AssetManifest } from './world/zoneGraph';
 import { ZoneManager } from './world/zoneManager';
 import { Hud } from './ui/hud';
 import { AudioEngine } from './audio/audioEngine';
@@ -170,13 +170,13 @@ async function main() {
 
   hud.setStatus('Lighting the chandeliers…');
   const t0 = performance.now();
-  const lobby = await zones.loadNow('lobby');
-  player.position = { ...lobby.spawn!.position };
-  player.yaw = lobby.spawn!.yaw;
+  const start = await zones.loadNow(startZone(manifest));
+  player.position = { ...start.spawn!.position };
+  player.yaw = start.spawn!.yaw;
   fpCamera.update(0);
   post.setTier(tier);
   await renderer.compileAsync(scene, fpCamera.camera);
-  if (__DEBUG__) console.info(`[load] lobby ready in ${(performance.now() - t0).toFixed(0)} ms`);
+  if (__DEBUG__) console.info(`[load] ${start.id} ready in ${(performance.now() - t0).toFixed(0)} ms`);
 
   // order matters: input → simulation → world state → presentation
   const loop = new FrameLoop().add(controller).add(doors).add(zones).add(lights).add(fpCamera).add(interaction).add(audio);
@@ -195,6 +195,8 @@ async function main() {
     }, config.debug);
     loop.add(debug);
     if (config.debug) debug.setColliders(true);
+    // automation handle for browser tests (dev builds only): teleport, inspect zones, drive a seated game
+    (window as unknown as Record<string, unknown>).__mansion = { player, input, zones, interaction, gameView, renderer, lights, debug };
   }
 
   addEventListener('resize', () => {

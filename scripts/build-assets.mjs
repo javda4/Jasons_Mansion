@@ -90,6 +90,13 @@ const only = args.filter((a) => !a.startsWith('--'));
 const registry = JSON.parse(await readFile(path.join(ROOT, 'blender/zones.json'), 'utf8')).zones;
 const ids = only.length ? only : Object.keys(registry);
 for (const id of ids) if (!registry[id]) throw new Error(`unknown zone "${id}" (not in blender/zones.json)`);
+// the master layout: every zone has an explicit world transform; rotations stay on the 90° grid (AABB colliders)
+for (const [id, z] of Object.entries(registry)) {
+  const t = z.transform;
+  if (!t || ![t.x, t.z, t.rotY].every(Number.isFinite)) throw new Error(`zone "${id}": blender/zones.json needs transform { x, z, rotY }`);
+  if (Math.abs(t.rotY / (Math.PI / 2) - Math.round(t.rotY / (Math.PI / 2))) > 1e-6) throw new Error(`zone "${id}": transform.rotY must be a multiple of π/2`);
+  for (const n of z.neighbors) if (!registry[n]) console.log(`  note: ${id} lists neighbour "${n}", not built yet`);
+}
 
 await MeshoptEncoder.ready;
 await MeshoptDecoder.ready;
@@ -99,6 +106,10 @@ const io = new NodeIO()
 
 const manifestPath = path.join(OUT_DIR, 'manifest.json');
 const manifest = await readFile(manifestPath, 'utf8').then(JSON.parse, () => ({ zones: {} }));
+for (const id of Object.keys(manifest.zones)) {
+  if (!registry[id]) { delete manifest.zones[id]; console.log(`  retired zone "${id}" dropped from the manifest`); }
+  else manifest.zones[id] = { ...manifest.zones[id], title: registry[id].title, neighbors: registry[id].neighbors, transform: registry[id].transform };
+}
 let failed = false;
 
 for (const id of ids) {
@@ -146,6 +157,8 @@ for (const id of ids) {
     safePrune(),
     // photoscanned props (Poly Haven map names): data maps at 512 — they're small on screen and UASTC is heavy
     toktx({ encoder: sharp, mode: Mode.UASTC, slots: /^(normal|occlusion|metallicRoughness)/, pattern: /(_nor_gl|_arm|_rough|_metal)/i, level: 2, rdo: true, zstd: 18, resize: [512, 512] }),
+    // real carpets (make-carpets): pile detail reads at half resolution; their colour keeps full size
+    toktx({ encoder: sharp, mode: Mode.UASTC, slots: /^(normal|occlusion|metallicRoughness)/, pattern: /^T_(Rug|Runner)_/, level: 2, rdo: true, zstd: 18, resize: [512, 1024] }),
     // Kraffing pack (TX_… images, 2048² throughout): data maps at 1024 — the pieces are table-sized, UASTC is heavy
     toktx({ encoder: sharp, mode: Mode.UASTC, slots: /^(normal|occlusion|metallicRoughness)/, pattern: /^TX_/, level: 2, rdo: true, zstd: 18, resize: [1024, 1024] }),
     toktx({ encoder: sharp, mode: Mode.ETC1S, slots: /^(baseColor|emissive)/, quality: 192, resize: [2048, 2048] }),
@@ -189,7 +202,7 @@ for (const id of ids) {
     preload: !!z.preload,
     priority: z.priority ?? 2,
     neighbors: z.neighbors,
-    ...(z.attach ? { attach: z.attach } : { transform: z.transform }),
+    transform: z.transform,
     dependencies: ['textures/library'],
     ...(lightmap ? { lightmap } : {}),
     stats: { triangles: stats.triangles, nodes: stats.nodes, materials: stats.materials, textureBytes: stats.textureBytes },

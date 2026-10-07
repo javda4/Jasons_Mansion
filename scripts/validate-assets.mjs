@@ -9,7 +9,7 @@ import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder } from 'meshoptimizer';
 import validator from 'gltf-validator';
-import { validateExtras } from '../src/interaction/schema.ts';
+import { gameOfTable, validateExtras } from '../src/interaction/schema.ts';
 import { isLibraryMaterial } from '../src/render/materialNames.ts';
 
 const PREFIXES = ['ROOM', 'COLLIDER', 'TRIGGER', 'PORTAL', 'DOOR', 'SPAWN', 'INTERACT', 'TABLE', 'CHAIR', 'SLOT', 'PROP', 'LIGHT', 'PROBE', 'NAV', 'AUDIO', 'ANCHOR', 'FX'];
@@ -63,6 +63,7 @@ export async function validateZoneGlb(file, { zone, lightmapped = false } = {}) 
       if (node.getMesh()) errors.push(`node "${name}": ANCHOR_ must be an empty`);
       if (!ANCHOR_ROLES.has(extras?.anchor)) errors.push(`node "${name}": extras.anchor must be a known role`);
       if (typeof extras?.tableId !== 'string') errors.push(`node "${name}": extras.tableId is required`);
+      else if (!gameOfTable(extras.tableId)) errors.push(`node "${name}": extras.tableId "${extras.tableId}" must be <gameType>_<NN>`);
     }
     if (m[1] === 'FX') {
       if (node.getMesh()) errors.push(`node "${name}": FX_ must be an empty`);

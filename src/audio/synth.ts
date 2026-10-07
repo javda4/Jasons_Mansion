@@ -4,7 +4,7 @@
  * a streamed recording (public/assets/audio/…) behind the same `SoundId` without touching callers.
  */
 export type SoundId =
-  | 'roomTone' | 'murmur' | 'fireCrackle' | 'slotHall'           // loops
+  | 'roomTone' | 'murmur' | 'fireCrackle' | 'slotHall' | 'fountain'   // loops
   | 'chips' | 'cardFlick' | 'rouletteBall' | 'slotChime' | 'slotWin'
   | 'doorOpen' | 'doorClose' | 'crystal' | 'uiClick';           // one-shots
 
@@ -99,6 +99,21 @@ const GENERATORS: Record<SoundId, Gen> = {
     }
     highpass(d, sr, 60);
     makeLoopable(d, sr); normalise(d, 0.7);
+    return b;
+  },
+  // fountain: water falling from the tazza into the basin, a soft hiss with droplet patter
+  fountain(ctx) {
+    const sr = ctx.sampleRate, b = buffer(ctx, 8), d = b.getChannelData(0), r = rng(5);
+    for (let i = 0; i < d.length; i++) d[i] = r() * 2 - 1;
+    bandpass(d, sr, 1800, 0.6);
+    lowpass(d, sr, 5000);
+    for (let i = 0; i < d.length; i++) d[i] *= 0.35;
+    for (let k = 0; k < 1400; k++) {   // droplets: short pitched blips
+      const at = Math.floor(r() * (d.length - sr * 0.02)), f = 900 + r() * 2600, len = Math.floor(sr * (0.004 + r() * 0.01)), amp = 0.15 + r() * 0.35;
+      for (let i = 0; i < len; i++) d[at + i] += Math.sin((2 * Math.PI * f * i) / sr) * amp * Math.exp(-i / (len * 0.3));
+    }
+    highpass(d, sr, 200);
+    makeLoopable(d, sr); normalise(d, 0.5);
     return b;
   },
   // slot hall bed: soft detuned electronic chimes far away

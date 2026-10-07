@@ -15,6 +15,22 @@ be. Games appear only where a house of that era would plausibly host them.
 | Staircase | Replace the straight stair with a grand stair: twin curved flights or an imperial stair (below). |
 | Dressing rule | Every room carries the full furnishing of its type, layered and lived-in, high end and classy. No bare walls, no empty corners, no box rooms with props dropped in. |
 
+## Standing rules (user, 2026-10-07)
+
+- **Comfort seating** uses the old Grand Lobby's chairs:
+  - the photoscanned Louis XVI bergère in red velvet (`A.club_chair`);
+  - the gold Louis XV sofa (`LouisSofa`);
+  - the Chesterfield, where it suits the room.
+
+  Re-tint the upholstery per room if needed. Never use the box-built brown leather armchairs.
+
+## Status
+
+| Phase | State |
+|---|---|
+| M0 layout contract | **Done.** `blender/zones.json` transforms → manifest → `zoneGraph.ts`. Presenters attach per table (`src/tables/attach.ts`); a `tableId` must be `<gameType>_<NN>` (schema + validator). Casino rooms and the code-built fallbacks are retired. |
+| M1 Stair Hall | **Built** (`author_stair_hall.py`). The Vestibule is part of the `stair_hall` zone: it is always loaded together with the hall, and one bake covers both. Doors to unbuilt rooms are locked. |
+
 ## What changes and what stays
 
 **Stays (layers 2–4 contracts):**
@@ -69,12 +85,12 @@ they read as the room's centrepiece rather than as a casino floor.
 | **Grand Salon** | Painted boiserie with gilt, Versailles parquet, marble fireplace with trumeau mirror, French windows | Three Louis XV seating groups, Aubusson-style carpets, bureau plat, vitrine of porcelain, ormolu clock and candelabra, piano, flowers, books and objects on every surface | Baccarat ×1, roped off at the window end |
 | **Ballroom / Salon de Musique** | Mirrored arcades, Versailles parquet, three chandeliers, musicians' alcove | Grand piano, harp, gilt chairs lining the walls, banquettes, palms in jardinières, wall girandoles | Roulette ×2, set at the centre of the floor |
 | **Library** | Walnut bookcases on two levels with a gallery and spiral stair, fireplace, coffered ceiling | Thousands of book spines, library table, globe, reading chairs, writing desk with lamp, chess table, busts above the cases, ladder | Poker ×1–2, under green-shaded lamps |
-| **Billiard Room** | Dark panelling, beamed ceiling, bar niche | Billiard table (the pack's pool table, moved from the Salon Privé), cue rack, Chesterfields, bar cart with decanters, trophies, sporting prints | Blackjack ×1–2 |
-| **Salle des Machines** | Small panelled cabinet room | The pack's slot cabinets along the panelling like curios, leather banquette, palm | Slots ×6 + Lucky Spin |
+| **Billiard Room** | Dark panelling, beamed ceiling, bar niche | Billiard table (the pack's pool table, moved from the Salon Privé), cue rack, velvet bergères and a Chesterfield, bar cart with decanters, trophies, sporting prints | Blackjack ×1–2 |
+| **Salle des Machines** | Small panelled cabinet room | The pack's slot cabinets along the panelling like curios, velvet banquette, bergères, palm | Slots ×6 + Lucky Spin |
 | **Dining Room** | Panelling, sideboard niche, two fireplaces | Table for 16 fully set (china, silver, glass, candelabra, flowers), sideboards with silver, porcelain, still lifes | — |
 | **Orangerie** | Glazed iron and glass conservatory, terracotta and marble floor, fountain | Palms and citrus in Versailles planters, wicker and rattan seating, lanterns, statues | — |
 | **Galleries** | Vaulted corridors with runners | Busts, consoles with clocks and vases, portraits and landscapes, benches, jardinières | — |
-| **Fumoir** | The current Salon Privé | Keep the fire. Swap the jukebox for a gramophone and add a cigar cabinet, humidors, newspapers and pipes | — |
+| **Fumoir** | The current Salon Privé | Keep the fire. Replace the box-built leather armchairs with bergères, swap the jukebox for a gramophone, and add a cigar cabinet, humidors, newspapers and pipes | — |
 
 ### Grand staircase (Stair Hall)
 

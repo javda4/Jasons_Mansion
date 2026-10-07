@@ -95,3 +95,25 @@ materials (merge `MAT_<Zone>_*` variants into the shared library).
 Lobby from the entrance: 87–100 fps, ~300–350 draw calls (all passes). Poker Room: 120 fps, 135 draw calls.
 Budget notes: scanned props' normal/ORM maps are encoded at 512² (build-assets `toktx` pattern rule) — at 1k
 the lobby GLB was 37 MB (> 25 MB budget). The potted plant scan is decimated to 30 % (70 k → ~20 k tris).
+
+## Mansion — Stair Hall (M1, 2026-10-07)
+
+Measured on an M1 Max (WebGPU, tier high, 1280×800) with `?debug` and the collider wireframes off.
+
+| | Value |
+|---|---|
+| GLB | 24.3 MB (budget 25), plus a 3.3 MB 4096² lightmap |
+| Authored triangles | 1.36 M (budget 1.5 M) |
+| Rendered triangles, all passes | 3.4 – 3.95 M |
+| Draw calls, all passes | 217 (vestibule) – 395 (hall) |
+| Frame rate | 120 fps (8.3 ms; worst 9.4 ms) |
+| Live lights | 2 point + 1 shadow key; the other 79 are bake-only |
+| Zone ready | 2.3 s (first run: 10 s, the shader compile is cached after) |
+
+Changes that kept the hall inside its budgets:
+- **Photoscans:** the dense props are decimated (vases 0.15, plants 0.15, busts 0.3, lion 0.25, candle
+  chandeliers 0.3, candelabra 0.2).
+- **Curves:** sconce and chandelier arms use tube resolution 5.
+- **Carpets:** detail maps (normal and ORM) cap at 512×1024; their colour map stays full size.
+
+The Grand Salon (M2) sets the dressing-density budget for the furnished rooms.

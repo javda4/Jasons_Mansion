@@ -1,39 +1,17 @@
 {
   "zones": {
-    "vip": {
-      "title": "Salon Privé",
-      "asset": "/assets/rooms/vip/vip.glb",
-      "bytes": 8356092,
-      "hash": "1dd6bb5d313cd1df",
-      "preload": false,
-      "priority": 2,
-      "neighbors": [
-        "hall_east"
-      ],
-      "attach": {
-        "zone": "hall_east",
-        "slot": "end"
-      },
-      "dependencies": [
-        "textures/library"
-      ],
-      "stats": {
-        "triangles": 105335,
-        "nodes": 72,
-        "materials": 32,
-        "textureBytes": 7384161
-      }
-    },
-    "lobby": {
-      "title": "Grand Lobby",
-      "asset": "/assets/rooms/lobby/lobby.glb",
-      "bytes": 19830904,
-      "hash": "998a9dce24e7c16e",
+    "stair_hall": {
+      "title": "Stair Hall",
+      "asset": "/assets/rooms/stair_hall/stair_hall.glb",
+      "bytes": 24868244,
+      "hash": "66ebaa8051a6ca48",
       "preload": true,
       "priority": 1,
       "neighbors": [
-        "hall_west",
-        "hall_east"
+        "grand_salon",
+        "library",
+        "gallery_west",
+        "gallery_east"
       ],
       "transform": {
         "x": 0,
@@ -44,234 +22,18 @@
         "textures/library"
       ],
       "lightmap": {
-        "url": "/assets/rooms/lobby/lobby_lightmap.ktx2",
-        "bytes": 4458190,
-        "hash": "04b083d31f031ed2",
-        "intensity": 4.764041364233805
+        "url": "/assets/rooms/stair_hall/stair_hall_lightmap.ktx2",
+        "bytes": 3457903,
+        "hash": "d974cd589f220e61",
+        "intensity": 8.389260784442516
       },
       "stats": {
-        "triangles": 1084302,
-        "nodes": 209,
-        "materials": 52,
-        "textureBytes": 14608612
-      }
-    },
-    "hall_west": {
-      "title": "West Gallery",
-      "asset": "/assets/rooms/hall_west/hall_west.glb",
-      "bytes": 5131424,
-      "hash": "8eb92a9cdfa93703",
-      "preload": false,
-      "priority": 2,
-      "neighbors": [
-        "lobby",
-        "poker",
-        "blackjack",
-        "baccarat"
-      ],
-      "attach": {
-        "zone": "lobby",
-        "slot": "west"
-      },
-      "dependencies": [
-        "textures/library"
-      ],
-      "lightmap": {
-        "url": "/assets/rooms/hall_west/hall_west_lightmap.ktx2",
-        "bytes": 1151716,
-        "hash": "424a394620df5c01",
-        "intensity": 7.785012419644156
-      },
-      "stats": {
-        "triangles": 180704,
-        "nodes": 71,
-        "materials": 18,
-        "textureBytes": 3223807
-      }
-    },
-    "hall_east": {
-      "title": "East Gallery",
-      "asset": "/assets/rooms/hall_east/hall_east.glb",
-      "bytes": 5179420,
-      "hash": "8ebe7ec2bae63cfc",
-      "preload": false,
-      "priority": 2,
-      "neighbors": [
-        "lobby",
-        "roulette",
-        "slots",
-        "vip"
-      ],
-      "attach": {
-        "zone": "lobby",
-        "slot": "east"
-      },
-      "dependencies": [
-        "textures/library"
-      ],
-      "lightmap": {
-        "url": "/assets/rooms/hall_east/hall_east_lightmap.ktx2",
-        "bytes": 1121819,
-        "hash": "7ca9f6f67229efc2",
-        "intensity": 7.9523301756602915
-      },
-      "stats": {
-        "triangles": 193008,
-        "nodes": 71,
-        "materials": 18,
-        "textureBytes": 3163325
-      }
-    },
-    "poker": {
-      "title": "Poker Room",
-      "asset": "/assets/rooms/poker/poker.glb",
-      "bytes": 7101628,
-      "hash": "e54327e218129322",
-      "preload": false,
-      "priority": 2,
-      "neighbors": [
-        "hall_west"
-      ],
-      "attach": {
-        "zone": "hall_west",
-        "slot": "left"
-      },
-      "dependencies": [
-        "textures/library"
-      ],
-      "lightmap": {
-        "url": "/assets/rooms/poker/poker_lightmap.ktx2",
-        "bytes": 1368740,
-        "hash": "30a60e87bb2d22e6",
-        "intensity": 6.971514244899873
-      },
-      "stats": {
-        "triangles": 298378,
-        "nodes": 130,
-        "materials": 26,
-        "textureBytes": 5529802
-      }
-    },
-    "blackjack": {
-      "title": "Blackjack Room",
-      "asset": "/assets/rooms/blackjack/blackjack.glb",
-      "bytes": 4233328,
-      "hash": "97dfccb353e2c6aa",
-      "preload": false,
-      "priority": 2,
-      "neighbors": [
-        "hall_west"
-      ],
-      "attach": {
-        "zone": "hall_west",
-        "slot": "right"
-      },
-      "dependencies": [
-        "textures/library"
-      ],
-      "lightmap": {
-        "url": "/assets/rooms/blackjack/blackjack_lightmap.ktx2",
-        "bytes": 1373451,
-        "hash": "f3259c77edc9f30a",
-        "intensity": 5.912403125790589
-      },
-      "stats": {
-        "triangles": 233646,
-        "nodes": 110,
-        "materials": 20,
-        "textureBytes": 2498812
-      }
-    },
-    "baccarat": {
-      "title": "Baccarat Room",
-      "asset": "/assets/rooms/baccarat/baccarat.glb",
-      "bytes": 4622720,
-      "hash": "da32f297530fb2f3",
-      "preload": false,
-      "priority": 2,
-      "neighbors": [
-        "hall_west"
-      ],
-      "attach": {
-        "zone": "hall_west",
-        "slot": "end"
-      },
-      "dependencies": [
-        "textures/library"
-      ],
-      "lightmap": {
-        "url": "/assets/rooms/baccarat/baccarat_lightmap.ktx2",
-        "bytes": 1290806,
-        "hash": "e133a017660a59e5",
-        "intensity": 5.1062243164072525
-      },
-      "stats": {
-        "triangles": 194778,
-        "nodes": 83,
-        "materials": 25,
-        "textureBytes": 3093196
-      }
-    },
-    "roulette": {
-      "title": "Roulette Room",
-      "asset": "/assets/rooms/roulette/roulette.glb",
-      "bytes": 5223644,
-      "hash": "fa05530fd1227722",
-      "preload": false,
-      "priority": 2,
-      "neighbors": [
-        "hall_east"
-      ],
-      "attach": {
-        "zone": "hall_east",
-        "slot": "left"
-      },
-      "dependencies": [
-        "textures/library"
-      ],
-      "lightmap": {
-        "url": "/assets/rooms/roulette/roulette_lightmap.ktx2",
-        "bytes": 1322880,
-        "hash": "4560771029275728",
-        "intensity": 6.677877515282883
-      },
-      "stats": {
-        "triangles": 238764,
-        "nodes": 99,
-        "materials": 19,
-        "textureBytes": 3457686
-      }
-    },
-    "slots": {
-      "title": "Slot Room",
-      "asset": "/assets/rooms/slots/slots.glb",
-      "bytes": 8418992,
-      "hash": "13d8b4af630cd5cc",
-      "preload": false,
-      "priority": 2,
-      "neighbors": [
-        "hall_east"
-      ],
-      "attach": {
-        "zone": "hall_east",
-        "slot": "right"
-      },
-      "dependencies": [
-        "textures/library"
-      ],
-      "lightmap": {
-        "url": "/assets/rooms/slots/slots_lightmap.ktx2",
-        "bytes": 1347295,
-        "hash": "26aa18371f6a3f3e",
-        "intensity": 5.873028954864041
-      },
-      "stats": {
-        "triangles": 342108,
-        "nodes": 341,
-        "materials": 21,
-        "textureBytes": 6915379
+        "triangles": 1355940,
+        "nodes": 721,
+        "materials": 63,
+        "textureBytes": 17526786
       }
     }
   },
-  "generated": "2026-09-30T17:36:20.317Z"
+  "generated": "2026-10-07T17:31:59.741Z"
 }
