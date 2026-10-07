@@ -1,4 +1,4 @@
-# CLAUDE.md — Riviera Mansion Casino (Browser 3D World)
+# CLAUDE.md — Mansion (Browser 3D World)
 
 This file guides Claude Code in this repository. Read it fully before starting any task.
 
@@ -79,7 +79,13 @@ define the contract change (name prefix, `extras` key, manifest field, event) be
 
 ## 3. Current status & how to work
 
-**Status (2026-09-30):** Phases 1–6 are complete and the **V2 realism pass** is in progress in this folder
+**Mansion (2026-10-07):** this folder (`~/Desktop/Mansion`) is a fork of CasinoV2 with a new direction: a real
+French Riviera villa with casino games woven into fitting rooms, not a casino with mansion styling. Every room is
+fully dressed as its real type (library, salon, ballroom, dining room, …). Night mood is kept. The plan, floor plan,
+room dressing lists and phases (M0–M5) live in **`docs/mansion-plan.md`**; it overrides the casino-era layout below.
+The `casino.png` reference still sets the mood, but not the layout.
+
+**Inherited status (CasinoV2, 2026-09-30):** Phases 1–6 are complete and the **V2 realism pass** is in progress in this folder
 (`~/Desktop/CasinoV2`). V1 (`~/Desktop/Casino`) is the frozen baseline that was first published.
 The technology is decided and documented in `docs/architecture.md`:
 - **Stack:** Three.js r186 `WebGPURenderer` (WebGL2 fallback) · TSL post stack (GTAO, SSR, TRAA, bloom, AgX)
@@ -556,7 +562,10 @@ URL flags: `?debug` (overlay + collider wireframes; `` ` `` toggles), `?quality=
 
 ## 15. Repository, publishing & testing
 
-- **GitHub:** `javda4/riviera-casino` (public). Pushing `main` runs `.github/workflows/pages.yml`, which
+- **GitHub:** Mansion has **no remote yet** (the CasinoV2 `origin` was removed on purpose, so a push here can never
+  overwrite the live casino site). Ask the user before creating a repository for it. The CasinoV2 lines below describe
+  that project.
+- **CasinoV2 GitHub:** `javda4/riviera-casino` (public). Pushing `main` runs `.github/workflows/pages.yml`, which
   builds with `BASE_PATH=/riviera-casino/` and deploys to **https://javda4.github.io/riviera-casino/**.
   Large binaries (`.blend`, textures, GLB, KTX2, audio) go through Git LFS (`.gitattributes`).
 - **Never publish**, and keep all of these in `.gitignore`:
