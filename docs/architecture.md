@@ -198,14 +198,16 @@ ray-cast felt heights and the wheel's radial profile. Build: pack data maps (`TX
 
 ## The view from the windows (2026-10-07)
 
-**The contract.** Windows are real openings through the wall, holding a faint glass pane. Beyond them each sea wall
-has an authored exterior: a stone terrace, a balustrade with urns, plants and lit lanterns (`Mansion.outside()`),
-and far out a backdrop quad with a `MAT_<Zone>_SeaView` material. glTF can't carry what lies past that, so at load
+**The contract.** Windows are real openings through the wall, holding a faint glass pane. Beyond them lies one
+exterior zone for the whole house (`author_exterior.py`, zones.json `always: true`), which the zone manager keeps
+loaded and drawn from every room. It holds the continuous sea terrace (balustrade, urns, lanterns, olive trees),
+baked under a low moon, and an open backdrop box (far, sides, top and bottom) with a `MAT_Exterior_SeaView`
+material, so no window at any angle can see past it. glTF can't carry what lies past that, so at load
 `glbZone` swaps every `*_SeaView` material for the shared **night-view** material (`src/render/nightView.ts`).
 
 **The night view** is a TSL node material drawn from the per-pixel viewing direction (camera → fragment), so every
 window shows its own part of the night and the view shifts correctly as the player moves:
-- **Sky:** a real night photograph, Poly Haven `qwantani_moonrise_puresky` (CC0). `npm run make-night-sky` turns
+- **Sky:** a real night photograph (the wrap faces due south, and it is sampled at a fixed LOD so the wrap leaves no seam), Poly Haven `qwantani_moonrise_puresky` (CC0). `npm run make-night-sky` turns
   it into `public/assets/env/T_NightSky.jpg` (the sky hemisphere, rotated so the moon rises over the sea) plus a
   JSON file with the moon's direction.
 - **Sea:** 28 m below the terrace, ray-cast per pixel. Animated noise swell reflects the sky with Fresnel, a moon

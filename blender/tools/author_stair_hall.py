@@ -168,7 +168,6 @@ for s, side in ((-1, "W"), (1, "E")):
 A.double_door("Terrace", (0, Y1, 0), (0, -1, 0), 2.2, DOOR_H, 0, "The terrace — closed for the night", locked=True)
 A.double_door("Front", (0, VY0, 0), (0, 1, 0), 2.4, DOOR_H, 0, "The front doors", locked=True)
 
-A.outside("BackOut", "x", Y1, -1, X0, X1, extend=0.15)       # the sea terrace beyond the loggia's windows
 
 # ============================================================================ walls — upper storey (A2, FL … HT)
 UP_P = [0.0, 2.2, 5.0, 7.6, 11.0, 13.6, 16.4, 19.3, 22.0]

@@ -19,6 +19,7 @@
     "author:grand_salon": "blender -b --factory-startup --python blender/tools/author_grand_salon.py",
     "author:library": "blender -b --factory-startup --python blender/tools/author_library.py",
     "author:ballroom": "blender -b --factory-startup --python blender/tools/author_ballroom.py",
+    "author:exterior": "blender -b --factory-startup --python blender/tools/author_exterior.py",
     "fetch-art": "node scripts/fetch-art.mjs",
     "bake:all": "sh scripts/bake-all.sh",
     "make-night-sky": "node scripts/make-night-sky.mjs",

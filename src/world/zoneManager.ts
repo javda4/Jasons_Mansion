@@ -23,6 +23,11 @@ export interface ZoneManifestEntry {
   /** World placement of the zone's local origin (its entrance anchor). */
   transform: { x: number; z: number; rotY: number };
   preload?: boolean;
+  /**
+   * Always loaded and always drawn, whatever room the player is in: the house's exterior (the sea terrace and
+   * the live night beyond every window). It has no doors; its bounds never contain the player.
+   */
+  always?: boolean;
   /** Code-built zones return a sync builder; GLB zones an async one (see loading/glbZone.ts). */
   load: () => Promise<(materials: Record<MaterialKey, Material>) => ZoneInstance | Promise<ZoneInstance>>;
 }
@@ -266,10 +271,12 @@ export class ZoneManager implements System, ZoneAvailability {
 
   private stream(): void {
     const loaded = new Set([...this.zones.values()].filter((z) => z.instance).map((z) => z.entry.id));
+    const always = [...this.zones.values()].filter((z) => z.entry.always).map((z) => z.entry.id);
+    for (const id of always) if (!this.isReady(id) && !this.requested.includes(id)) this.requested.push(id);
     const decision = decide(this.graph, this.current, loaded, this.outOfRange, this.time, {
       idle: this.loading === null && this.requested.length === 0,
       unloadAfter: UNLOAD_AFTER,
-      pinned: new Set([...this.visible, ...this.requested]),
+      pinned: new Set([...this.visible, ...this.requested, ...always]),
     });
     for (const id of decision.unload) this.unload(id);
     if (this.loading) return;
@@ -286,7 +293,7 @@ export class ZoneManager implements System, ZoneAvailability {
     };
     if (this.current && inside(this.current)) return;
     for (const [id, z] of this.zones) {
-      if (z.instance && inside(id)) {
+      if (z.instance && !z.entry.always && inside(id)) {
         this.setCurrent(id);
         return;
       }
@@ -305,6 +312,7 @@ export class ZoneManager implements System, ZoneAvailability {
   /** Current zone + zones reachable through open doors (two portals deep). */
   private updateVisibility(): void {
     const next = new Set<string>([this.current]);
+    for (const [id, z] of this.zones) if (z.entry.always && this.isReady(id)) next.add(id);
     const links = [...this.doors.openLinks()];
     for (let depth = 0; depth < 2; depth++) {
       for (const l of links) {

@@ -4,6 +4,6 @@
     "az": 0.3141592653589793,
     "el": 0.24160197409198858
   },
-  "exposure": 0.20609394898414327,
-  "layout": "rows horizon\u2192zenith (bottom\u2192top), columns az 0\u21922\u03c0 from north towards east"
+  "exposure": 0.20729887251722115,
+  "layout": "rows horizon\u2192zenith (bottom\u2192top), columns az -\u03c0\u2192\u03c0 (south, east, north at the centre, west)"
 }

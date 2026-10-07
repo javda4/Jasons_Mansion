@@ -127,7 +127,37 @@
         "materials": 33,
         "textureBytes": 2630747
       }
+    },
+    "exterior": {
+      "title": "Sea Terrace",
+      "asset": "/assets/rooms/exterior/exterior.glb",
+      "bytes": 4494584,
+      "hash": "68901d17248f8001",
+      "preload": false,
+      "always": true,
+      "priority": 1,
+      "neighbors": [],
+      "transform": {
+        "x": 0,
+        "z": 0,
+        "rotY": 0
+      },
+      "dependencies": [
+        "textures/library"
+      ],
+      "lightmap": {
+        "url": "/assets/rooms/exterior/exterior_lightmap.ktx2",
+        "bytes": 1104040,
+        "hash": "02973f7c5712660a",
+        "intensity": 0.1570795765034354
+      },
+      "stats": {
+        "triangles": 284694,
+        "nodes": 26,
+        "materials": 10,
+        "textureBytes": 3284435
+      }
     }
   },
-  "generated": "2026-10-07T23:15:50.151Z"
+  "generated": "2026-10-07T23:54:57.284Z"
 }

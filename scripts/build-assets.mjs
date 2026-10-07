@@ -200,6 +200,7 @@ for (const id of ids) {
     bytes: bytes.byteLength,
     hash: createHash('sha256').update(bytes).digest('hex').slice(0, 16),
     preload: !!z.preload,
+    ...(z.always ? { always: true } : {}),
     priority: z.priority ?? 2,
     neighbors: z.neighbors,
     transform: z.transform,

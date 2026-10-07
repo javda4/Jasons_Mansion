@@ -64,8 +64,8 @@ def validate(zone: str):
                 errors.append(f"{o.name}: extras.effect must be one of {sorted(C.FX_EFFECTS)}")
         if o.type == "LIGHT" and prefix not in C.LIGHT_PREFIXES:
             errors.append(f"{o.name}: lights must be named LIGHT_…")
-        if o.type == "LIGHT" and o.data.type not in {"POINT", "SPOT"}:
-            errors.append(f"{o.name}: only POINT and SPOT lights are supported at runtime")
+        if o.type == "LIGHT" and o.data.type not in {"POINT", "SPOT"} and not o.get("bakeOnly"):
+            errors.append(f"{o.name}: only POINT and SPOT lights are supported at runtime (other types must be bakeOnly)")
 
         if o.type == "MESH":
             if any(abs(s - 1.0) > 1e-4 for s in o.scale) and prefix in {"COLLIDER", "TRIGGER", "ROOM"}:

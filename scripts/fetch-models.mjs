@@ -37,6 +37,8 @@ export const MODELS = {
   // Grand Salon
   tea_set_01: '1k',                    // porcelain tea service (gilt rims)
   chess_set: '1k',                     // marble board and turned pieces
+  // Exterior
+  island_tree_02: '1k',                // a Mediterranean olive, potted on the terrace
 };
 
 const exists = (p) => access(p).then(() => true, () => false);

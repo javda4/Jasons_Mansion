@@ -2,11 +2,11 @@
   "zone": "grand_salon",
   "size": 2048,
   "samples": 256,
-  "encodeScale": 0.5167593969408928,
-  "intensity": 6.079410789987299,
-  "p99_5": 1.9351365566253662,
-  "max": 12.579843521118164,
-  "coverage": 0.33257317543029785,
+  "encodeScale": 0.474847743306451,
+  "intensity": 6.6159999660403,
+  "p99_5": 2.105938196182251,
+  "max": 13.638387680053711,
+  "coverage": 0.33147120475769043,
   "objects": [
     "ROOM_GrandSalon_Lightmapped_01",
     "ROOM_GrandSalon_Lightmapped_02",
@@ -14,8 +14,7 @@
     "ROOM_GrandSalon_Lightmapped_04",
     "ROOM_GrandSalon_Lightmapped_05",
     "ROOM_GrandSalon_Lightmapped_06",
-    "ROOM_GrandSalon_Lightmapped_07",
-    "ROOM_GrandSalon_Lightmapped_08"
+    "ROOM_GrandSalon_Lightmapped_07"
   ],
   "bakeOnlyLights": [
     "LIGHT_GrandSalon_Sconce_01",
@@ -32,9 +31,6 @@
     "LIGHT_GrandSalon_Sconce_12",
     "LIGHT_GrandSalon_Sconce_13",
     "LIGHT_GrandSalon_Sconce_14",
-    "LIGHT_GrandSalon_TerraceLantern_01",
-    "LIGHT_GrandSalon_TerraceLantern_02",
-    "LIGHT_GrandSalon_TerraceLantern_03",
     "LIGHT_GrandSalon_Moon_01",
     "LIGHT_GrandSalon_Candelabra_01",
     "LIGHT_GrandSalon_Candelabra_02",
@@ -44,5 +40,5 @@
     "LIGHT_GrandSalon_Candelabra_03",
     "LIGHT_GrandSalon_Candelabra_04"
   ],
-  "seconds": 104.6
+  "seconds": 112.3
 }

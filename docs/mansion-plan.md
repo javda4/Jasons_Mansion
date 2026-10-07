@@ -147,6 +147,15 @@ Mitigations:
 Budgets per zone will be re-set in `docs/performance.md` once the Grand Salon is measured, before the other
 rooms are dressed.
 
+## Upper floor (decided 2026-10-07, built later)
+
+- **Levels:** the Stair Hall's gallery is at 5.0 m, but the Grand Salon and Library are 6 m tall (ceilings 6.3 m).
+  The apartments above them therefore sit at **6.6 m**. Each of the hall's four gallery doors opens onto a small
+  vestibule with a short flight (about 9 steps) up to that level, a split level as in many old houses.
+- **Ballroom:** at 9 m it stays a single-storey wing with nothing above it.
+- **Hall walls:** the salon and library front walls are dressing only (`mass=False`); the hall's wall is the
+  mass. Their 6 m walls had stood inside the hall's wall and hidden the bottom of the gallery doors.
+
 ## Phases
 
 | # | Deliverable | Verify |

@@ -45,7 +45,8 @@ FIELD = M["damask_gold"]
 # ============================================================================ floor, walls, ceiling
 K.box(K.name("ROOM", "Floor"), (W, D, 0.2), (0, D / 2, -0.1), M["parquet"], lightmap=True)
 K.collider("Floor", (X0 - 0.5, -0.5, -0.5), (X1 + 0.5, D + 0.5, 0))
-A.wall("Front", "x", 0, 1, X0, X1, openings=[(0.0, DOOR_W, DOOR_H)], jambs=False, field=FIELD,
+A.wall("Front", "x", 0, 1, X0, X1, openings=[(0.0, DOOR_W, DOOR_H)], jambs=False, mass=False,   # the Stair Hall's wall is the mass (its upper doors stand in it)
+       field=FIELD,
        pilasters=[X0, -4.6, -1.65, 1.65, 4.6, X1], paintings=[(-5.8, 2)], sconces=[-4.6, -1.65, 1.65, 4.6])
 A.wall("Back", "x", D, -1, X0, X1, openings=[(0.0, DOOR_W, DOOR_H)], field=FIELD,
        pilasters=[X0, -4.6, -1.65, 1.65, 4.6, X1], paintings=[(5.8, 6)], sconces=[-4.6, -1.65, 1.65, 4.6])
@@ -53,7 +54,6 @@ NORTH_P = [0.0, 1.6, 4.8, 6.4, 9.6, 11.2, 14.4, D]
 A.wall("North", "y", X1, -1, 0, D, field=FIELD, pilasters=NORTH_P, windows=[3.2, 8.0, 12.8], sconces=[1.6, 14.4])
 A.wall("South", "y", X0, 1, 0, D, field=FIELD, pilasters=[0.0, 2.8, 6.2, 9.8, 13.2, D],
        paintings=[(4.5, 8), (11.5, 9), (14.6, 1), (1.4, 4)], sconces=[2.8, 6.2, 9.8, 13.2])
-A.outside("NorthOut", "y", X1, -1, 0, D, extend=0.15)          # the sea terrace beyond the windows
 A.coffered_ceiling(X0, X1, 0, D, spacing=2.7)
 A.double_door("Ballroom", (0, D, 0), (0, -1, 0), DOOR_W, DOOR_H, 0, "Enter the Ballroom", target="ballroom")
 # ceiling roses over the chandeliers

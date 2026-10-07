@@ -70,7 +70,6 @@ A.wall("Front", "x", 0, 1, X0, X1, openings=[(0.0, DOOR_W, DOOR_H)], jambs=False
 A.wall("North", "y", X1, -1, 0, D, field=FIELD, pilasters=[0.0] + PIERS + [D], windows=BAYS)
 A.wall("South", "y", X0, 1, 0, D, field=FIELD, pilasters=[0.0] + PIERS + [D], mirrors=BAYS)
 A.wall("Back", "x", D, -1, X0, X1, field=FIELD, pilasters=[X0, X1])
-A.outside("NorthOut", "y", X1, -1, 0, D, extend=0.15)          # the sea terrace beyond the French windows
 A.coffered_ceiling(X0, X1, 0, D, spacing=3.0)
 
 # giant marble columns before every pier

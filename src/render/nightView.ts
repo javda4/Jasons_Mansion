@@ -61,9 +61,9 @@ export function nightViewMaterial(): Material {
   // sky radiance in direction d (d.y ≥ 0): the photograph, darkened to a night that sits behind lamplit rooms
   const skyAt = (d: Node<'vec3'>) => {
     const az = atan(d.x, d.z.negate());
-    const u = fract(az.div(TAU));
-    const v = clamp(asin(clamp(d.y, 0.0, 1.0)).div(Math.PI / 2), 0.002, 0.998);
-    return vec3(texture(sky, vec2(u, v)).rgb).mul(SKY);
+    const u = fract(az.div(TAU).add(0.5));                           // north at the centre; the wrap is due south
+    const v = clamp(asin(clamp(d.y, 0.0, 1.0)).div(Math.PI / 2), 0.004, 0.996);
+    return vec3(texture(sky, vec2(u, v)).level(float(0)).rgb).mul(SKY);     // fixed LOD: no mip seam where u wraps
   };
 
   const dir = normalize(positionWorld.sub(cameraPosition));

@@ -2,11 +2,11 @@
   "zone": "ballroom",
   "size": 4096,
   "samples": 256,
-  "encodeScale": 1.6750535746662716,
-  "intensity": 1.875517715435285,
-  "p99_5": 0.5969958305358887,
-  "max": 34.05424880981445,
-  "coverage": 0.2897809147834778,
+  "encodeScale": 1.6515099895035916,
+  "intensity": 1.9022547084526495,
+  "p99_5": 0.6055064797401428,
+  "max": 33.80453872680664,
+  "coverage": 0.2738324999809265,
   "objects": [
     "ROOM_Ballroom_Lightmapped_01",
     "ROOM_Ballroom_Lightmapped_02",
@@ -16,16 +16,11 @@
     "ROOM_Ballroom_Lightmapped_06",
     "ROOM_Ballroom_Lightmapped_07",
     "ROOM_Ballroom_Lightmapped_08",
-    "ROOM_Ballroom_Lightmapped_09",
-    "ROOM_Ballroom_Lightmapped_10"
+    "ROOM_Ballroom_Lightmapped_09"
   ],
   "bakeOnlyLights": [
     "LIGHT_Ballroom_Sconce_01",
     "LIGHT_Ballroom_Sconce_02",
-    "LIGHT_Ballroom_TerraceLantern_01",
-    "LIGHT_Ballroom_TerraceLantern_02",
-    "LIGHT_Ballroom_TerraceLantern_03",
-    "LIGHT_Ballroom_TerraceLantern_04",
     "LIGHT_Ballroom_Footlight_01",
     "LIGHT_Ballroom_Footlight_02",
     "LIGHT_Ballroom_Footlight_03",
@@ -42,5 +37,5 @@
     "LIGHT_Ballroom_Torchere_07",
     "LIGHT_Ballroom_Torchere_08"
   ],
-  "seconds": 345.1
+  "seconds": 319.6
 }

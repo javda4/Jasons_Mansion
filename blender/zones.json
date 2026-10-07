@@ -72,6 +72,22 @@
       "preload": false,
       "priority": 2,
       "lightmap": "textures_src/ballroom/T_Ballroom_Lightmap"
+    },
+    "exterior": {
+      "title": "Sea Terrace",
+      "source": "rooms/exterior/exterior.blend",
+      "blend": "rooms/exterior/exterior_baked.blend",
+      "zone": "Exterior",
+      "neighbors": [],
+      "transform": {
+        "x": 0,
+        "z": 0,
+        "rotY": 0
+      },
+      "preload": false,
+      "always": true,
+      "priority": 1,
+      "lightmap": "textures_src/exterior/T_Exterior_Lightmap"
     }
   }
 }

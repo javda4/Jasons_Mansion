@@ -1,0 +1,30 @@
+{
+  "zone": "exterior",
+  "size": 2048,
+  "samples": 256,
+  "encodeScale": 20.00000715255993,
+  "intensity": 0.1570795765034354,
+  "p99_5": 0.04999998211860657,
+  "max": 0.050798650830984116,
+  "coverage": 0.26488614082336426,
+  "objects": [
+    "ROOM_Exterior_Lightmapped_01"
+  ],
+  "bakeOnlyLights": [
+    "LIGHT_Exterior_TerraceLantern_01",
+    "LIGHT_Exterior_TerraceLantern_02",
+    "LIGHT_Exterior_TerraceLantern_03",
+    "LIGHT_Exterior_TerraceLantern_04",
+    "LIGHT_Exterior_TerraceLantern_05",
+    "LIGHT_Exterior_TerraceLantern_06",
+    "LIGHT_Exterior_TerraceLantern_07",
+    "LIGHT_Exterior_TerraceLantern_08",
+    "LIGHT_Exterior_TerraceLantern_09",
+    "LIGHT_Exterior_TerraceLantern_10",
+    "LIGHT_Exterior_TerraceLantern_11",
+    "LIGHT_Exterior_TerraceLantern_12",
+    "LIGHT_Exterior_TerraceLantern_13",
+    "LIGHT_Exterior_Moon_01"
+  ],
+  "seconds": 16.8
+}

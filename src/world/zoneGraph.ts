@@ -23,6 +23,7 @@ export interface AssetManifest {
     priority: number;
     neighbors: string[];
     transform: Transform2;
+    always?: boolean;
     lightmap?: { url: string; intensity: number; hash: string };
   }>;
 }
@@ -35,7 +36,7 @@ export function buildZoneGraph(manifest: AssetManifest): ZoneManifestEntry[] {
   for (const [id, z] of Object.entries(manifest.zones)) {
     if (!z.transform) { console.warn(`[zones] manifest zone ${id} has no transform`); continue; }
     zones.set(id, {
-      id, title: z.title, neighbors: z.neighbors, preload: z.preload, transform: z.transform,
+      id, title: z.title, neighbors: z.neighbors, preload: z.preload, transform: z.transform, always: !!z.always,
       load: async () => {
         const room = ROOM_MODULES[id] ? await ROOM_MODULES[id]() : null;
         return async (mats: Record<MaterialKey, Material>) => {
@@ -61,7 +62,7 @@ export function buildZoneGraph(manifest: AssetManifest): ZoneManifestEntry[] {
 
 /** The zone the player starts in: the preloaded one (lowest priority number), else the first. */
 export function startZone(manifest: AssetManifest): string {
-  const [first] = Object.entries(manifest.zones).sort(([, a], [, b]) => Number(b.preload) - Number(a.preload) || a.priority - b.priority);
+  const [first] = Object.entries(manifest.zones).filter(([, z]) => !z.always).sort(([, a], [, b]) => Number(b.preload) - Number(a.preload) || a.priority - b.priority);
   if (!first) throw new Error('manifest has no zones: run npm run build:assets');
   return first[0];
 }

@@ -290,6 +290,20 @@
         553.2379746437073,
         112.3529537471768
       ]
+    },
+    "island_tree_02": {
+      "name": "Island Tree 02",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/island_tree_02/island_tree_02.gltf",
+      "authors": [
+        "Rob Tuytel",
+        "Rico Cilliers"
+      ],
+      "dimensions": [
+        8485.51321029663,
+        4078.6155462265015,
+        3408.9039135724306
+      ]
     }
   }
 }

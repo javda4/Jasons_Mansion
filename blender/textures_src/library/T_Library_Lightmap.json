@@ -2,11 +2,11 @@
   "zone": "library",
   "size": 4096,
   "samples": 256,
-  "encodeScale": 2.8684662639832084,
-  "intensity": 1.0952168735731673,
-  "p99_5": 0.34861835837364197,
-  "max": 27.498027801513672,
-  "coverage": 0.04952436685562134,
+  "encodeScale": 2.7514568700297355,
+  "intensity": 1.1417924401467507,
+  "p99_5": 0.3634438216686249,
+  "max": 31.019691467285156,
+  "coverage": 0.04993033409118652,
   "objects": [
     "ROOM_Library_Lightmapped_01",
     "ROOM_Library_Lightmapped_02",
@@ -17,16 +17,13 @@
     "ROOM_Library_Lightmapped_07",
     "ROOM_Library_Lightmapped_08",
     "ROOM_Library_Lightmapped_09",
-    "ROOM_Library_Lightmapped_10",
-    "ROOM_Library_Lightmapped_11"
+    "ROOM_Library_Lightmapped_10"
   ],
   "bakeOnlyLights": [
     "LIGHT_Library_Sconce_01",
     "LIGHT_Library_Sconce_02",
     "LIGHT_Library_Sconce_03",
     "LIGHT_Library_Sconce_04",
-    "LIGHT_Library_TerraceLantern_01",
-    "LIGHT_Library_TerraceLantern_02",
     "LIGHT_Library_Moon_01",
     "LIGHT_Library_Candelabra_01",
     "LIGHT_Library_Candelabra_02",
@@ -36,5 +33,5 @@
     "LIGHT_Library_Banker_02",
     "LIGHT_Library_Lamp_03"
   ],
-  "seconds": 108.5
+  "seconds": 102.9
 }
