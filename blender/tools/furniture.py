@@ -725,3 +725,123 @@ def music_stand(A, xy, rz, z0=0.0):
     desk.rotation_euler = (math.radians(-20), 0, rz)
     part = K.box(K.name("PROP", "StandPart"), (0.42, 0.004, 0.3), tuple(T(0, 0.055, 1.19)), M["shade"])
     part.rotation_euler = (math.radians(-20), 0, rz)
+
+
+# ============================================================================ grand rooms: columns, torchères, theatre curtains
+
+def column(A, xy, top, r=0.27, z0=0.0, collider=True):
+    """A fluted Calacatta column on a Nero plinth with a gilt base, a gilt Ionic-ish capital and a walnut abacus,
+    rising from z0 to `top`."""
+    K, M = A.K, A.M
+    x, y = xy
+    K.box(K.name("ROOM", "ColumnPlinth"), (r * 2.6, r * 2.6, 0.36), (x, y, z0 + 0.18), M["nero"], bevel=0.02, segments=3, lightmap=True)
+    K.lathe(K.name("ROOM", "ColumnBase"), [(0, 0), (r * 1.25, 0), (r * 1.25, 0.05), (r * 1.12, 0.1), (r * 1.05, 0.13), (r, 0.18), (0, 0.18)], (x, y, z0 + 0.36), M["gilt"], segments=40)
+    shaft = top - z0 - 0.54 - 0.62
+    K.fluted_shaft(K.name("ROOM", "ColumnShaft"), r, shaft, (x, y, z0 + 0.54), M["marble"], flutes=20, lightmap=True)
+    K.lathe(K.name("ROOM", "ColumnCapital"), [(0, 0), (r * 0.96, 0), (r * 1.04, 0.06), (r * 1.2, 0.22), (r * 1.36, 0.38), (r * 1.5, 0.46), (0, 0.46)], (x, y, z0 + 0.54 + shaft), M["gilt"], segments=40)
+    K.box(K.name("ROOM", "ColumnAbacus"), (r * 3.2, r * 3.2, 0.16), (x, y, top - 0.08), M["gilt"], bevel=0.02, segments=3)
+    for k in range(4):
+        a = k * math.pi / 2 + math.pi / 4
+        K.torus(K.name("PROP", "CapitalVolute"), r * 0.24, r * 0.07, (x + r * 1.3 * math.cos(a), y + r * 1.3 * math.sin(a), top - 0.25), M["gilt"],
+                major=16, minor=6, rot=(math.pi / 2, 0, a + math.pi / 2))
+    if collider:
+        K.collider(f"Column_{K.idx('fcol')}", (x - r * 1.3, y - r * 1.3, z0), (x + r * 1.3, y + r * 1.3, top))
+
+
+def torchere(A, xy, z0=0.0, height=2.3, arms=6, candela=4):
+    """A gilt torchère: a tall turned standard carrying a crown of candle arms (lit, bake-only)."""
+    K, M = A.K, A.M
+    x, y = xy
+    P = A._props.get("_torch")
+    if P is None:
+        P = A._props["_torch"] = {
+            "cup": K.prototype(K.lathe(K.name("PROP", "TorchCup"), [(0, 0), (0.045, 0.0), (0.055, 0.03), (0.03, 0.05), (0, 0.05)], (0, 0, -30), M["gilt"], segments=12)),
+            "candle": K.prototype(K.cyl(K.name("PROP", "TorchCandle"), 0.016, 0.016, 0.2, (0, 0, -30), M["shade"], segments=10)),
+            "flame": K.prototype(K.lathe(K.name("PROP", "TorchFlame"), [(0, 0), (0.014, 0.012), (0.01, 0.035), (0, 0.055)], (0, 0, -30), M["candle"], segments=8)),
+        }
+    stand = [(0, 0), (0.3, 0), (0.28, 0.05), (0.12, 0.14), (0.08, 0.3), (0.05, 0.5), (0.07, 0.62), (0.04, 0.8), (0.035, height - 0.55),
+             (0.07, height - 0.48), (0.05, height - 0.4), (0.09, height - 0.32), (0, height - 0.3)]
+    K.lathe(K.name("PROP", "TorchStand"), stand, (x, y, z0), M["gilt"], segments=24)
+    hub = Vector((x, y, z0 + height - 0.32))
+    for k in range(arms):
+        a = 2 * math.pi * k / arms
+        tip = hub + Vector((0.32 * math.cos(a), 0.32 * math.sin(a), 0.16))
+        K.tube(K.name("PROP", "TorchArm"), [hub, hub + Vector((0.16 * math.cos(a), 0.16 * math.sin(a), -0.06)), tip], 0.012, M["gilt"], resolution=5, bevel_res=2)
+        for key, dz in (("cup", 0.0), ("candle", 0.14), ("flame", 0.24)):
+            K.linked(K.name("PROP", "Torch" + key.capitalize()), P[key], tuple(tip + Vector((0, 0, dz))))
+    for key, dz in (("cup", 0.02), ("candle", 0.16), ("flame", 0.26)):
+        K.linked(K.name("PROP", "Torch" + key.capitalize()), P[key], tuple(hub + Vector((0, 0, 0.1 + dz))))
+    K.light(K.name("LIGHT", "Torchere"), "POINT", tuple(hub + Vector((0, 0, 0.5))), candela, rng=6, bake_only=True)
+    K.collider(f"Torchere_{K.idx('ftorch')}", (x - 0.3, y - 0.3, z0), (x + 0.3, y + 0.3, z0 + height))
+
+
+def theatre_curtains(A, x0, x1, y, z_floor, z_top, tie_z=None, valance=1.0):
+    """A proscenium's grand drape: two deep-pleated velvet curtains drawn and tied back to the sides (hourglass,
+    hems pooling on the stage), a scalloped swag valance across the top with a gold bullion fringe. The curtains hang
+    in the plane y (facing -Y, towards the house)."""
+    K, M = A.K, A.M
+    tie_z = tie_z if tie_z is not None else z_floor + 1.6
+    span = x1 - x0
+    H0 = z_top - valance - z_floor
+    for sgn in (-1, 1):
+        outer = (x0 if sgn < 0 else x1)
+        bm = bmesh.new()
+        nu, nv, folds = 80, 44, 16
+        rows = []
+        for j in range(nv + 1):
+            fz = j / nv
+            z = z_top - valance * 0.6 - fz * (H0 + valance * 0.4)
+            if z >= tie_z:
+                t = (z_top - z) / (z_top - tie_z)
+                width = span * 0.5 * (1 - t ** 1.4) + 0.7 * t ** 1.4
+            else:
+                t = (tie_z - z) / max(0.01, tie_z - z_floor)
+                width = 0.7 + 0.9 * math.sin(t * math.pi / 2)
+            amp = 0.07 + 0.12 * max(0.0, 2.0 - width) / 2.0
+            row = []
+            for i in range(nu + 1):
+                u = i / nu
+                xx = outer - sgn * width * u
+                d = amp * math.sin(2 * math.pi * folds * u) + amp
+                zz = z
+                if j == nv:
+                    d += 0.12
+                    zz = z_floor + 0.008
+                row.append(bm.verts.new((xx, y - d, zz)))
+            rows.append(row)
+        for j in range(nv):
+            for i in range(nu):
+                f = bm.faces.new((rows[j][i], rows[j][i + 1], rows[j + 1][i + 1], rows[j + 1][i]))
+                f.smooth = True
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        for f in bm.faces:
+            if f.normal.y > 0:
+                f.normal_flip()
+        K.obj(K.name("PROP", "StageCurtain"), bm, M["velvet"])
+        cx = outer - sgn * 0.35
+        K.tube(K.name("PROP", "StageTieback"), [Vector((cx + 0.42 * math.cos(a), y - 0.15 - 0.25 * math.sin(a), tie_z)) for a in [2 * math.pi * k / 14 for k in range(15)]], 0.03, M["gilt"])
+        K.lathe(K.name("PROP", "StageTassel"), [(0, 0), (0.07, 0.04), (0.09, 0.24), (0.04, 0.33), (0.06, 0.38), (0, 0.42)], (cx - sgn * 0.42, y - 0.15, tie_z - 0.5), M["gilt"], segments=14)
+    # valance: a row of swags (catenaries) with jabots, pleated, across the top
+    bm = bmesh.new()
+    nu, swags = 160, 7
+    top, bot = [], []
+    for i in range(nu + 1):
+        u = i / nu
+        xx = x0 + span * u
+        sag = valance * (0.45 + 0.55 * abs(math.sin(math.pi * swags * u)))
+        d = 0.06 + 0.05 * math.sin(2 * math.pi * swags * 4 * u)
+        top.append(bm.verts.new((xx, y - 0.3, z_top)))
+        bot.append(bm.verts.new((xx, y - 0.3 - d, z_top - sag)))
+    for i in range(nu):
+        f = bm.faces.new((top[i], top[i + 1], bot[i + 1], bot[i]))
+        f.smooth = True
+        if f.normal.y > 0:
+            f.normal_flip()
+    K.obj(K.name("PROP", "StageValance"), bm, M["velvet"])
+    fringe = A._props.get("_bullion")
+    if fringe is None:
+        fringe = A._props["_bullion"] = K.prototype(K.cyl(K.name("PROP", "BullionFringe"), 0.015, 0.008, 0.16, (0, 0, -30), M["gilt"], segments=6))
+    for i in range(0, nu + 1, 1):
+        u = i / nu
+        sag = valance * (0.45 + 0.55 * abs(math.sin(math.pi * swags * u)))
+        K.linked(K.name("PROP", "BullionFringe"), fringe, (x0 + span * u, y - 0.36, z_top - sag - 0.07))

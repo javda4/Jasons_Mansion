@@ -2,11 +2,11 @@
   "zone": "library",
   "size": 4096,
   "samples": 256,
-  "encodeScale": 2.770142093234217,
-  "intensity": 1.1340907967366747,
-  "p99_5": 0.36099231243133545,
-  "max": 18.240978240966797,
-  "coverage": 0.05188673734664917,
+  "encodeScale": 2.7642896339155203,
+  "intensity": 1.1364918549218144,
+  "p99_5": 0.3617565929889679,
+  "max": 31.806554794311523,
+  "coverage": 0.05044454336166382,
   "objects": [
     "ROOM_Library_Lightmapped_01",
     "ROOM_Library_Lightmapped_02",
@@ -33,5 +33,5 @@
     "LIGHT_Library_Banker_02",
     "LIGHT_Library_Lamp_03"
   ],
-  "seconds": 103.2
+  "seconds": 99.7
 }

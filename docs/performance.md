@@ -141,3 +141,14 @@ Dressing-density budget for furnished rooms, set from this room:
 | Ballroom | 5.5 MB | 0.32 M | 4096² | 190–436 draw calls, 120 fps |
 
 Both rooms are inside the per-room budget (0.8 M triangles, 20 MB).
+
+## Grand Ballroom rebuild and the window fix (2026-10-07)
+
+| Room | GLB | Triangles | In the browser |
+|---|---|---|---|
+| Ballroom (18 × 30 × 9 m, stage and orchestra) | 7.3 MB | 0.56 M | 164–306 draw calls, 120 fps |
+| Stair Hall (now with real window openings) | 24.9 MB | 1.43 M | unchanged |
+| Grand Salon | 18.7 MB | 0.72 M | 120 fps |
+| Library | 16.3 MB | 0.45 M | 120 fps |
+
+The parquet is waxed, not lacquered (clearcoat 0.06): SSR at grazing angles had turned it into a mirror.

@@ -105,6 +105,8 @@ class Mansion:
         self.trim = trim or self.M["walnut"]
         self.panel = panel or self.M["walnut_dark"]
         self.ceil = ceiling or self.M["ceiling"]
+        self.win_sill = 1.35          # window sill above the wall base (a ballroom lowers it: French windows)
+        self.win_w = 1.9              # window / mirror opening width
         self.H = height
         self.T = thickness
         self.field_top = height - 1.3
@@ -143,6 +145,28 @@ class Mansion:
             lo_c, hi_c = P(a, -T, z0), P(b, 0, z1)
             K.collider(f"{tag}_{K.idx(tag + 'col')}", [min(lo_c[i], hi_c[i]) for i in range(3)], [max(lo_c[i], hi_c[i]) for i in range(3)])
 
+        bottom_w, top_w = self.win_box(base)
+        holes = [(c - self.win_w / 2, c + self.win_w / 2, bottom_w, top_w) for c in list(windows) + list(mirrors)]
+
+        def cut(a, b, z0, z1):
+            """Rectangles covering [a, b] × [z0, z1] minus the window and mirror openings."""
+            xs = sorted({a, b} | {x for h0, h1, _, _ in holes for x in (h0, h1) if a < x < b})
+            out = []
+            for x0, x1 in zip(xs, xs[1:]):
+                hole = next((h for h in holes if h[0] <= x0 + 1e-6 and x1 <= h[1] + 1e-6), None)
+                if not hole:
+                    out.append((x0, x1, z0, z1))
+                    continue
+                for za, zb in ((z0, min(z1, hole[2])), (max(z0, hole[3]), z1)):
+                    if zb - za > 1e-3:
+                        out.append((x0, x1, za, zb))
+            return out
+
+        def cut_line(a, b, z):
+            """Segments of a horizontal moulding at height z that don't cross an opening."""
+            xs = sorted({a, b} | {x for h0, h1, zb, zt in holes if zb < z < zt for x in (h0, h1) if a < x < b})
+            return [(x0, x1) for x0, x1 in zip(xs, xs[1:]) if not any(h[0] <= x0 + 1e-6 and x1 <= h[1] + 1e-6 and h[2] < z < h[3] for h in holes)]
+
         gaps = sorted((c - w / 2, c + w / 2, h) for c, w, h in openings)
         spans, start = [], lo
         for g0, g1, _ in gaps:
@@ -154,7 +178,8 @@ class Mansion:
 
         for a, b in spans:
             if mass:
-                boxw(K.name("ROOM", f"{tag}Wall"), (a + b) / 2, b - a, -T, T + 0.02, base, H, self.panel, lightmap=True)
+                for x0, x1, z0, z1 in cut(a, b, base, H):
+                    boxw(K.name("ROOM", f"{tag}Wall"), (x0 + x1) / 2, x1 - x0, -T, T + 0.02, z0, z1, self.panel, lightmap=True)
                 col(a, b, base, H)
             else:
                 boxw(K.name("ROOM", f"{tag}Wall"), (a + b) / 2, b - a, -0.02, 0.04, base, H, self.panel, lightmap=True)
@@ -176,19 +201,23 @@ class Mansion:
 
         for a, b in spans:
             z = base
-            K.sweep(K.name("ROOM", f"{tag}Skirting"), [P(a, 0, z), P(b, 0, z)], n,
-                    [(h_, d_) for (d_, h_) in [(0, 0), (0.035, 0), (0.035, 0.14), (0.025, 0.155), (0.02, 0.17), (0.012, 0.19), (0, 0.2)]],
-                    self.trim, n1_hint=UPV, lightmap=True)
-            boxw(K.name("ROOM", f"{tag}Wainscot"), (a + b) / 2, b - a, 0, 0.03, z, z + 1.05, self.trim, lightmap=True)
-            K.sweep(K.name("ROOM", f"{tag}Rail"), [P(a, 0, z + 1.07), P(b, 0, z + 1.07)], n,
-                    [(h_, d_) for (d_, h_) in [(0, -0.03), (0.02, -0.03), (0.045, -0.015), (0.055, 0), (0.05, 0.018), (0.03, 0.03), (0.012, 0.04), (0, 0.045)]],
-                    M["gilt"], n1_hint=UPV)
-            boxw(K.name("ROOM", f"{tag}Field"), (a + b) / 2, b - a, 0, 0.018, z + 1.12, FT, field, lightmap=True)
+            for s0, s1 in cut_line(a, b, z + 0.1):
+                K.sweep(K.name("ROOM", f"{tag}Skirting"), [P(s0, 0, z), P(s1, 0, z)], n,
+                        [(h_, d_) for (d_, h_) in [(0, 0), (0.035, 0), (0.035, 0.14), (0.025, 0.155), (0.02, 0.17), (0.012, 0.19), (0, 0.2)]],
+                        self.trim, n1_hint=UPV, lightmap=True)
+            for x0, x1, z0, z1 in cut(a, b, z, z + 1.05):
+                boxw(K.name("ROOM", f"{tag}Wainscot"), (x0 + x1) / 2, x1 - x0, 0, 0.03, z0, z1, self.trim, lightmap=True)
+            for s0, s1 in cut_line(a, b, z + 1.07):
+                K.sweep(K.name("ROOM", f"{tag}Rail"), [P(s0, 0, z + 1.07), P(s1, 0, z + 1.07)], n,
+                        [(h_, d_) for (d_, h_) in [(0, -0.03), (0.02, -0.03), (0.045, -0.015), (0.055, 0), (0.05, 0.018), (0.03, 0.03), (0.012, 0.04), (0, 0.045)]],
+                        M["gilt"], n1_hint=UPV)
+            for x0, x1, z0, z1 in cut(a, b, z + 1.12, FT):
+                boxw(K.name("ROOM", f"{tag}Field"), (x0 + x1) / 2, x1 - x0, 0, 0.018, z0, z1, field, lightmap=True)
             k = max(1, round((b - a) / 1.4))
             pw = (b - a) / k
             for i in range(k):
                 c = a + pw * (i + 0.5)
-                if pw < 0.6:
+                if pw < 0.6 or any(h[0] - 0.1 < c < h[1] + 0.1 and h[2] < z + 0.9 for h in holes):
                     continue
                 boxw(K.name("ROOM", f"{tag}Panel"), c, pw - 0.36, 0.03, 0.02, z + 0.3, z + 0.9, self.panel, bevel=0.012, segments=3, lightmap=True)
                 K.frame(K.name("ROOM", f"{tag}PanelFrame"), tuple(P(c, 0.03, z + 0.6)), pw - 0.3, 0.66, n, P_PANEL, self.trim)
@@ -236,43 +265,142 @@ class Mansion:
         for c in sconces:
             self.sconce(P, n, c, base)
 
-    def window(self, tag, P, n, t_dir, c, base, w=1.9, mirror=False):
-        K, M = self.K, self.M
+    def win_box(self, base):
+        """Bottom and top (arch crown) of this room's window / mirror openings on a wall standing at `base`."""
+        return base + self.win_sill, min(base + self.win_sill + 3.9 + max(0.0, self.H - 7.0), self.field_top - 0.55)
+
+    def window(self, tag, P, n, t_dir, c, base, w=None, mirror=False):
+        """An arched opening through the wall: painted reveals and spandrels, a gilt surround and a marble sill. A
+        window holds the night view deep in the reveal behind glazing bars at mid-depth, dressed with pleated
+        velvet drapes on gilt tiebacks over a sheer voile; a mirror is silvered glass in a shallow recess."""
+        K, M, T = self.K, self.M, self.T
+        w = w or self.win_w
         if mirror and "mirror" not in M:
             K.material("mirror", f"MAT_{K.zone}_Mirror", (0.82, 0.83, 0.8), 0.04, metal=1.0)
-        bottom, top = base + 1.35, min(base + 5.25, self.field_top - 0.55)
+        bottom, top = self.win_box(base)
         hh = top - bottom
+        spring = hh - w / 2
+        right = Vector((0, 0, 1)).cross(n).normalized()
+        depth = 0.07 if mirror else T - 0.04
+        outline = [(-w / 2, 0.0), (-w / 2, spring)] + [(-(w / 2) * math.cos(math.pi * k / 16), spring + (w / 2) * math.sin(math.pi * k / 16)) for k in range(1, 16)] + [(w / 2, spring), (w / 2, 0.0)]
+        at = lambda u, v, off: P(c, off, bottom) + right * u + Vector((0, 0, v))  # noqa: E731
+        # the view (or the mirror glass) at the back of the opening
         bm = bmesh.new()
         uvl = bm.loops.layers.uv.verify()
-        pts = [(-w / 2, 0), (w / 2, 0), (w / 2, hh - w / 2)]
-        for k in range(1, 16):
-            a = math.pi * k / 16
-            pts.append((w / 2 * math.cos(a), hh - w / 2 + w / 2 * math.sin(a)))
-        pts.append((-w / 2, hh - w / 2))
-        right = Vector((0, 0, 1)).cross(n).normalized()
-        f = bm.faces.new([bm.verts.new(P(c, -0.02, bottom) + right * u + Vector((0, 0, v))) for u, v in pts])
-        for loop, (u, v) in zip(f.loops, pts):
+        f = bm.faces.new([bm.verts.new(at(u, v, -depth)) for u, v in outline])
+        for loop, (u, v) in zip(f.loops, outline):
             loop[uvl].uv = (u / w + 0.5, v / hh)
         if f.normal.dot(n) < 0:
             f.normal_flip()
         K.obj(K.name("PROP", f"{tag}{'Mirror' if mirror else 'WindowView'}"), bm, M["mirror" if mirror else "sea"], uv=None)
-        for zz in (bottom + hh * 0.26, bottom + hh * 0.52, bottom + hh * 0.75):
-            K.box(K.name("PROP", f"{tag}Glazing"), (w, 0.04, 0.035) if abs(n.y) > 0.5 else (0.04, w, 0.035), tuple(P(c, 0.0, zz)), self.trim)
-        K.box(K.name("PROP", f"{tag}Glazing"), (0.05, 0.04, hh) if abs(n.y) > 0.5 else (0.04, 0.05, hh), tuple(P(c, 0.0, bottom + hh / 2)), self.trim)
-        arch = [P(c - w / 2, 0.0, bottom)] + [P(c + (w / 2) * math.cos(math.pi - math.pi * k / 16), 0.0, bottom + hh - w / 2 + (w / 2) * math.sin(math.pi * k / 16)) for k in range(17)] + [P(c + w / 2, 0.0, bottom)]
+        # reveal: the opening's lining, from the room face back to the view; spandrels close the arch's corners
+        bm = bmesh.new()
+        ring_in = [bm.verts.new(at(u, v, 0.02)) for u, v in outline]
+        ring_out = [bm.verts.new(at(u, v, -depth)) for u, v in outline]
+        # wound so the lining faces into the opening (sides, arch soffit and the sill's top)
+        for k in range(len(outline) - 1):
+            bm.faces.new((ring_out[k], ring_out[k + 1], ring_in[k + 1], ring_in[k]))
+        bm.faces.new((ring_out[-1], ring_out[0], ring_in[0], ring_in[-1]))
+        K.obj(K.name("ROOM", f"{tag}Reveal"), bm, self.trim, lightmap=True)
+        for sgn in (-1, 1):
+            poly = [(sgn * w / 2, spring)] + [(sgn * (w / 2) * math.cos(math.pi * k / 16), spring + (w / 2) * math.sin(math.pi * k / 16)) for k in range(1, 9)] + [(0.0, hh + 0.02), (sgn * (w / 2 + 0.02), hh + 0.02)]
+            bm = bmesh.new()
+            f = bm.faces.new([bm.verts.new(at(u, v, 0.022)) for u, v in poly])
+            if f.normal.dot(n) < 0:
+                f.normal_flip()
+            K.obj(K.name("ROOM", f"{tag}Spandrel"), bm, self.panel, lightmap=True)
+        arch = [P(c - w / 2, 0.03, bottom)] + [P(c + (w / 2) * math.cos(math.pi - math.pi * k / 16), 0.03, bottom + spring + (w / 2) * math.sin(math.pi * k / 16)) for k in range(17)] + [P(c + w / 2, 0.03, bottom)]
         K.sweep(K.name("ROOM", f"{tag}WindowSurround"), arch, n, [(0, 0), (0, 0.04), (0.05, 0.06), (0.12, 0.05), (0.14, 0)], M["gilt"], n1_hint=-t_dir)
-        K.box(K.name("ROOM", f"{tag}WindowSill"), (w + 0.5, 0.3, 0.08) if abs(n.y) > 0.5 else (0.3, w + 0.5, 0.08), tuple(P(c, 0.15, bottom - 0.04)), M["nero"], bevel=0.01, lightmap=True)
+        K.box(K.name("ROOM", f"{tag}WindowSill"), (w + 0.36, 0.26, 0.06) if abs(n.y) > 0.5 else (0.26, w + 0.36, 0.06), tuple(P(c, 0.08, bottom - 0.03)), M["nero"], bevel=0.01, lightmap=True)
+        mid = -depth * (0.35 if mirror else 0.5)
+        for fz in ((0.5, 1.0) if mirror else (0.34, 0.67, 1.0)):     # transoms up to the springing line
+            K.box(K.name("PROP", f"{tag}Glazing"), (w, 0.035, 0.03) if abs(n.y) > 0.5 else (0.035, w, 0.03), tuple(P(c, mid, bottom + spring * fz)), self.trim)
+        K.box(K.name("PROP", f"{tag}Glazing"), (0.045, 0.035, hh) if abs(n.y) > 0.5 else (0.035, 0.045, hh), tuple(P(c, mid, bottom + hh / 2)), self.trim)
         if mirror:
             return
-        key = f"drape{round(self.field_top - base, 2)}"
-        if key not in self._sconce:
-            self._sconce[key] = K.prototype(K.cyl(K.name("PROP", "Drape"), 0.085, 0.085, self.field_top - base - 0.1, (0, 0, -20), M["velvet"], segments=12, subsurf=1))
-        for s in (-1, 1):
-            for k in range(5):
-                p = P(c + s * (w / 2 + 0.12 + k * 0.1), 0.2 + (k % 2) * 0.03, base + (self.field_top - base) / 2)
-                K.linked(K.name("PROP", "Drape"), self._sconce[key], tuple(p))
-        K.box(K.name("PROP", f"{tag}Pelmet"), (w + 1.4, 0.16, 0.42) if abs(n.y) > 0.5 else (0.16, w + 1.4, 0.42), tuple(P(c, 0.22, self.field_top - 0.25)), M["velvet"], bevel=0.03, segments=3)
-        K.box(K.name("PROP", f"{tag}PelmetGilt"), (w + 1.45, 0.18, 0.05) if abs(n.y) > 0.5 else (0.18, w + 1.45, 0.05), tuple(P(c, 0.23, self.field_top - 0.47)), M["gilt"], bevel=0.01)
+        self._voile(tag, P, right, n, c, w, base, top)
+        drop = self.field_top - 0.47
+        for sgn in (-1, 1):
+            self._drape(tag, P, right, n, c, w, base, drop, sgn)
+        K.box(K.name("PROP", f"{tag}Pelmet"), (w + 1.5, 0.18, 0.42) if abs(n.y) > 0.5 else (0.18, w + 1.5, 0.42), tuple(P(c, 0.26, drop + 0.21)), M["velvet"], bevel=0.03, segments=3)
+        K.box(K.name("PROP", f"{tag}PelmetGilt"), (w + 1.56, 0.2, 0.06) if abs(n.y) > 0.5 else (0.2, w + 1.56, 0.06), tuple(P(c, 0.27, drop + 0.43)), M["gilt"], bevel=0.012)
+        fringe = self._sconce.get("fringe")
+        if fringe is None:
+            fringe = self._sconce["fringe"] = K.prototype(K.cyl(K.name("PROP", "PelmetTassel"), 0.012, 0.004, 0.09, (0, 0, -30), M["gilt"], segments=6))
+        for k in range(int((w + 1.4) / 0.07)):
+            K.linked(K.name("PROP", "PelmetTassel"), fringe, tuple(P(c - (w + 1.4) / 2 + k * 0.07, 0.355, drop - 0.04)))
+
+    def _drape(self, tag, P, right, n, c, w, base, drop, sgn):
+        """One velvet curtain: deep pleats hanging from the pelmet, gathered by a gilt tieback into an hourglass and
+        flaring into a slight puddle on the floor. sgn = -1 left of the window, +1 right."""
+        K, M = self.K, self.M
+        outer = sgn * (w / 2 + 0.62)                # the curtain's outer edge, beside the opening
+        inner_top = sgn * (w / 2 - 0.12)            # it overlaps the glass a little at the top
+        tie = base + 1.05
+        H0 = drop - base
+        nu, nv, folds = 56, 36, 9
+        bm = bmesh.new()
+        uvl = bm.loops.layers.uv.verify()
+        rows = []
+        for j in range(nv + 1):
+            fz = j / nv                              # 0 at the rod, 1 at the floor
+            z = drop - fz * H0
+            # inner edge: from the glass at the top, pinched to the tieback, then flaring out below it
+            if z >= tie:
+                t = (drop - z) / (drop - tie)
+                inner = inner_top + ((outer - sgn * 0.26) - inner_top) * (t ** 1.6)
+            else:
+                t = (tie - z) / max(0.01, tie - base)
+                inner = (outer - sgn * 0.26) + (-sgn * 0.34) * math.sin(t * math.pi / 2) * 1.0
+            width = abs(outer - inner)
+            amp = min(0.11, 0.045 + 0.065 * max(0.0, 0.75 - width) / 0.5)   # pleats deepen where the cloth is gathered
+            off0 = 0.17 + (0.05 if abs(z - tie) < 0.15 else 0.0) * (1 - abs(z - tie) / 0.15)
+            row = []
+            for i in range(nu + 1):
+                u = i / nu
+                x = outer + (inner - outer) * u
+                d = off0 + amp * math.sin(2 * math.pi * folds * u) + amp
+                zz = z
+                if j == nv:                          # puddle: the hem rolls out onto the floor
+                    d += 0.07
+                    zz = base + 0.006
+                row.append(bm.verts.new(P(c + x, d, zz)))
+            rows.append(row)
+        for j in range(nv):
+            for i in range(nu):
+                f = bm.faces.new((rows[j][i], rows[j][i + 1], rows[j + 1][i + 1], rows[j + 1][i]))
+                f.smooth = True
+                for loop, (ii, jj) in zip(f.loops, ((i, j), (i + 1, j), (i + 1, j + 1), (i, j + 1))):
+                    loop[uvl].uv = (ii / nu * 1.2, -(jj / nv) * H0)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        for f in bm.faces:
+            if f.normal.dot(n) < 0:
+                f.normal_flip()
+        K.obj(K.name("PROP", f"{tag}Drape"), bm, M["velvet"], uv=None)
+        # the gilt tieback rope round the gathered curtain, and its tassel
+        cx = outer - sgn * 0.13
+        pts = [P(c + cx + 0.17 * math.cos(a), 0.2 + 0.11 * math.sin(a), tie) for a in [2 * math.pi * k / 12 for k in range(13)]]
+        K.tube(K.name("PROP", f"{tag}Tieback"), pts, 0.016, M["gilt"])
+        K.lathe(K.name("PROP", f"{tag}Tassel"), [(0, 0), (0.035, 0.02), (0.045, 0.12), (0.02, 0.17), (0.03, 0.2), (0, 0.22)],
+                tuple(P(c + cx + sgn * 0.17, 0.2, tie - 0.24)), M["gilt"], segments=12)
+
+    def _voile(self, tag, P, right, n, c, w, base, top):
+        """A sheer voile behind the drapes: softly pleated, translucent, from the arch's crown to the sill."""
+        K, M = self.K, self.M
+        if "voile" not in M:
+            K.material("voile", f"MAT_{K.zone}_Voile", (0.88, 0.86, 0.8), 0.7, alpha=0.1)   # barely there: the night shows through
+        bottom = base + self.win_sill
+        bm = bmesh.new()
+        nu, folds = 36, 12
+        rows = []
+        for z in (top + 0.05, bottom + 0.02):
+            rows.append([bm.verts.new(P(c - w / 2 - 0.05 + (w + 0.1) * i / nu, 0.06 + 0.02 * math.sin(2 * math.pi * folds * i / nu), z)) for i in range(nu + 1)])
+        for i in range(nu):
+            f = bm.faces.new((rows[0][i], rows[0][i + 1], rows[1][i + 1], rows[1][i]))
+            f.smooth = True
+            if f.normal.dot(n) < 0:
+                f.normal_flip()
+        K.obj(K.name("PROP", f"{tag}Voile"), bm, M["voile"])
 
     def art_material(self, idx):
         work = self.art[idx % len(self.art)]

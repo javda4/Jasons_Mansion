@@ -3,8 +3,8 @@
     "stair_hall": {
       "title": "Stair Hall",
       "asset": "/assets/rooms/stair_hall/stair_hall.glb",
-      "bytes": 24868276,
-      "hash": "c80d27ec58140448",
+      "bytes": 25523516,
+      "hash": "07d36d19ff6841f8",
       "preload": true,
       "priority": 1,
       "neighbors": [
@@ -23,22 +23,22 @@
       ],
       "lightmap": {
         "url": "/assets/rooms/stair_hall/stair_hall_lightmap.ktx2",
-        "bytes": 3457903,
-        "hash": "d974cd589f220e61",
-        "intensity": 8.389260784442516
+        "bytes": 3364440,
+        "hash": "3963c52ddacf977e",
+        "intensity": 9.030059537174102
       },
       "stats": {
-        "triangles": 1355940,
-        "nodes": 721,
-        "materials": 63,
+        "triangles": 1430600,
+        "nodes": 722,
+        "materials": 64,
         "textureBytes": 17526786
       }
     },
     "grand_salon": {
       "title": "Grand Salon",
       "asset": "/assets/rooms/grand_salon/grand_salon.glb",
-      "bytes": 18717996,
-      "hash": "c96e820257d3e797",
+      "bytes": 19117904,
+      "hash": "39ce5a1db246d600",
       "preload": false,
       "priority": 2,
       "neighbors": [
@@ -55,22 +55,22 @@
       ],
       "lightmap": {
         "url": "/assets/rooms/grand_salon/grand_salon_lightmap.ktx2",
-        "bytes": 1394405,
-        "hash": "a2b021160211ba8c",
-        "intensity": 6.415466432670856
+        "bytes": 1243160,
+        "hash": "699b9f0301692c42",
+        "intensity": 6.658161967285458
       },
       "stats": {
-        "triangles": 671601,
-        "nodes": 173,
-        "materials": 62,
+        "triangles": 716397,
+        "nodes": 174,
+        "materials": 63,
         "textureBytes": 15353979
       }
     },
     "library": {
       "title": "Library",
       "asset": "/assets/rooms/library/library.glb",
-      "bytes": 16446808,
-      "hash": "1f253c4946ca60e3",
+      "bytes": 16727604,
+      "hash": "d2da1b540f44d770",
       "preload": false,
       "priority": 2,
       "neighbors": [
@@ -86,22 +86,22 @@
       ],
       "lightmap": {
         "url": "/assets/rooms/library/library_lightmap.ktx2",
-        "bytes": 1509974,
-        "hash": "36bbc9f219253c7d",
-        "intensity": 1.1340907967366747
+        "bytes": 1469019,
+        "hash": "96b7c15247b1c0b6",
+        "intensity": 1.1364918549218144
       },
       "stats": {
-        "triangles": 424129,
-        "nodes": 138,
-        "materials": 49,
+        "triangles": 454489,
+        "nodes": 139,
+        "materials": 50,
         "textureBytes": 12427412
       }
     },
     "ballroom": {
       "title": "Ballroom",
       "asset": "/assets/rooms/ballroom/ballroom.glb",
-      "bytes": 5635012,
-      "hash": "6ea8c9a9da0a1575",
+      "bytes": 7520420,
+      "hash": "d292699ffe4cb837",
       "preload": false,
       "priority": 2,
       "neighbors": [
@@ -117,17 +117,17 @@
       ],
       "lightmap": {
         "url": "/assets/rooms/ballroom/ballroom_lightmap.ktx2",
-        "bytes": 5642478,
-        "hash": "0e543c2606def1ef",
-        "intensity": 6.260701777736052
+        "bytes": 4692097,
+        "hash": "87163a62a94f5bcd",
+        "intensity": 1.9502614536348524
       },
       "stats": {
-        "triangles": 324720,
-        "nodes": 142,
-        "materials": 30,
-        "textureBytes": 3203986
+        "triangles": 556170,
+        "nodes": 176,
+        "materials": 31,
+        "textureBytes": 2630747
       }
     }
   },
-  "generated": "2026-10-07T21:09:57.497Z"
+  "generated": "2026-10-07T22:29:56.412Z"
 }

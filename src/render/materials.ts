@@ -117,7 +117,7 @@ export function createMaterials(tex: TextureLibrary): Record<MaterialKey, Materi
     }),
     // Mansion salons: oak point de Hongrie, satin-waxed (clearcoat ≤ 0.2), and ivory-painted boiserie
     MAT_Wood_Parquet: pbr('Wood_Parquet', 1 / 3.4, {
-      color: tint(0xe0c9a8), roughness: 1, metalness: 0, clearcoat: 0.15, clearcoatRoughness: 0.4, envMapIntensity: 0.9,
+      color: tint(0xe0c9a8), roughness: 1, metalness: 0, clearcoat: 0.06, clearcoatRoughness: 0.55, envMapIntensity: 0.55,   // waxed, not lacquered: no mirror sheen at grazing angles
     }),
     MAT_Paint_Ivory: pbr('Plaster_Ceiling', 0.5, {
       color: tint(0xd9ccb0), roughness: 0.62, metalness: 0, normalScale: new Vector2(0.25, 0.25), envMapIntensity: 0.6,
