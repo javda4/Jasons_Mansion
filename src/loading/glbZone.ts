@@ -4,6 +4,7 @@ import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import type { Aabb, Vec3 } from '../physics/types';
 import { isLibraryMaterial, type MaterialKey } from '../render/materialNames';
+import { isNightView, nightViewMaterial } from '../render/nightView';
 import type { DoorExtras } from '../interaction/schema';
 import type { AnchorDef, DoorDef, EffectDef, LightDef, ZoneInstance } from '../world/roomBuilder';
 import { assetUrl } from './assetUrl';
@@ -24,6 +25,7 @@ import { assetUrl } from './assetUrl';
  *                 origins (hinges); local +Y (Blender +Z) points to the owning room
  *   TEXCOORD_1  → baked lightmap (hybrid lighting; see blender/tools/bake_lightmap.py)
  *   MAT_*       → library material names are swapped for the shared runtime material
+ *   MAT_*_SeaView → the window-view backdrop: swapped for the live night view (render/nightView.ts)
  *
  * Decoding runs off the main thread: KTX2 transcoding in a worker (Basis WASM), Meshopt in WASM.
  */
@@ -114,7 +116,7 @@ export async function loadGlbZone(id: string, url: string, materials: Record<Mat
     }
     if (mesh.isMesh) {
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-      const swapped = mats.map((m) => (isLibraryMaterial(m.name) ? materials[m.name] : m));
+      const swapped = mats.map((m) => (isLibraryMaterial(m.name) ? materials[m.name] : isNightView(m.name) ? nightViewMaterial() : m));
       for (const m of swapped) if (FELT.test(m.name)) matteCloth(m);
       mesh.material = Array.isArray(mesh.material) ? swapped : swapped[0];
       const emissiveOnly = swapped.every((m) => m.name.startsWith('MAT_Emissive') || /Fire|SeaView|Window/.test(m.name));

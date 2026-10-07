@@ -21,6 +21,7 @@
     "author:ballroom": "blender -b --factory-startup --python blender/tools/author_ballroom.py",
     "fetch-art": "node scripts/fetch-art.mjs",
     "bake:all": "sh scripts/bake-all.sh",
+    "make-night-sky": "node scripts/make-night-sky.mjs",
     "make-carpets": "node scripts/make-carpets.mjs",
     "fetch-models": "node scripts/fetch-models.mjs",
     "make-game-textures": "node scripts/make-game-textures.mjs"

@@ -118,7 +118,9 @@ class Mansion:
         self._dining = {}
         self._props = {}
         if sea:
-            K.material("sea", f"MAT_{K.zone}_SeaView", (0, 0, 0), 0.1, emis_tex=sea, emis_strength=1.1)
+            # the backdrop beyond the windows: swapped for the live night at runtime (src/render/nightView.ts); in the
+            # bake it is only a faint sky glow, so the terrace and the rooms see a moonlit night, not a lit wall
+            K.material("sea", f"MAT_{K.zone}_SeaView", (0, 0, 0), 0.1, emis_tex=sea, emis_strength=0.12)
 
     # ------------------------------------------------------------------ walls
     def wall(self, tag, axis, surface, normal, lo, hi, base=0.0, openings=(), windows=(), paintings=(),
@@ -281,18 +283,21 @@ class Mansion:
         hh = top - bottom
         spring = hh - w / 2
         right = Vector((0, 0, 1)).cross(n).normalized()
-        depth = 0.07 if mirror else T - 0.04
+        depth = 0.07 if mirror else T + 0.02          # a window goes right through the wall
         outline = [(-w / 2, 0.0), (-w / 2, spring)] + [(-(w / 2) * math.cos(math.pi * k / 16), spring + (w / 2) * math.sin(math.pi * k / 16)) for k in range(1, 16)] + [(w / 2, spring), (w / 2, 0.0)]
         at = lambda u, v, off: P(c, off, bottom) + right * u + Vector((0, 0, v))  # noqa: E731
-        # the view (or the mirror glass) at the back of the opening
+        # a mirror's silvered glass at the back of its recess; a window's glass at mid-depth (the view is outside:
+        # the terrace and the live night beyond it, see outside())
+        if "winglass" not in M:
+            K.material("winglass", f"MAT_{K.zone}_WindowGlass", (0.8, 0.85, 0.85), 0.04, alpha=0.035)
         bm = bmesh.new()
         uvl = bm.loops.layers.uv.verify()
-        f = bm.faces.new([bm.verts.new(at(u, v, -depth)) for u, v in outline])
+        f = bm.faces.new([bm.verts.new(at(u, v, -depth if mirror else -T * 0.5 - 0.02)) for u, v in outline])
         for loop, (u, v) in zip(f.loops, outline):
             loop[uvl].uv = (u / w + 0.5, v / hh)
         if f.normal.dot(n) < 0:
             f.normal_flip()
-        K.obj(K.name("PROP", f"{tag}{'Mirror' if mirror else 'WindowView'}"), bm, M["mirror" if mirror else "sea"], uv=None)
+        K.obj(K.name("PROP", f"{tag}{'Mirror' if mirror else 'WindowGlass'}"), bm, M["mirror" if mirror else "winglass"], uv=None)
         # reveal: the opening's lining, from the room face back to the view; spandrels close the arch's corners
         bm = bmesh.new()
         ring_in = [bm.verts.new(at(u, v, 0.02)) for u, v in outline]
@@ -318,7 +323,7 @@ class Mansion:
         K.box(K.name("PROP", f"{tag}Glazing"), (0.045, 0.035, hh) if abs(n.y) > 0.5 else (0.035, 0.045, hh), tuple(P(c, mid, bottom + hh / 2)), self.trim)
         if mirror:
             return
-        self._voile(tag, P, right, n, c, w, base, top)
+        # (no voile across the glass: lit by the room it veiled the night in a cream haze)
         drop = self.field_top - 0.47
         for sgn in (-1, 1):
             self._drape(tag, P, right, n, c, w, base, drop, sgn)
@@ -401,6 +406,61 @@ class Mansion:
             if f.normal.dot(n) < 0:
                 f.normal_flip()
         K.obj(K.name("PROP", f"{tag}Voile"), bm, M["voile"])
+
+    def outside(self, tag, axis, surface, normal, lo, hi, base=0.0, depth=3.6, extend=4.0):
+        """What a sea wall's windows look out on. A stone terrace the depth of `depth` beyond the wall's outer face, a
+        balustrade of turned stone balusters on its edge with urns of plants and lanterns on its pedestals; beyond
+        it nothing but the backdrop: a great quad 45 m out whose `MAT_*_SeaView` material the runtime swaps for the
+        live night (sky photograph, animated sea far below the cliff, the coast's lights: src/render/nightView.ts).
+        axis / surface / normal as for wall() (normal points into the room)."""
+        K, M, T = self.K, self.M, self.T
+        if "stone" not in M:
+            K.material("stone", f"MAT_{K.zone}_TerraceStone", (0.5, 0.46, 0.39), 0.88)
+            K.material("terracotta", f"MAT_{K.zone}_Terracotta", (0.42, 0.2, 0.12), 0.8)
+        n = Vector((0, normal, 0)) if axis == "x" else Vector((normal, 0, 0))
+
+        def P(c, off, z):
+            return Vector((c, surface + off * normal, z)) if axis == "x" else Vector((surface + off * normal, c, z))
+
+        def box(name, c, length, off0, off1, z0, z1, mat, **kw):
+            size = (length, abs(off1 - off0), z1 - z0) if axis == "x" else (abs(off1 - off0), length, z1 - z0)
+            return K.box(K.name("ROOM", name), size, tuple(P(c, (off0 + off1) / 2, (z0 + z1) / 2)), mat, **kw)
+        a, b = lo - extend, hi + extend
+        mid, L = (a + b) / 2, b - a
+        edge = -T - depth                                        # the balustrade line (offsets are negative outside)
+        box(f"{tag}Terrace", mid, L, -T, edge - 0.35, base - 0.25, base - 0.01, M["stone"], lightmap=True)
+        box(f"{tag}TerraceCoping", mid, L, edge - 0.35, edge - 0.55, base - 0.6, base + 0.02, M["stone"], lightmap=True)
+        box(f"{tag}BalustradePlinth", mid, L, edge + 0.12, edge - 0.18, base, base + 0.18, M["stone"], lightmap=True)
+        box(f"{tag}BalustradeRail", mid, L, edge + 0.16, edge - 0.22, base + 0.86, base + 1.0, M["stone"], bevel=0.02, lightmap=True)
+        bal = self._sconce.get("stonebal")
+        if bal is None:
+            bal = self._sconce["stonebal"] = K.prototype(K.lathe(K.name("PROP", "StoneBaluster"), [(0, 0), (0.07, 0), (0.07, 0.05), (0.045, 0.09), (0.04, 0.2), (0.075, 0.4),
+                                                                                                    (0.08, 0.46), (0.045, 0.6), (0.035, 0.63), (0.06, 0.66), (0.06, 0.68), (0, 0.68)], (0, 0, -30), M["stone"], segments=10))
+        x = a + 0.12
+        piers = [a + k * (L / max(1, round(L / 4.2))) for k in range(round(L / 4.2) + 1)]
+        while x < b:
+            if all(abs(x - q) > 0.32 for q in piers):
+                K.linked(K.name("PROP", "StoneBaluster"), bal, tuple(P(x, edge - 0.03, base + 0.18)))
+            x += 0.22
+        for k, q in enumerate(piers):
+            box(f"{tag}BalustradePier", q, 0.5, edge + 0.2, edge - 0.3, base, base + 1.06, M["stone"], bevel=0.02, lightmap=True)
+            top = base + 1.06
+            K.lathe(K.name("PROP", "TerraceUrn"), [(0, 0), (0.13, 0), (0.14, 0.04), (0.09, 0.1), (0.12, 0.2), (0.24, 0.4), (0.27, 0.52), (0.2, 0.6), (0.25, 0.66), (0, 0.66)],
+                    tuple(P(q, edge - 0.05, top)), M["terracotta"], segments=24)
+            if k % 2:
+                self.prop("potted_plant_02", "Plant", pick=["leaves", "dirt"], scale=1.45, decimate=0.15)
+                self.place("Plant", tuple(P(q, edge - 0.05, top + 0.42)), 0.0)
+            else:   # a terrace lantern on the pier
+                K.lathe(K.name("PROP", "TerraceLantern"), [(0, 0), (0.08, 0), (0.06, 0.04), (0.1, 0.1), (0.1, 0.38), (0.12, 0.42), (0.05, 0.5), (0, 0.55)],
+                        tuple(P(q, edge - 0.05, top + 0.62)), M["brass"], segments=8)
+                K.cyl(K.name("PROP", "TerraceLanternGlow"), 0.085, 0.085, 0.26, tuple(P(q, edge - 0.05, top + 0.86)), M["shade"], segments=12)
+                K.light(K.name("LIGHT", "TerraceLantern"), "POINT", tuple(P(q, edge - 0.05, top + 0.88)), 6, color=(1.0, 0.72, 0.42), rng=8, bake_only=True)
+        # the backdrop for the live night view, far out beyond the cliff's edge
+        bm = bmesh.new()
+        f = bm.faces.new([bm.verts.new(P(c, -T - 45.0, z)) for c, z in ((a - 90, base - 70), (b + 90, base - 70), (b + 90, base + 80), (a - 90, base + 80))])
+        if f.normal.dot(n) < 0:
+            f.normal_flip()
+        K.obj(K.name("PROP", f"{tag}NightView"), bm, M["sea"])
 
     def art_material(self, idx):
         work = self.art[idx % len(self.art)]

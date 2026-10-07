@@ -34,3 +34,6 @@ blender/rooms/vip/*.blend
 # Python bytecode (Blender tools)
 __pycache__/
 *.pyc
+
+# re-downloadable night-sky HDRI (npm run make-night-sky)
+blender/textures_src/env/*.hdr

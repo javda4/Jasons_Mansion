@@ -559,6 +559,7 @@ room, a casino game, and a Blender asset. Update docs in the same change as the 
 | `npm run fetch-art` | Public-domain paintings (Met Open Access, CC0) → `blender/textures_src/art/` + `public/assets/art/` |
 | `npm run fetch-models` | CC0 photoscanned furniture/decor from Poly Haven → `blender/props/polyhaven/` (imported with `K.import_prop`) |
 | `npm run make-game-textures` | Card/chip atlases + reel strip (runtime, with layout `meta` in textures.json), printed felts, wheel ring, slot marquee/pay glass (`blender/textures_src/games/`) |
+| `npm run make-night-sky` | Poly Haven night-sky HDRI → `public/assets/env/T_NightSky.jpg` + moon direction, used by the live window view (`src/render/nightView.ts`) |
 | `npm run make-carpets` | Real antique carpets (Met Open Access) → rug textures in `blender/textures_src/carpets/` + the seamless `Carpet_Gul` library set |
 | `blender -b blender/rooms/<zone>/<zone>.blend --python blender/tools/validate_zone.py -- <Zone>` | Authoring-time validation only |
 

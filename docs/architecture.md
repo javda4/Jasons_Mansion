@@ -195,3 +195,23 @@ and cards are dropped — guests sit on our velvet tub chairs and the runtime de
 
 Calibration = orthographic top renders of each original model (m/px noted in `casino_props.py`) plus
 ray-cast felt heights and the wheel's radial profile. Build: pack data maps (`TX_…`) are encoded at 1024².
+
+## The view from the windows (2026-10-07)
+
+**The contract.** Windows are real openings through the wall, holding a faint glass pane. Beyond them each sea wall
+has an authored exterior: a stone terrace, a balustrade with urns, plants and lit lanterns (`Mansion.outside()`),
+and far out a backdrop quad with a `MAT_<Zone>_SeaView` material. glTF can't carry what lies past that, so at load
+`glbZone` swaps every `*_SeaView` material for the shared **night-view** material (`src/render/nightView.ts`).
+
+**The night view** is a TSL node material drawn from the per-pixel viewing direction (camera → fragment), so every
+window shows its own part of the night and the view shifts correctly as the player moves:
+- **Sky:** a real night photograph, Poly Haven `qwantani_moonrise_puresky` (CC0). `npm run make-night-sky` turns
+  it into `public/assets/env/T_NightSky.jpg` (the sky hemisphere, rotated so the moon rises over the sea) plus a
+  JSON file with the moon's direction.
+- **Sea:** 28 m below the terrace, ray-cast per pixel. Animated noise swell reflects the sky with Fresnel, a moon
+  glitter path follows the moon's direction, and haze thickens towards the horizon.
+- **Coast:** a headland along the eastern horizon with scattered warm town lights.
+
+The material is double-sided (the exporter's winding of the quad doesn't matter) and casts no shadows. In the
+Cycles bake the backdrop is only a faint emissive sky glow (strength 0.12), so terraces and rooms bake as a
+moonlit night.

@@ -53,6 +53,7 @@ NORTH_P = [0.0, 1.6, 4.8, 6.4, 9.6, 11.2, 14.4, D]
 A.wall("North", "y", X1, -1, 0, D, field=FIELD, pilasters=NORTH_P, windows=[3.2, 8.0, 12.8], sconces=[1.6, 14.4])
 A.wall("South", "y", X0, 1, 0, D, field=FIELD, pilasters=[0.0, 2.8, 6.2, 9.8, 13.2, D],
        paintings=[(4.5, 8), (11.5, 9), (14.6, 1), (1.4, 4)], sconces=[2.8, 6.2, 9.8, 13.2])
+A.outside("NorthOut", "y", X1, -1, 0, D, extend=0.15)          # the sea terrace beyond the windows
 A.coffered_ceiling(X0, X1, 0, D, spacing=2.7)
 A.double_door("Ballroom", (0, D, 0), (0, -1, 0), DOOR_W, DOOR_H, 0, "Enter the Ballroom", target="ballroom")
 # ceiling roses over the chandeliers

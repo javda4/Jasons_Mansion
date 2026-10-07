@@ -2,11 +2,11 @@
   "zone": "stair_hall",
   "size": 4096,
   "samples": 256,
-  "encodeScale": 0.34790386936617407,
-  "intensity": 9.030059537174102,
-  "p99_5": 2.874357223510742,
-  "max": 11.763826370239258,
-  "coverage": 0.15582525730133057,
+  "encodeScale": 0.3475298459188876,
+  "intensity": 9.03977799455829,
+  "p99_5": 2.877450704574585,
+  "max": 10.997057914733887,
+  "coverage": 0.15161222219467163,
   "objects": [
     "ROOM_StairHall_Lightmapped_01",
     "ROOM_StairHall_Lightmapped_02",
@@ -20,7 +20,8 @@
     "ROOM_StairHall_Lightmapped_10",
     "ROOM_StairHall_Lightmapped_11",
     "ROOM_StairHall_Lightmapped_12",
-    "ROOM_StairHall_Lightmapped_13"
+    "ROOM_StairHall_Lightmapped_13",
+    "ROOM_StairHall_Lightmapped_14"
   ],
   "bakeOnlyLights": [
     "LIGHT_StairHall_Sconce_01",
@@ -51,6 +52,9 @@
     "LIGHT_StairHall_Sconce_26",
     "LIGHT_StairHall_Sconce_27",
     "LIGHT_StairHall_Sconce_28",
+    "LIGHT_StairHall_TerraceLantern_01",
+    "LIGHT_StairHall_TerraceLantern_02",
+    "LIGHT_StairHall_TerraceLantern_03",
     "LIGHT_StairHall_Sconce_29",
     "LIGHT_StairHall_Sconce_30",
     "LIGHT_StairHall_Sconce_31",
@@ -103,5 +107,5 @@
     "LIGHT_StairHall_Candelabra_08",
     "LIGHT_StairHall_Candelabra_09"
   ],
-  "seconds": 312.8
+  "seconds": 334.3
 }

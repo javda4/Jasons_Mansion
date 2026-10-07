@@ -49,6 +49,7 @@ A.wall("Front", "x", 0, 1, X0, X1, openings=[(0.0, DOOR_W, DOOR_H)], jambs=False
 A.wall("Back", "x", D, -1, X0, X1, field=field, pilasters=[X0, X1])
 A.wall("North", "y", X0, 1, 0, D, field=field, pilasters=[0.0, 2.6, 5.0, 9.0, 11.4, D], windows=[3.8, 10.2], sconces=[2.6, 5.0, 9.0, 11.4])
 A.wall("South", "y", X1, -1, 0, D, field=field, pilasters=[0.0, D])
+A.outside("NorthOut", "y", X0, 1, 0, D, extend=0.15)           # the sea terrace beyond the windows
 A.coffered_ceiling(X0, X1, 0, D, spacing=2.35)
 
 # ============================================================================ the cases, the gallery, the stair and ladder
