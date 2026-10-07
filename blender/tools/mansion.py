@@ -52,6 +52,8 @@ def library_materials(K):
     K.material("candle", "MAT_Emissive_Candle", (0, 0, 0), 0.5, emis_color=(1, 0.76, 0.48), emis_strength=40)
     K.material("shade", "MAT_Fabric_LampShade", (0.9, 0.83, 0.66), 0.9, emis_color=(1, 0.72, 0.44), emis_strength=1.6)
     K.material("ceiling", "MAT_Plaster_Ceiling", (0.12, 0.08, 0.05), 0.55, lib="Plaster_Ceiling")
+    K.material("parquet", "MAT_Wood_Parquet", (0.45, 0.32, 0.2), 0.5, coat=0.15, coat_rough=0.4, lib="Wood_Parquet")
+    K.material("paint", "MAT_Paint_Ivory", (0.7, 0.65, 0.54), 0.62, lib="Plaster_Ceiling")
     K.material("lacquer", f"MAT_{K.zone}_Lacquer", (0.012, 0.01, 0.009), 0.15, coat=1, coat_rough=0.02)
     return K.mat
 
@@ -95,9 +97,14 @@ def artworks():
 
 
 class Mansion:
-    def __init__(self, K, height, thickness=0.3, sea=None):
+    def __init__(self, K, height, thickness=0.3, sea=None, trim=None, panel=None, ceiling=None):
+        """`trim` / `panel`: the woodwork palette for walls, ceilings, windows and doors (default walnut / dark
+        walnut). A salon passes the ivory-painted boiserie: panel = M["paint"], trim = M["paint"]."""
         self.K = K
         self.M = K.mat if K.mat else library_materials(K)
+        self.trim = trim or self.M["walnut"]
+        self.panel = panel or self.M["walnut_dark"]
+        self.ceil = ceiling or self.M["ceiling"]
         self.H = height
         self.T = thickness
         self.field_top = height - 1.3
@@ -147,32 +154,32 @@ class Mansion:
 
         for a, b in spans:
             if mass:
-                boxw(K.name("ROOM", f"{tag}Wall"), (a + b) / 2, b - a, -T, T + 0.02, base, H, M["walnut_dark"], lightmap=True)
+                boxw(K.name("ROOM", f"{tag}Wall"), (a + b) / 2, b - a, -T, T + 0.02, base, H, self.panel, lightmap=True)
                 col(a, b, base, H)
             else:
-                boxw(K.name("ROOM", f"{tag}Wall"), (a + b) / 2, b - a, -0.02, 0.04, base, H, M["walnut_dark"], lightmap=True)
+                boxw(K.name("ROOM", f"{tag}Wall"), (a + b) / 2, b - a, -0.02, 0.04, base, H, self.panel, lightmap=True)
         for c, w, h in openings:
-            boxw(K.name("ROOM", f"{tag}Lintel"), c, w, -T if mass else -0.02, (T + 0.02) if mass else 0.04, base + h, H, M["walnut_dark"], lightmap=True)
+            boxw(K.name("ROOM", f"{tag}Lintel"), c, w, -T if mass else -0.02, (T + 0.02) if mass else 0.04, base + h, H, self.panel, lightmap=True)
             if mass:
                 col(c - w / 2, c + w / 2, base + h, H)
             if jambs and mass:
                 for s in (-1, 1):
-                    boxw(K.name("ROOM", f"{tag}Jamb"), c + s * (w / 2 - 0.03), 0.06, -T, T, base, base + h, M["walnut"], lightmap=True)
-                boxw(K.name("ROOM", f"{tag}Jamb"), c, w, -T, T, base + h - 0.06, base + h, M["walnut"], lightmap=True)
+                    boxw(K.name("ROOM", f"{tag}Jamb"), c + s * (w / 2 - 0.03), 0.06, -T, T, base, base + h, self.trim, lightmap=True)
+                boxw(K.name("ROOM", f"{tag}Jamb"), c, w, -T, T, base + h - 0.06, base + h, self.trim, lightmap=True)
                 boxw(K.name("ROOM", f"{tag}Threshold"), c, w, -T, T, base, base + 0.02, M["nero"], lightmap=True)
             path = [P(c - w / 2 - 0.02, 0.0, base), P(c - w / 2 - 0.02, 0.0, base + h + 0.02), P(c + w / 2 + 0.02, 0.0, base + h + 0.02), P(c + w / 2 + 0.02, 0.0, base)]
-            K.sweep(K.name("ROOM", f"{tag}Architrave"), path, n, [(0, 0), (0, 0.05), (0.06, 0.07), (0.14, 0.07), (0.2, 0.05), (0.22, 0)], M["walnut"], n1_hint=-t_dir, lightmap=True)
+            K.sweep(K.name("ROOM", f"{tag}Architrave"), path, n, [(0, 0), (0, 0.05), (0.06, 0.07), (0.14, 0.07), (0.2, 0.05), (0.22, 0)], self.trim, n1_hint=-t_dir, lightmap=True)
             K.sweep(K.name("ROOM", f"{tag}ArchitraveGilt"), path, n, [(0.02, 0.07), (0.03, 0.085), (0.05, 0.085), (0.06, 0.07)], M["gilt"], n1_hint=-t_dir)
             top = min(base + h + 0.52, FT - 0.02)
-            boxw(K.name("ROOM", f"{tag}Overdoor"), c, w + 0.7, 0, 0.14, base + h + 0.2, top, M["walnut"], bevel=0.01, lightmap=True)
+            boxw(K.name("ROOM", f"{tag}Overdoor"), c, w + 0.7, 0, 0.14, base + h + 0.2, top, self.trim, bevel=0.01, lightmap=True)
             boxw(K.name("ROOM", f"{tag}Overdoor"), c, w + 0.9, 0, 0.22, top, top + 0.08, M["gilt"], bevel=0.012)
 
         for a, b in spans:
             z = base
             K.sweep(K.name("ROOM", f"{tag}Skirting"), [P(a, 0, z), P(b, 0, z)], n,
                     [(h_, d_) for (d_, h_) in [(0, 0), (0.035, 0), (0.035, 0.14), (0.025, 0.155), (0.02, 0.17), (0.012, 0.19), (0, 0.2)]],
-                    M["walnut"], n1_hint=UPV, lightmap=True)
-            boxw(K.name("ROOM", f"{tag}Wainscot"), (a + b) / 2, b - a, 0, 0.03, z, z + 1.05, M["walnut"], lightmap=True)
+                    self.trim, n1_hint=UPV, lightmap=True)
+            boxw(K.name("ROOM", f"{tag}Wainscot"), (a + b) / 2, b - a, 0, 0.03, z, z + 1.05, self.trim, lightmap=True)
             K.sweep(K.name("ROOM", f"{tag}Rail"), [P(a, 0, z + 1.07), P(b, 0, z + 1.07)], n,
                     [(h_, d_) for (d_, h_) in [(0, -0.03), (0.02, -0.03), (0.045, -0.015), (0.055, 0), (0.05, 0.018), (0.03, 0.03), (0.012, 0.04), (0, 0.045)]],
                     M["gilt"], n1_hint=UPV)
@@ -183,10 +190,10 @@ class Mansion:
                 c = a + pw * (i + 0.5)
                 if pw < 0.6:
                     continue
-                boxw(K.name("ROOM", f"{tag}Panel"), c, pw - 0.36, 0.03, 0.02, z + 0.3, z + 0.9, M["walnut_dark"], bevel=0.012, segments=3, lightmap=True)
-                K.frame(K.name("ROOM", f"{tag}PanelFrame"), tuple(P(c, 0.03, z + 0.6)), pw - 0.3, 0.66, n, P_PANEL, M["walnut"])
+                boxw(K.name("ROOM", f"{tag}Panel"), c, pw - 0.36, 0.03, 0.02, z + 0.3, z + 0.9, self.panel, bevel=0.012, segments=3, lightmap=True)
+                K.frame(K.name("ROOM", f"{tag}PanelFrame"), tuple(P(c, 0.03, z + 0.6)), pw - 0.3, 0.66, n, P_PANEL, self.trim)
 
-        boxw(K.name("ROOM", f"{tag}Frieze"), (lo + hi) / 2, hi - lo, 0, 0.06, FT, FZ, M["walnut"], lightmap=True)
+        boxw(K.name("ROOM", f"{tag}Frieze"), (lo + hi) / 2, hi - lo, 0, 0.06, FT, FZ, self.trim, lightmap=True)
         dentil = K.prototype(K.box(K.name("PROP", f"{tag}Dentil"), (0.06, 0.06, 0.08), (0, 0, -5), M["gilt"]))
         x = lo + 0.08
         while x < hi - 0.05:
@@ -195,7 +202,7 @@ class Mansion:
         crown_h = H - FZ
         K.sweep(K.name("ROOM", f"{tag}Crown"), [P(lo, 0.0, FZ), P(hi, 0.0, FZ)], n,
                 [(h_, d_) for (d_, h_) in [(0, 0), (0.05, 0), (0.06, 0.08), (0.1, 0.1), (0.2, 0.16), (0.26, 0.22), (0.28, 0.26), (0.3, 0.3), (0.3, 0.34), (0.3, crown_h), (0, crown_h)]],
-                M["walnut"], n1_hint=UPV, lightmap=True)
+                self.trim, n1_hint=UPV, lightmap=True)
         K.sweep(K.name("ROOM", f"{tag}CrownGilt"), [P(lo, 0.0, FZ + 0.34), P(hi, 0.0, FZ + 0.34)], n,
                 [(h_, d_) for (d_, h_) in [(0.3, 0), (0.33, 0.01), (0.34, 0.03), (0.33, 0.05), (0.3, 0.06)]], M["gilt"], n1_hint=UPV)
 
@@ -209,12 +216,12 @@ class Mansion:
                 K.frame(K.name("ROOM", f"{tag}FieldFrame"), tuple(P(c, 0.018, (base + 1.12 + FT) / 2)), fw, fh, n, P_FRAME, M["gilt"])
         for pc in pilasters:
             z0 = base
-            boxw(K.name("ROOM", f"{tag}Pilaster"), pc, 0.46, 0, 0.12, z0, FT - 0.3, M["walnut"], bevel=0.01, lightmap=True)
+            boxw(K.name("ROOM", f"{tag}Pilaster"), pc, 0.46, 0, 0.12, z0, FT - 0.3, self.trim, bevel=0.01, lightmap=True)
             for f in (-0.12, -0.04, 0.04, 0.12):
-                boxw(K.name("ROOM", f"{tag}Flute"), pc + f, 0.035, 0.12, 0.012, z0 + 1.3, FT - 0.55, M["walnut_dark"])
-            boxw(K.name("ROOM", f"{tag}PilasterBase"), pc, 0.56, 0, 0.16, z0, z0 + 0.32, M["walnut"], bevel=0.012, lightmap=True)
+                boxw(K.name("ROOM", f"{tag}Flute"), pc + f, 0.035, 0.12, 0.012, z0 + 1.3, FT - 0.55, self.panel)
+            boxw(K.name("ROOM", f"{tag}PilasterBase"), pc, 0.56, 0, 0.16, z0, z0 + 0.32, self.trim, bevel=0.012, lightmap=True)
             boxw(K.name("ROOM", f"{tag}Capital"), pc, 0.56, 0, 0.17, FT - 0.3, FT - 0.12, M["gilt"], bevel=0.015, segments=3)
-            boxw(K.name("ROOM", f"{tag}Capital"), pc, 0.64, 0, 0.2, FT - 0.12, FT, M["walnut"], bevel=0.01)
+            boxw(K.name("ROOM", f"{tag}Capital"), pc, 0.64, 0, 0.2, FT - 0.12, FT, self.trim, bevel=0.01)
             for s in (-1, 1):
                 vol = P(pc + s * 0.24, 0.17, FT - 0.2)
                 K.torus(K.name("PROP", f"{tag}Volute"), 0.05, 0.014, tuple(vol), M["gilt"], major=20, minor=6,
@@ -246,8 +253,8 @@ class Mansion:
             f.normal_flip()
         K.obj(K.name("PROP", f"{tag}WindowView"), bm, M["sea"], uv=None)
         for zz in (bottom + hh * 0.26, bottom + hh * 0.52, bottom + hh * 0.75):
-            K.box(K.name("PROP", f"{tag}Glazing"), (w, 0.04, 0.035) if abs(n.y) > 0.5 else (0.04, w, 0.035), tuple(P(c, 0.0, zz)), M["walnut"])
-        K.box(K.name("PROP", f"{tag}Glazing"), (0.05, 0.04, hh) if abs(n.y) > 0.5 else (0.04, 0.05, hh), tuple(P(c, 0.0, bottom + hh / 2)), M["walnut"])
+            K.box(K.name("PROP", f"{tag}Glazing"), (w, 0.04, 0.035) if abs(n.y) > 0.5 else (0.04, w, 0.035), tuple(P(c, 0.0, zz)), self.trim)
+        K.box(K.name("PROP", f"{tag}Glazing"), (0.05, 0.04, hh) if abs(n.y) > 0.5 else (0.04, 0.05, hh), tuple(P(c, 0.0, bottom + hh / 2)), self.trim)
         arch = [P(c - w / 2, 0.0, bottom)] + [P(c + (w / 2) * math.cos(math.pi - math.pi * k / 16), 0.0, bottom + hh - w / 2 + (w / 2) * math.sin(math.pi * k / 16)) for k in range(17)] + [P(c + w / 2, 0.0, bottom)]
         K.sweep(K.name("ROOM", f"{tag}WindowSurround"), arch, n, [(0, 0), (0, 0.04), (0.05, 0.06), (0.12, 0.05), (0.14, 0)], M["gilt"], n1_hint=-t_dir)
         K.box(K.name("ROOM", f"{tag}WindowSill"), (w + 0.5, 0.3, 0.08) if abs(n.y) > 0.5 else (0.3, w + 0.5, 0.08), tuple(P(c, 0.15, bottom - 0.04)), M["nero"], bevel=0.01, lightmap=True)
@@ -337,13 +344,13 @@ class Mansion:
             bm = kit.cube_bm(lw, 0.07, h - 0.02)
             bmesh.ops.translate(bm, verts=bm.verts, vec=Vector((-sgn * lw / 2, 0, (h - 0.02) / 2)))
             rz = math.atan2(right.y, right.x)
-            leaf = K.obj(f"DOOR_{K.zone}_{did}_{side}", bm, M["walnut_dark"], loc=tuple(hinge), rot=(0, 0, rz), bevel=0.008)
+            leaf = K.obj(f"DOOR_{K.zone}_{did}_{side}", bm, self.panel, loc=tuple(hinge), rot=(0, 0, rz), bevel=0.008)
             parts = []
             for face in (-1, 1):
                 for z0, ph in ((0.35, 0.85), (1.35, max(0.6, h - 2.1)), (h - 0.62, 0.36)):
                     if z0 + ph > h - 0.12:
                         continue
-                    p = K.box(K.name("DOOR", f"{did}{side}Panel"), (lw - 0.26, 0.02, ph), (-sgn * lw / 2, face * 0.045, z0 + ph / 2), M["walnut"], bevel=0.008)
+                    p = K.box(K.name("DOOR", f"{did}{side}Panel"), (lw - 0.26, 0.02, ph), (-sgn * lw / 2, face * 0.045, z0 + ph / 2), self.trim, bevel=0.008)
                     p.parent = leaf
                     parts.append(p)
                     fr = K.frame(K.name("DOOR", f"{did}{side}PanelFrame"), (-sgn * lw / 2, face * 0.056, z0 + ph / 2), lw - 0.2, ph + 0.05,
@@ -400,17 +407,17 @@ class Mansion:
     def coffered_ceiling(self, x0, x1, y0, y1, spacing=2.0, beam_d=0.34):
         K, M, H = self.K, self.M, self.H
         W, D, cx, cy = x1 - x0, y1 - y0, (x0 + x1) / 2, (y0 + y1) / 2
-        K.box(K.name("ROOM", "Ceiling"), (W, D, 0.3), (cx, cy, H + 0.15), M["ceiling"], lightmap=True)
+        K.box(K.name("ROOM", "Ceiling"), (W, D, 0.3), (cx, cy, H + 0.15), self.ceil, lightmap=True)
         nx, ny = max(1, round(W / spacing)), max(1, round(D / spacing))
         xs = [x0 + i * W / nx for i in range(1, nx)]
         ys = [y0 + i * D / ny for i in range(1, ny)]
         for x in xs:
-            K.box(K.name("ROOM", "Beam"), (0.26, D, beam_d), (x, cy, H - beam_d / 2), M["walnut"], lightmap=True)
+            K.box(K.name("ROOM", "Beam"), (0.26, D, beam_d), (x, cy, H - beam_d / 2), self.trim, lightmap=True)
             for s in (-1, 1):
                 K.sweep(K.name("ROOM", "BeamMoulding"), [(x + s * 0.13, y0, H - beam_d), (x + s * 0.13, y1, H - beam_d)], (s, 0, 0),
                         [(0, 0), (0, 0.02), (0.03, 0.04), (0.06, 0.045), (0.06, 0)], M["gilt"], n1_hint=UPV)
         for y in ys:
-            K.box(K.name("ROOM", "Beam"), (W, 0.26, beam_d), (cx, y, H - beam_d / 2 - 0.001), M["walnut"], lightmap=True)
+            K.box(K.name("ROOM", "Beam"), (W, 0.26, beam_d), (cx, y, H - beam_d / 2 - 0.001), self.trim, lightmap=True)
         rosette = self._sconce.get("rosette")
         if rosette is None:
             rosette = self._sconce["rosette"] = K.prototype(K.lathe(K.name("PROP", "Rosette"), [(0, -0.07), (0.05, -0.065), (0.09, -0.04), (0.12, -0.02), (0.13, 0), (0, 0)], (0, 0, -30), M["gilt"], segments=16))

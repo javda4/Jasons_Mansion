@@ -7,7 +7,7 @@
  */
 export const MATERIAL_KEYS = [
   'MAT_Marble_Calacatta', 'MAT_Marble_Nero', 'MAT_Marble_Rosso', 'MAT_Marble_Bardiglio',
-  'MAT_Wood_WalnutPolished', 'MAT_Wood_WalnutDark',
+  'MAT_Wood_WalnutPolished', 'MAT_Wood_WalnutDark', 'MAT_Wood_Parquet', 'MAT_Paint_Ivory',
   'MAT_Fabric_DamaskOxblood', 'MAT_Fabric_DamaskForest', 'MAT_Fabric_DamaskGold',
   'MAT_Fabric_CarpetCrimson', 'MAT_Fabric_CarpetForest', 'MAT_Fabric_VelvetRed',
   'MAT_Fabric_FeltGreen', 'MAT_Leather_Oxblood',

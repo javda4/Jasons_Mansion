@@ -27,6 +27,7 @@ const TEXTURES = {
   caban: { res: '1k', material: 'Fabric_Felt' },
   velour_velvet: { res: '1k', material: 'Fabric_Velvet' },
   plastered_wall: { res: '1k', material: 'Plaster_Ceiling' },
+  herringbone_parquet: { res: '2k', material: 'Wood_Parquet' },   // Mansion: point de Hongrie in the salons (3.4 m tile)
 };
 // ambientCG (CC0) sets: zip of separate maps; roughness/metalness are packed into our ORM layout
 const AMBIENTCG = {

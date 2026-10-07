@@ -16,6 +16,7 @@
     "bake": "node scripts/bake.mjs",
     "author:lobby": "blender -b --factory-startup --python blender/tools/author_lobby.py",
     "author:stair_hall": "blender -b --factory-startup --python blender/tools/author_stair_hall.py",
+    "author:grand_salon": "blender -b --factory-startup --python blender/tools/author_grand_salon.py",
     "fetch-art": "node scripts/fetch-art.mjs",
     "bake:all": "sh scripts/bake-all.sh",
     "make-carpets": "node scripts/make-carpets.mjs",

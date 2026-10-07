@@ -117,3 +117,18 @@ Changes that kept the hall inside its budgets:
 - **Carpets:** detail maps (normal and ORM) cap at 512×1024; their colour map stays full size.
 
 The Grand Salon (M2) sets the dressing-density budget for the furnished rooms.
+
+## Mansion — Grand Salon (M2, 2026-10-07)
+
+| | Value |
+|---|---|
+| GLB | 18.3 MB, plus a 1.4 MB 2048² lightmap |
+| Authored triangles | 0.67 M |
+| Hall and salon both visible (through the open door) | 395 draw calls, 5.1 M triangles over all passes, 120 fps |
+| Salon alone | 230–280 draw calls, 1.8 M triangles, 120 fps |
+| Stream-in on a fresh profile | about 15 s, mostly first-time shader compiles (the door waits); cached visits about 8 s |
+
+Dressing-density budget for furnished rooms, set from this room:
+- at most **0.8 M** authored triangles and **20 MB** of GLB per room;
+- every repeated prop instanced;
+- photoscans decimated to roughly 10k triangles or fewer each.

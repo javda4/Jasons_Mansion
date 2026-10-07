@@ -30,3 +30,7 @@ blender/rooms/blackjack/*.blend
 blender/rooms/roulette/*.blend
 blender/rooms/slots/*.blend
 blender/rooms/vip/*.blend
+
+# Python bytecode (Blender tools)
+__pycache__/
+*.pyc

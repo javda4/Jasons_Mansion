@@ -43,6 +43,7 @@ VX, VY0 = 4.0, -6.0                            # vestibule half-width, front wal
 ARCH_W, ARCH_H = 3.2, 3.2                      # ground-storey openings stay under the frieze (field top 3.7 m)
 DOOR_W, DOOR_H = 2.4, 3.2
 DOOR_Y = (3.6, 15.0)                           # side doors: gallery (south row), sea-front room (north row)
+BUILT = {"Salon": "grand_salon"}               # side doors whose rooms exist (blender/zones.json); the rest stay locked
 UP_W, UP_H = 1.9, 3.1                          # apartment doors
 SC = Vector((0.0, 12.5))                       # staircase centre = fountain
 R_C, SW = 5.4, 2.2
@@ -161,7 +162,9 @@ for s, side in ((-1, "W"), (1, "E")):
     x = s * X1
     names = (("Gallery" + side, "West Gallery" if s < 0 else "East Gallery"), ("Salon" if s < 0 else "Library", "Grand Salon" if s < 0 else "Library"))
     for y, (did, title) in zip(DOOR_Y, names):
-        A.double_door(did, (x, y, 0), (-s, 0, 0), DOOR_W, DOOR_H, 0, f"{title} — not yet open", locked=True)
+        target = BUILT.get(did)
+        A.double_door(did, (x, y, 0), (-s, 0, 0), DOOR_W, DOOR_H, 0, f"Enter the {title}" if target else f"{title} — not yet open",
+                      target=target, locked=not target)
 A.double_door("Terrace", (0, Y1, 0), (0, -1, 0), 2.2, DOOR_H, 0, "The terrace — closed for the night", locked=True)
 A.double_door("Front", (0, VY0, 0), (0, 1, 0), 2.4, DOOR_H, 0, "The front doors", locked=True)
 
@@ -574,7 +577,7 @@ for s in (-1, 1):
     for y in DOOR_Y:
         for dy in (-1.95, 1.95):
             pedestal(wx - s * 0.5, y + dy)
-            A.place("Bust", (wx - s * 0.5, y + dy, 1.12), -s * math.pi / 2)
+            A.place("Bust", (wx - s * 0.5, y + dy, 1.12), s * math.pi / 2)    # the scan faces local -Y: looks into the hall
     chair_pair(wx - s * 0.62, 9.3, s * math.pi / 2)
     jardiniere_plant(wx - s * 0.55, Y0 + 0.55)
 A.place("GrandfatherClock", (X0 + 0.45, 17.95, 0), -math.pi / 2, collide=(0.32, 0.25, 2.2))
@@ -603,7 +606,7 @@ for s in (-1, 1):
     for y in DOOR_Y:
         for dy in (-1.55, 1.55):
             pedestal(s * (X1 - 0.45), y + dy, FL)
-            A.place("Bust", (s * (X1 - 0.45), y + dy, FL + 1.12), -s * math.pi / 2)
+            A.place("Bust", (s * (X1 - 0.45), y + dy, FL + 1.12), s * math.pi / 2)
     for y in (5.85, 9.65, 13.45):
         A.rug(f"GalleryRunner{K.idx('grun')}", s * 8.85, y, 3.6, 3.6 / 3.8109, 0, "Runner_Mamluk", fringe=False, z0=FL)
     A.place("LouisSofa", (s * 4.0, Y0 + 0.6, FL + 0.011), 0.0, collide=(0.95, 0.4, 0.8))

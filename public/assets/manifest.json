@@ -3,8 +3,8 @@
     "stair_hall": {
       "title": "Stair Hall",
       "asset": "/assets/rooms/stair_hall/stair_hall.glb",
-      "bytes": 24868244,
-      "hash": "66ebaa8051a6ca48",
+      "bytes": 24868276,
+      "hash": "4e2ed8cb30ce8ded",
       "preload": true,
       "priority": 1,
       "neighbors": [
@@ -33,7 +33,39 @@
         "materials": 63,
         "textureBytes": 17526786
       }
+    },
+    "grand_salon": {
+      "title": "Grand Salon",
+      "asset": "/assets/rooms/grand_salon/grand_salon.glb",
+      "bytes": 18718000,
+      "hash": "4c79ad3905d29d56",
+      "preload": false,
+      "priority": 2,
+      "neighbors": [
+        "stair_hall",
+        "ballroom"
+      ],
+      "transform": {
+        "x": -10.3,
+        "z": -15,
+        "rotY": 1.5707963267948966
+      },
+      "dependencies": [
+        "textures/library"
+      ],
+      "lightmap": {
+        "url": "/assets/rooms/grand_salon/grand_salon_lightmap.ktx2",
+        "bytes": 1394405,
+        "hash": "a2b021160211ba8c",
+        "intensity": 6.415466432670856
+      },
+      "stats": {
+        "triangles": 671601,
+        "nodes": 173,
+        "materials": 62,
+        "textureBytes": 15353979
+      }
     }
   },
-  "generated": "2026-10-07T17:31:59.741Z"
+  "generated": "2026-10-07T20:22:52.571Z"
 }

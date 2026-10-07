@@ -550,6 +550,7 @@ room, a casino game, and a Blender asset. Update docs in the same change as the 
 | `npm run build:assets [-- <zone>] [--skip-export]` | Blender validate+export → glTF-Transform optimise (KTX2, Meshopt, instancing, merge) → validate → `public/assets/rooms/` + generated `manifest.json` |
 | `npm run validate:assets -- <file.glb>` | glTF-Validator + naming/extras/budget checks on an optimised GLB |
 | `npm run author:stair_hall` | Re-generate the Stair Hall + Vestibule `.blend` (Mansion M1; overwrites hand edits) |
+| `npm run author:grand_salon` | Re-generate the Grand Salon `.blend` (Mansion M2; uses `furniture.py` for the hearth, piano, bureau and vitrines) |
 | `npm run author:vip` / `npm run author:lobby` | Casino-era bootstrap scripts (zones retired in the Mansion; kept for reference) |
 | `npm run bake -- <zone> [size] [samples]` | Cycles GPU lightmap bake → `<zone>_baked.blend` + lightmap PNG/JSON (slow; run after editing a lit zone) |
 | `npm run bake:all` | Re-bake all eight lit zones and rebuild every asset (≈ 25–30 min on an M1 Max) |

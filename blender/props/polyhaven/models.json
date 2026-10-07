@@ -262,6 +262,34 @@
         227.31918096542358,
         692.4719526432455
       ]
+    },
+    "tea_set_01": {
+      "name": "Tea Set 01",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/tea_set_01/tea_set_01.gltf",
+      "authors": [
+        "James Ray Cock",
+        "Rico Cilliers",
+        "Jurita Burger"
+      ],
+      "dimensions": [
+        918.4822738170624,
+        483.876571059227,
+        164.99304870376363
+      ]
+    },
+    "chess_set": {
+      "name": "Chess Set",
+      "resolution": "1k",
+      "file": "blender/props/polyhaven/chess_set/chess_set.gltf",
+      "authors": [
+        "Riley Queen"
+      ],
+      "dimensions": [
+        553.2379746437073,
+        553.2379746437073,
+        112.3529537471768
+      ]
     }
   }
 }

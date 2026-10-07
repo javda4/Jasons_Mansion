@@ -196,7 +196,7 @@ async function main() {
     loop.add(debug);
     if (config.debug) debug.setColliders(true);
     // automation handle for browser tests (dev builds only): teleport, inspect zones, drive a seated game
-    (window as unknown as Record<string, unknown>).__mansion = { player, input, zones, interaction, gameView, renderer, lights, debug };
+    (window as unknown as Record<string, unknown>).__mansion = { player, input, scene, zones, interaction, gameView, renderer, lights, debug };
   }
 
   addEventListener('resize', () => {

@@ -34,6 +34,9 @@ export const MODELS = {
   gothic_statue: '1k',                 // bronze robed figure (the fountain centrepiece)
   lion_head: '1k',                     // bronze lion on a plinth
   brass_vase_01: '1k',
+  // Grand Salon
+  tea_set_01: '1k',                    // porcelain tea service (gilt rims)
+  chess_set: '1k',                     // marble board and turned pieces
 };
 
 const exists = (p) => access(p).then(() => true, () => false);

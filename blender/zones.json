@@ -1,16 +1,43 @@
 {
-  "$comment": "Master layout and source registry of the Blender-authored zones (docs/mansion-plan.md). Each zone's transform places its local origin in the world (glTF frame: x east, z south; rotY a multiple of π/2). The asset build copies titles, neighbours and transforms into public/assets/manifest.json (never edit that by hand). Neighbours that are not built yet are kept here and dropped at runtime. Zones with 'lightmap' are exported from their *_baked.blend (npm run bake -- <zone>).",
+  "$comment": "Master layout and source registry of the Blender-authored zones (docs/mansion-plan.md). Each zone's transform places its local origin in the world (glTF frame: x east, z south; rotY a multiple of \u03c0/2). The asset build copies titles, neighbours and transforms into public/assets/manifest.json (never edit that by hand). Neighbours that are not built yet are kept here and dropped at runtime. Zones with 'lightmap' are exported from their *_baked.blend (npm run bake -- <zone>).",
   "zones": {
     "stair_hall": {
       "title": "Stair Hall",
       "source": "rooms/stair_hall/stair_hall.blend",
       "blend": "rooms/stair_hall/stair_hall_baked.blend",
       "zone": "StairHall",
-      "neighbors": ["grand_salon", "library", "gallery_west", "gallery_east"],
-      "transform": { "x": 0, "z": 0, "rotY": 0 },
+      "neighbors": [
+        "grand_salon",
+        "library",
+        "gallery_west",
+        "gallery_east"
+      ],
+      "transform": {
+        "x": 0,
+        "z": 0,
+        "rotY": 0
+      },
       "preload": true,
       "priority": 1,
       "lightmap": "textures_src/stair_hall/T_StairHall_Lightmap"
+    },
+    "grand_salon": {
+      "title": "Grand Salon",
+      "source": "rooms/grand_salon/grand_salon.blend",
+      "blend": "rooms/grand_salon/grand_salon_baked.blend",
+      "zone": "GrandSalon",
+      "neighbors": [
+        "stair_hall",
+        "ballroom"
+      ],
+      "transform": {
+        "x": -10.3,
+        "z": -15,
+        "rotY": 1.5707963267948966
+      },
+      "preload": false,
+      "priority": 2,
+      "lightmap": "textures_src/grand_salon/T_GrandSalon_Lightmap"
     }
   }
 }

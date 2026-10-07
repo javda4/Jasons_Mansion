@@ -29,6 +29,7 @@ be. Games appear only where a house of that era would plausibly host them.
 | Phase | State |
 |---|---|
 | M0 layout contract | **Done.** `blender/zones.json` transforms → manifest → `zoneGraph.ts`. Presenters attach per table (`src/tables/attach.ts`); a `tableId` must be `<gameType>_<NN>` (schema + validator). Casino rooms and the code-built fallbacks are retired. |
+| M2 Grand Salon | **Built** (`author_grand_salon.py`): ivory-and-gilt boiserie, point-de-Hongrie parquet, a lit fireplace, piano, bureau plat, vitrines, chess corner; baccarat roped off at the far end. Shared pieces live in `furniture.py` (hearth, grand piano, bureau plat, vitrine, guéridon). New library materials: `MAT_Wood_Parquet`, `MAT_Paint_Ivory`. `Mansion(..., trim, panel, ceiling)` sets each room's woodwork palette. The hall's west door is unlocked. |
 | M1 Stair Hall | **Built** (`author_stair_hall.py`). The Vestibule is part of the `stair_hall` zone: it is always loaded together with the hall, and one bake covers both. Doors to unbuilt rooms are locked. |
 
 ## What changes and what stays
