@@ -2,11 +2,11 @@
   "zone": "grand_salon",
   "size": 2048,
   "samples": 256,
-  "encodeScale": 0.474847743306451,
-  "intensity": 6.6159999660403,
-  "p99_5": 2.105938196182251,
-  "max": 13.638387680053711,
-  "coverage": 0.33147120475769043,
+  "encodeScale": 0.48278913566059045,
+  "intensity": 6.507173466716927,
+  "p99_5": 2.0712976455688477,
+  "max": 13.719152450561523,
+  "coverage": 0.3292720317840576,
   "objects": [
     "ROOM_GrandSalon_Lightmapped_01",
     "ROOM_GrandSalon_Lightmapped_02",
@@ -40,5 +40,5 @@
     "LIGHT_GrandSalon_Candelabra_03",
     "LIGHT_GrandSalon_Candelabra_04"
   ],
-  "seconds": 112.3
+  "seconds": 109.6
 }

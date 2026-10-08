@@ -119,6 +119,8 @@ export async function loadGlbZone(id: string, url: string, materials: Record<Mat
       const swapped = mats.map((m) => (isLibraryMaterial(m.name) ? materials[m.name] : isNightView(m.name) ? nightViewMaterial() : m));
       for (const m of swapped) if (FELT.test(m.name)) matteCloth(m);
       mesh.material = Array.isArray(mesh.material) ? swapped : swapped[0];
+      // the night view is drawn last among opaques: hidden behind the walls, its per-pixel sky and sea is never run
+      if (swapped.some((m) => isNightView(m.name) || m.name === 'MAT_NightView')) mesh.renderOrder = 1000;
       const emissiveOnly = swapped.every((m) => m.name.startsWith('MAT_Emissive') || /Fire|SeaView|Window/.test(m.name));
       mesh.castShadow = !emissiveOnly;
       mesh.receiveShadow = true;

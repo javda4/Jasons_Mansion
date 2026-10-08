@@ -310,13 +310,13 @@ class Mansion:
         for sgn in (-1, 1):
             poly = [(sgn * w / 2, spring)] + [(sgn * (w / 2) * math.cos(math.pi * k / 16), spring + (w / 2) * math.sin(math.pi * k / 16)) for k in range(1, 9)] + [(0.0, hh + 0.02), (sgn * (w / 2 + 0.02), hh + 0.02)]
             bm = bmesh.new()
-            f = bm.faces.new([bm.verts.new(at(u, v, 0.022)) for u, v in poly])
+            f = bm.faces.new([bm.verts.new(at(u, v, 0.035)) for u, v in poly])       # proud of the wall face and the damask
             if f.normal.dot(n) < 0:
                 f.normal_flip()
             K.obj(K.name("ROOM", f"{tag}Spandrel"), bm, self.panel, lightmap=True)
-        arch = [P(c - w / 2, 0.03, bottom)] + [P(c + (w / 2) * math.cos(math.pi - math.pi * k / 16), 0.03, bottom + spring + (w / 2) * math.sin(math.pi * k / 16)) for k in range(17)] + [P(c + w / 2, 0.03, bottom)]
+        arch = [P(c - w / 2, 0.045, bottom)] + [P(c + (w / 2) * math.cos(math.pi - math.pi * k / 16), 0.045, bottom + spring + (w / 2) * math.sin(math.pi * k / 16)) for k in range(17)] + [P(c + w / 2, 0.045, bottom)]
         K.sweep(K.name("ROOM", f"{tag}WindowSurround"), arch, n, [(0, 0), (0, 0.04), (0.05, 0.06), (0.12, 0.05), (0.14, 0)], M["gilt"], n1_hint=-t_dir)
-        K.box(K.name("ROOM", f"{tag}WindowSill"), (w + 0.36, 0.26, 0.06) if abs(n.y) > 0.5 else (0.26, w + 0.36, 0.06), tuple(P(c, 0.08, bottom - 0.03)), M["nero"], bevel=0.01, lightmap=True)
+        K.box(K.name("ROOM", f"{tag}WindowSill"), (w + 0.36, 0.26, 0.06) if abs(n.y) > 0.5 else (0.26, w + 0.36, 0.06), tuple(P(c, 0.08, bottom - 0.018)), M["nero"], bevel=0.01, lightmap=True)   # stands 12 mm proud of the opening's floor
         mid = -depth * (0.35 if mirror else 0.5)
         for fz in ((0.5, 1.0) if mirror else (0.34, 0.67, 1.0)):     # transoms up to the springing line
             K.box(K.name("PROP", f"{tag}Glazing"), (w, 0.035, 0.03) if abs(n.y) > 0.5 else (0.035, w, 0.03), tuple(P(c, mid, bottom + spring * fz)), self.trim)

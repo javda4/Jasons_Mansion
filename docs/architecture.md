@@ -217,3 +217,15 @@ window shows its own part of the night and the view shifts correctly as the play
 The material is double-sided (the exporter's winding of the quad doesn't matter) and casts no shadows. In the
 Cycles bake the backdrop is only a faint emissive sky glow (strength 0.12), so terraces and rooms bake as a
 moonlit night.
+
+## Depth precision and near-coplanar surfaces (2026-10-08)
+
+- **Reversed depth buffer.** The renderer uses a reversed float depth buffer (`reversedDepthBuffer: true`), and the
+  camera runs from 0.1 m to 300 m. The near plane stays below the 0.3 m capsule radius, so walls never clip.
+  Mouldings, sills and glass no longer z-fight at a distance.
+- **Authoring rule:** keep at least about 1 cm between parallel surfaces that overlap (window spandrels sit 35 mm
+  proud, surrounds 45 mm, sills 12 mm above the opening's floor). Glass is inset inside its frames, never coplanar
+  with them.
+- **The exterior backdrop box** stays well inside the far plane from every window (x -75…45, y 20…52, z ±38). The
+  night view is direction-based, so the box's size never shows, only its coverage. It is drawn last among opaques
+  (renderOrder), so pixels behind walls never run its shader.

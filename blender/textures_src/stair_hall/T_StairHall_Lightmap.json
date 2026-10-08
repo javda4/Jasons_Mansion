@@ -2,11 +2,11 @@
   "zone": "stair_hall",
   "size": 4096,
   "samples": 256,
-  "encodeScale": 0.3759742778370443,
-  "intensity": 8.35587123582808,
-  "p99_5": 2.6597564220428467,
-  "max": 11.319957733154297,
-  "coverage": 0.15540987253189087,
+  "encodeScale": 0.34679260758555913,
+  "intensity": 9.058995448208085,
+  "p99_5": 2.8835678100585938,
+  "max": 11.733477592468262,
+  "coverage": 0.15590566396713257,
   "objects": [
     "ROOM_StairHall_Lightmapped_01",
     "ROOM_StairHall_Lightmapped_02",
@@ -103,5 +103,5 @@
     "LIGHT_StairHall_Candelabra_08",
     "LIGHT_StairHall_Candelabra_09"
   ],
-  "seconds": 337.5
+  "seconds": 308.1
 }

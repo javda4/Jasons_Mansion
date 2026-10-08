@@ -5,8 +5,8 @@
   "encodeScale": 20.00000715255993,
   "intensity": 0.1570795765034354,
   "p99_5": 0.04999998211860657,
-  "max": 0.050798650830984116,
-  "coverage": 0.26488614082336426,
+  "max": 0.05079739913344383,
+  "coverage": 0.2648746967315674,
   "objects": [
     "ROOM_Exterior_Lightmapped_01"
   ],
@@ -26,5 +26,5 @@
     "LIGHT_Exterior_TerraceLantern_13",
     "LIGHT_Exterior_Moon_01"
   ],
-  "seconds": 16.8
+  "seconds": 15.5
 }

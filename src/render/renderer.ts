@@ -51,6 +51,7 @@ export async function createRenderer(canvas: HTMLCanvasElement, forceWebGL: bool
     antialias: false, // AA is done in post (TRAA/SMAA) per quality tier
     forceWebGL,
     powerPreference: 'high-performance',
+    reversedDepthBuffer: true, // float depth, far → 0: no z-fighting on mouldings, sills and glass at a distance
   });
   await renderer.init();
 

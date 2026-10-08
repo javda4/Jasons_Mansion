@@ -32,7 +32,7 @@ export class FirstPersonCamera implements System {
   private walkQuat = new Quaternion();
 
   constructor(private readonly player: PlayerState, fov = 68) {
-    this.camera = new PerspectiveCamera(fov, innerWidth / innerHeight, 0.05, 120);
+    this.camera = new PerspectiveCamera(fov, innerWidth / innerHeight, 0.1, 300);   // near < capsule radius (0.3): walls never clip; reversed depth keeps precision
     this.baseFov = fov;
     this.camera.rotation.order = 'YXZ';
   }

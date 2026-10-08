@@ -108,7 +108,7 @@ ob["bakeOnly"] = True
 K.coll["LIGHTS"].objects.link(ob)
 
 # ============================================================================ the backdrop for the live night: an open box beyond everything
-BX0, BX1, BY0, BY1, BZ0, BZ1 = -170.0, 140.0, 14.0, 90.0, -90.0, 100.0
+BX0, BX1, BY0, BY1, BZ0, BZ1 = -75.0, 45.0, 20.0, 52.0, -38.0, 38.0   # well inside the camera's reach from every window
 faces = (
     ((BX0, BY1, BZ0), (BX1, BY1, BZ0), (BX1, BY1, BZ1), (BX0, BY1, BZ1)),      # far
     ((BX0, BY0, BZ0), (BX0, BY1, BZ0), (BX0, BY1, BZ1), (BX0, BY0, BZ1)),      # west

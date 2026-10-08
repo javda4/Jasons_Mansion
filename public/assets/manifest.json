@@ -3,8 +3,8 @@
     "stair_hall": {
       "title": "Stair Hall",
       "asset": "/assets/rooms/stair_hall/stair_hall.glb",
-      "bytes": 25578036,
-      "hash": "1ca8a7f404c8fe9f",
+      "bytes": 25449792,
+      "hash": "02983cbd4a3bf495",
       "preload": true,
       "priority": 1,
       "neighbors": [
@@ -23,22 +23,22 @@
       ],
       "lightmap": {
         "url": "/assets/rooms/stair_hall/stair_hall_lightmap.ktx2",
-        "bytes": 3301733,
-        "hash": "336a3be6cb1df798",
-        "intensity": 9.03977799455829
+        "bytes": 3375022,
+        "hash": "dd9749a92e4b4d07",
+        "intensity": 9.058995448208085
       },
       "stats": {
-        "triangles": 1478437,
-        "nodes": 728,
-        "materials": 66,
-        "textureBytes": 17526786
+        "triangles": 1430240,
+        "nodes": 721,
+        "materials": 63,
+        "textureBytes": 17481227
       }
     },
     "grand_salon": {
       "title": "Grand Salon",
       "asset": "/assets/rooms/grand_salon/grand_salon.glb",
-      "bytes": 19177284,
-      "hash": "bef3f108c8f1953b",
+      "bytes": 19065816,
+      "hash": "671e982034680aeb",
       "preload": false,
       "priority": 2,
       "neighbors": [
@@ -55,22 +55,22 @@
       ],
       "lightmap": {
         "url": "/assets/rooms/grand_salon/grand_salon_lightmap.ktx2",
-        "bytes": 1461255,
-        "hash": "3d901a5de097b6f9",
-        "intensity": 6.079410789987299
+        "bytes": 1333200,
+        "hash": "c69f3c90ae0f958f",
+        "intensity": 6.507173466716927
       },
       "stats": {
-        "triangles": 751393,
-        "nodes": 180,
-        "materials": 65,
-        "textureBytes": 15353979
+        "triangles": 716145,
+        "nodes": 170,
+        "materials": 62,
+        "textureBytes": 15308323
       }
     },
     "library": {
       "title": "Library",
       "asset": "/assets/rooms/library/library.glb",
-      "bytes": 16768312,
-      "hash": "55be450912998057",
+      "bytes": 16658776,
+      "hash": "bd9ce46e2ea92ddd",
       "preload": false,
       "priority": 2,
       "neighbors": [
@@ -86,22 +86,22 @@
       ],
       "lightmap": {
         "url": "/assets/rooms/library/library_lightmap.ktx2",
-        "bytes": 1432193,
-        "hash": "f9968b29c44e3ec2",
-        "intensity": 1.0952168735731673
+        "bytes": 1435955,
+        "hash": "9d0ecd544cf85b36",
+        "intensity": 1.1478911934757352
       },
       "stats": {
-        "triangles": 487077,
-        "nodes": 144,
-        "materials": 52,
-        "textureBytes": 12427412
+        "triangles": 453877,
+        "nodes": 135,
+        "materials": 49,
+        "textureBytes": 12381680
       }
     },
     "ballroom": {
       "title": "Ballroom",
       "asset": "/assets/rooms/ballroom/ballroom.glb",
-      "bytes": 7600376,
-      "hash": "38f566acd1501362",
+      "bytes": 7473528,
+      "hash": "f551ad1e8e22e3e5",
       "preload": false,
       "priority": 2,
       "neighbors": [
@@ -117,22 +117,22 @@
       ],
       "lightmap": {
         "url": "/assets/rooms/ballroom/ballroom_lightmap.ktx2",
-        "bytes": 5122041,
-        "hash": "c56fe9a358940ad4",
-        "intensity": 1.875517715435285
+        "bytes": 4762683,
+        "hash": "2cd68b069ad373e3",
+        "intensity": 2.040738044839469
       },
       "stats": {
-        "triangles": 622952,
-        "nodes": 183,
-        "materials": 33,
-        "textureBytes": 2630747
+        "triangles": 555738,
+        "nodes": 175,
+        "materials": 30,
+        "textureBytes": 2585109
       }
     },
     "exterior": {
       "title": "Sea Terrace",
       "asset": "/assets/rooms/exterior/exterior.glb",
-      "bytes": 4494584,
-      "hash": "68901d17248f8001",
+      "bytes": 4494664,
+      "hash": "a7172b2a9220fd90",
       "preload": false,
       "always": true,
       "priority": 1,
@@ -147,8 +147,8 @@
       ],
       "lightmap": {
         "url": "/assets/rooms/exterior/exterior_lightmap.ktx2",
-        "bytes": 1104040,
-        "hash": "02973f7c5712660a",
+        "bytes": 1117919,
+        "hash": "82c0e24910082eae",
         "intensity": 0.1570795765034354
       },
       "stats": {
@@ -159,5 +159,5 @@
       }
     }
   },
-  "generated": "2026-10-07T23:54:57.284Z"
+  "generated": "2026-10-08T00:40:25.429Z"
 }

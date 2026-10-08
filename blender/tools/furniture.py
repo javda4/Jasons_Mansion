@@ -328,12 +328,13 @@ def vitrine(A, at, rz, width=1.2, height=1.9, depth=0.42, fill=("Vase", "TeaSet"
     for sx in (-1, 1):
         for sy in (0.02, depth - 0.02):
             K.box(K.name("PROP", "VitrinePost"), (0.035, 0.035, height), tuple(T(sx * (width / 2 - 0.018), sy, z0 + height / 2)), M["gilt"], rot=rot)
-        K.box(K.name("PROP", "VitrineGlass"), (0.006, depth - 0.04, height - 0.04), tuple(T(sx * (width / 2 - 0.01), depth / 2, z0 + height / 2)), M["glass"], rot=rot)
-    K.box(K.name("PROP", "VitrineGlass"), (width - 0.04, 0.006, height - 0.04), tuple(T(0, depth - 0.01, z0 + height / 2)), M["glass"], rot=rot)
-    K.box(K.name("PROP", "VitrineMullion"), (0.02, 0.012, height), tuple(T(0, depth - 0.006, z0 + height / 2)), M["gilt"], rot=rot)
+        # glass inset inside the posts (never coplanar with them: it flickered at a distance)
+        K.box(K.name("PROP", "VitrineGlass"), (0.004, depth - 0.1, height - 0.06), tuple(T(sx * (width / 2 - 0.05), depth / 2, z0 + height / 2)), M["glass"], rot=rot)
+    K.box(K.name("PROP", "VitrineGlass"), (width - 0.1, 0.004, height - 0.06), tuple(T(0, depth - 0.05, z0 + height / 2)), M["glass"], rot=rot)
+    K.box(K.name("PROP", "VitrineMullion"), (0.02, 0.012, height), tuple(T(0, depth - 0.03, z0 + height / 2)), M["gilt"], rot=rot)
     shelves = [z0 + height * f for f in (0.03, 0.36, 0.68)]
     for z in shelves:
-        K.box(K.name("PROP", "VitrineShelf"), (width - 0.06, depth - 0.06, 0.012), tuple(T(0, depth / 2, z)), M["glass"], rot=rot)
+        K.box(K.name("PROP", "VitrineShelf"), (width - 0.14, depth - 0.14, 0.012), tuple(T(0, depth / 2, z)), M["glass"], rot=rot)
     for k, z in enumerate(shelves):
         what = fill[k % len(fill)]
         if what == "TeaSet":

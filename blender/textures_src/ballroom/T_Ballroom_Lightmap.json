@@ -2,11 +2,11 @@
   "zone": "ballroom",
   "size": 4096,
   "samples": 256,
-  "encodeScale": 1.6515099895035916,
-  "intensity": 1.9022547084526495,
-  "p99_5": 0.6055064797401428,
-  "max": 33.80453872680664,
-  "coverage": 0.2738324999809265,
+  "encodeScale": 1.539439450121547,
+  "intensity": 2.040738044839469,
+  "p99_5": 0.649587094783783,
+  "max": 35.878883361816406,
+  "coverage": 0.27347785234451294,
   "objects": [
     "ROOM_Ballroom_Lightmapped_01",
     "ROOM_Ballroom_Lightmapped_02",
@@ -37,5 +37,5 @@
     "LIGHT_Ballroom_Torchere_07",
     "LIGHT_Ballroom_Torchere_08"
   ],
-  "seconds": 319.6
+  "seconds": 315.8
 }
